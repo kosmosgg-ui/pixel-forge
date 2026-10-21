@@ -3,3 +3,6 @@ dist/
 out/
 .forge-cache/
 *.tsbuildinfo
+
+# 작업 폴더 밖 출력 허용 목록(사람이 직접 작성, 로컬 전용)
+.forge/targets.local.json

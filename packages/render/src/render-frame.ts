@@ -6,6 +6,7 @@ import { fitBudgetInPlace, type BudgetFitResult } from './budget-fit.js';
 import { drawEyesInPlace, faceStats, type FaceStats } from './eyes.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
 import { applyFxInPlace } from './fx.js';
+import { heldThinShadeInPlace } from './held-shade.js';
 import { innerLinesInPlace, isThinMask, outerOutlineInPlace, thinStrokesInPlace } from './outline.js';
 import { placeParts, type PlacedPart } from './place.js';
 import { rasterizePart, type PartRaster } from './rasterize-part.js';
@@ -118,6 +119,10 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     if (!held && isThinMask(r.mask, r.w, r.h)) thin.add(p.index + 1);
     const local = partZone(p, r);
     shadeZoneInPlace(local, bible.light, rules.shade, stepsOf, (id) => small.has(id));
+    const joint = bones[p.part.bone];
+    if (held && joint && isThinMask(r.mask, r.w, r.h, rules.heldThinShade.maxThickness + 1)) {
+      heldThinShadeInPlace(local, r, [joint.x, joint.y], stepsOf(r.material.find((m) => m > 0) ?? 0), rules.heldThinShade.brightSteps);
+    }
     // 손에 든 파츠는 눈처럼 정리 대상에서 뺀다(작은 날·자루가 지워지지 않게)
     if (!held) {
       mergeSmallClustersInPlace(local, rules.cleanup.minCluster);

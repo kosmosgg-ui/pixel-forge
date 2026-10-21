@@ -5,6 +5,9 @@
 현재 단계: **P6**
 
 ## 로그
+- [P5 보정] 완료 | 사용자 승인 2건: rule form.held-thin-shade(두께 ≤3px held 몸체는 밝은 2단계, 손잡이·날끝 1px만 0단계), 출력 허용 목록 .forge/targets.local.json + --out @이름(gitignore, 사람이 작성)
+  - 수락: Tests 202 passed (39 files). 도적 단검 날 배경 대비 최악 프레임 ≥ contrastMinL 0.18(실측 0.48). build-all sample 3/3
+
 - [P5] 완료 | 완료: export(shelf 패킹 1px·결정론·pow2, Aseprite 호환 JSON hash+frameTags+duration — 근거 doc_exporter.cpp, manifest §10), forge pack, build는 QA 통과 시만 pack, Adapter 인터페이스 + dir 어댑터 + forge apply, forge watch(chokidar 4.0.3), docs/integration.md(Canvas 2D 로더 31줄), FORGE_VERSION 0.5.0(캐시 무효화)
   - 시트: 우향만 + rest 1프레임(duration 100), 좌향은 엔진 flipX. manifest pivot = 발밑
   - 수락기준: pnpm build && pnpm test -- --reporter=dot → Tests 199 passed (37 files). forge build rogue → pass:true, exit 0. forge apply rogue --target dir --out out/apply-test → written 3, exit 0

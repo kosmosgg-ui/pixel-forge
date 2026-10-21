@@ -90,4 +90,20 @@ describe('forge apply --target dir', () => {
     expect(() => applyCommand(spec, work, { out: 'game6' })).toThrow(expect.objectContaining({ code: 'apply.foreign-file' }));
     expect(existsSync(join(work, 'game6', 'rogue', 'rogue.png'))).toBe(false);
   });
+
+  it('작업 폴더 밖은 허용 목록(.forge/targets.local.json)의 @이름으로만: 없으면 만드는 법 안내, 없는 이름은 io.path-escape', () => {
+    expect(() => applyCommand(spec, work, { out: '@ext' })).toThrow(expect.objectContaining({ code: 'io.path-escape', message: expect.stringContaining('직접 만드세요') }));
+    const ext = mkdtempSync(join(tmpdir(), 'forge-ext-'));
+    try {
+      mkdirSync(join(work, '.forge'), { recursive: true });
+      writeFileSync(join(work, '.forge', 'targets.local.json'), JSON.stringify({ targets: { ext } }));
+      expect(applyCommand(spec, work, { out: '@ext' })).toMatchObject({ applied: true, out: join(ext, 'rogue') });
+      expect(existsSync(join(ext, 'rogue', 'rogue.json'))).toBe(true);
+      expect(() => applyCommand(spec, work, { out: '@nope' })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
+      expect(() => applyCommand(spec, work, { out: ext })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
+    } finally {
+      rmSync(ext, { recursive: true, force: true });
+      rmSync(join(work, '.forge'), { recursive: true, force: true });
+    }
+  });
 });

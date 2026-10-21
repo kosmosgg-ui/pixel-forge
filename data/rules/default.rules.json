@@ -59,6 +59,12 @@
     "source": "눈이 보여야 캐릭터가 읽힌다. 3/4 시점 먼 쪽 눈은 1px, 머리 외곽선에서 1px 띄움",
     "farEyeGap": 1
   },
+  "heldThinShade": {
+    "id": "form.held-thin-shade",
+    "source": "사용자 승인(P5 확인): 두께 3px 이하 held 파츠는 명암 단계를 다 쓰면 어두운 줄이 게임 배경에 묻혀 1px로 보인다. 날·몸체는 램프의 가장 밝은 2단계만, 어두운 톤은 손잡이(부착점 쪽)·날끝 1px에만",
+    "maxThickness": 3,
+    "brightSteps": 2
+  },
   "held": {
     "id": "form.held-min-width",
     "source": "사용자 승인(P4 보정): 손에 든 무기·소품은 1px 획이면 외곽선 톤에 묻혀 사라진다. held 파츠 두께 최소 2px, 1px은 decorative 파츠만",

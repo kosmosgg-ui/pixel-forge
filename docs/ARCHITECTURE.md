@@ -112,6 +112,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - `dark`: 전역 외곽선색 단일
    - `none`: 바깥 외곽선 없음
    - 얇은 획 (rule `form.outline-thin`): 두께 1px 이하 파츠(1px `line` 등)는 바깥 외곽선을 그리지 않고, 획 자체를 그 재질의 외곽선 톤으로 칠한다. 칼날 하이라이트 1px만 허용. 1px 무기 양쪽에 평행한 외곽선이 붙어 두 줄로 보이는 문제 방지
+   - 얇은 held 파츠 색 (rule `form.held-thin-shade`): 두께 `rules.heldThinShade.maxThickness`(3px) 이하 held 파츠는 몸체를 램프의 가장 밝은 `brightSteps`(2)단계만, 부착 관절에 가장 가까운 1px(손잡이)·가장 먼 1px(날끝)만 0단계. 파츠별 셰이딩 직후(모든 프레임 동일 규칙)
    - 손에 든 파츠 (rule `form.held-min-width`): `held=true` 파츠는 두께 `rules.held.minWidth`(2px) 이상이어야 한다(rest에서 판정, 미달 → `spec.held-too-thin`). 1px는 `decorative=true`만. held 파츠는 얇은 획 처리·작은 섬 병합·고립 정리에서 빠진다(눈처럼 보호). 1px 무기가 외곽선 톤으로만 칠해져 배경에 묻히던 문제(P4 보정 조사) 방지
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
@@ -258,7 +259,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge variants <spec> --rarity --palette-swap --part-swap` | 아이템 변형 생성(P7) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
-| `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 시 어댑터로 복사. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
+| `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 시 어댑터로 복사. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
 | `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
 - **경로 안전**: 경로를 받는 명령(palette, apply, ref, palette import)은 `resolveInside(base, path)`로 정규화하고 기준 폴더 밖(`../`, 절대 경로)이면 `ForgeError("io.path-escape")`.

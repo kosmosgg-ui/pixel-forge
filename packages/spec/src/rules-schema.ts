@@ -38,6 +38,7 @@ export const rulesSchema = z
     outline: z.object({ id: z.string(), mode: outlineModeSchema, seloutLitThreshold: z.number().min(0).max(1), innerLines: z.boolean() }).passthrough(),
     budgetFit: z.object({ id: z.string(), smallPartArea: z.number().int().min(0) }).passthrough(),
     face: z.object({ id: z.string(), farEyeGap: z.number().int().min(0) }).passthrough(),
+    heldThinShade: z.object({ id: z.string(), maxThickness: z.number().int().min(1), brightSteps: z.number().int().min(1) }).passthrough(),
     held: z.object({ id: z.string(), minWidth: z.number().int().min(1) }).passthrough(),
     qa: qaRulesSchema,
     anim: z
