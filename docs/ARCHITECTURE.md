@@ -102,7 +102,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 3. **래스터화**: 파츠별 도형 → ZoneBuffer에 depth 비교로 기록 (`depthLayer` back < mid < front 순으로 `depth`가 작다). 캔버스 배치: 루트 관절은 가로 가운데, 가장 아래 픽셀은 바닥에서 2px 위(외곽선 1px + 빈 줄 1px)
 4. **셰이딩**: 픽셀별 `lambert = max(0, n·L)` + `ambient` → `rules.shade.thresholds`로 단계 양자화 → shade 기록
    - 뒤쪽 보정: `depthLayer = "back"`인 뼈에 붙은 파츠는 `shade -= rules.shade.backLimbDarken`(기본 1) — 깊이감 (rule `form.depth-cue`)
-5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 2px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
+5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 3px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
+   - 면적 < `rules.budgetFit.smallPartArea`(12px)인 파츠는 램프를 3단계(어둠·기본·하이라이트)로 축소 (rule `color.budget-fit`)
 6. **해석(resolve)**: material+shade → 팔레트 인덱스 → IndexedRaster
 7. **외곽선**: `rules.outline.mode`
    - `selout`(기본): 실루엣 바깥 1px. 어두운 면은 인접 재질의 **외곽선 톤**(`ramp.outline`), 광원을 향한 면(법선·L > `seloutLitThreshold`)은 `ramp[0]`. 그림자 색과 외곽선이 같은 색이 되지 않게 한다
@@ -110,7 +111,9 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - `none`: 바깥 외곽선 없음
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
-8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개이고 외곽선 아님), 1px 획의 L자 모서리 제거
+7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
+8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개이고 외곽선·눈 아님), 1px 획의 L자 모서리 제거
+6.5 **색 예산 맞춤** (rule `color.budget-fit`, 실행은 8 다음): 고유 색 수 > `bible.colorBudget[sizeClass]`이면 같은 재질에서 사용 픽셀이 가장 적은 단계를 OKLab으로 가장 가까운 사용 중 단계로 병합, 예산 이하까지 반복. 외곽선 톤·눈 색·예약 색은 제외. 동률이면 재질 키 순 → 단계 인덱스 낮은 쪽. 병합 내역은 렌더 결과 `meta.budget`에 기록(QA 리포트에 표시). 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
 9. **검증 훅**: 팔레트 밖 인덱스, 반투명 알파가 없음을 assert (개발 모드)
 
 ## §7 DSL — 입력 JSON 스키마 (packages/spec)
@@ -122,6 +125,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "view": "side",                        // "side" | "topdown" | "iso" — 지금은 side만 구현
   "directions": 1,                       // 1 | 4 | 8. side = 1 + 좌우 반전
   "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },  // 이름 자유, [w, h] px
+  "defaultRig": "humanoid-34-v1",        // Spec이 rig를 생략하면 이 리그
   "pivot": "bottom-center",              // 발밑 중앙
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
   "outline": { "mode": "selout", "globalColor": "#1a1020" },
@@ -144,7 +148,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "kind": "character",                   // "character" | "item" | "tile" | "fx" | "ui" — P2~P4는 character만 구현
   "bible": "sample-v0",
   "sizeClass": "character",
-  "rig": "humanoid-side-v1",
+  "rig": "humanoid-34-v1",              // 생략하면 bible.defaultRig
   "proportions": { "headRatio": 0.28, "bulk": 0.9, "height": 30 },   // 캔버스 안 키(px)
   "parts": [
     { "bone": "head",  "shape": { "type": "ellipse", "w": 10, "h": 10 }, "material": "skin" },
@@ -162,6 +166,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - 뼈 로컬 +y: 위로 선 뼈에서는 화면 앞(+x), 아래로 향한 뼈에서는 화면 뒤(−x).
 - `proportions.height`: 리그 전체(관절 위치·뼈 길이)를 `rig.baseHeight` 대비 이 비율로 축척한다. 파츠 크기는 축척하지 않는다. `headRatio`·`bulk`는 지금은 기록용(P6 레퍼런스 비교).
 - `role`(선택): `bible.roleColorKey`의 키.
+- `eyes`(선택, rule `form.face`): `{ bone, pos: [x, y], size: 1|2, color: "<재질>:<단계>" }`. 위치는 뼈 중간점에서 화면 축으로 `pos`. `size`는 세로 픽셀 수. 3/4 리그는 먼 쪽 눈이 자동으로 붙는다.
+- 역할색 지침: `roleColorKey` 재질이 실루엣의 20% 이상(QA `read.role-color`). 부족하면 망토·휘장 같은 큰 파츠를 그 재질로.
 - `kind`가 아직 구현되지 않은 종류면 `ForgeError("spec.kind-not-implemented")`. `sizeClass`는 바이블 `sizeClasses`의 키여야 한다.
 - 작성 지침: 캐릭터당 재질 3~4개 권장. 색 예산 초과 시 재질의 `steps`를 줄이거나 재질을 합친다.
 ### §7.3 Mask 파츠 (형태가 독특한 파츠용)
@@ -174,11 +180,14 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ### §7.4 Rules (`data/rules/default.rules.json`) — 수치와 근거 id를 함께 보관. 렌더러는 rule id를 로그로 남긴다.
 
 ## §8 리그와 애니메이션 (packages/rig)
-### §8.1 Rig (`humanoid-side-v1`)
+### §8.1 Rig (`humanoid-side-v1`, `humanoid-34-v1`)
 뼈: `root(골반) → spine → chest → neck → head`, `chest → upperArmF → lowerArmF → handF → weapon`, `chest → upperArmB → lowerArmB → handB`, `root → thighF → shinF → footF`, `root → thighB → shinB → footB`.
 - 각 뼈: `parent, pivot[x,y], length, restAngle, depthLayer`. `depthLayer`는 `"back" | "mid" | "front"`(이 리그: `*B` 사지=back, 몸통·머리=mid, `*F` 사지·weapon=front). 이름의 `F`/`B`는 사람이 읽기 위한 관례일 뿐, 렌더러는 `depthLayer`·`drawOrder`만 본다.
 - drawOrder: back 사지 → 몸통 → 머리 → front 사지 → weapon.
 - 측면 시점, 오른쪽을 바라봄. 왼쪽은 렌더 후 수평 반전(픽셀 정확).
+- `humanoid-34-v1`: 몸통이 화면 쪽으로 약 30° 돈 측면 3/4. 같은 뼈 구조에 어깨 피벗만 앞 2px·뒤 3px로 벌려 양 어깨가 보이고, 뒤팔(back)은 몸통 뒤로 일부 노출. `metrics.chestWidth`(Spec 작성 참고값) 10 = 측면 대비 약 1.6배. `eyes: {count: 2, spacing: 3}`.
+- `restAngle`은 차렷, `restPose`(뼈별 rot·dx·dy)는 **전투 대기 자세**까지의 변화량. `solveRig`가 항상 적용하고 P4 포즈는 그 위에 더한다. 34 리그의 restPose: 앞다리 앞·뒷다리 뒤(발 간격 4~6px), 무릎 굽힘, 무기 팔이 몸통 앞으로(손이 몸통 실루엣 밖).
+- `humanoid-side-v1`은 완전 측면 게임용으로 유지.
 ### §8.2 Pose / Animation
 ```jsonc
 { "id": "attack", "loop": false,

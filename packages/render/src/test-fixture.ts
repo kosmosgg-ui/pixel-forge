@@ -14,9 +14,9 @@ export function bible(over: Partial<Record<string, unknown>> = {}): Bible {
 }
 
 /** 루트 하나(각도 0)와 뒤쪽 뼈 하나 */
-export function rig(names: [string, string] = ['root', 'back']): Rig {
+export function rig(names: [string, string] = ['root', 'back'], eyes = { count: 1, spacing: 3 }): Rig {
   return rigSchema.parse({
-    id: 'r', view: 'side', facing: 'right', baseHeight: 10,
+    id: 'r', view: 'side', facing: 'right', baseHeight: 10, eyes,
     bones: {
       [names[0]]: { parent: null, pivot: [0, 0], length: 0, restAngle: 0, depthLayer: 'mid' },
       [names[1]]: { parent: names[0], pivot: [0, 0], length: 0, restAngle: 0, depthLayer: 'back' },

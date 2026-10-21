@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
 import { ForgeError } from '@pixel-forge/core';
+import { decodePng } from '../io/png.js';
 import { renderCommand } from './render.js';
 import { validateCommand } from './validate.js';
 
@@ -59,6 +60,19 @@ describe('forge render (golden)', () => {
   it.each(['warrior', 'rogue', 'mage'])('샘플 %s rest 프레임', (id) => {
     const r = renderCommand(`data/specs/sample/${id}.spec.json`, work);
     expect(r).toMatchObject({ ok: true, out: join('out', id, 'frames', 'rest.png'), clipped: 0 });
+    expect(r.colors).toBeLessThanOrEqual(15);
     expect(sha(r.out)).toMatchSnapshot();
+  });
+
+  it.each(['warrior', 'rogue'])('샘플 %s: 다리 사이 틈이 있다(아래 1/4 구간에 불투명 덩어리 2개인 줄)', (id) => {
+    const r = renderCommand(`data/specs/sample/${id}.spec.json`, work);
+    const img = decodePng(readFileSync(join(work, r.out)));
+    let rows = 0;
+    for (let y = Math.floor(img.h * 0.75); y < img.h; y++) {
+      let runs = 0, inRun = false;
+      for (let x = 0; x < img.w; x++) { const o = (img.rgba[(y * img.w + x) * 4 + 3] ?? 0) > 0; if (o && !inRun) runs++; inRun = o; }
+      if (runs >= 2) rows++;
+    }
+    expect(rows).toBeGreaterThanOrEqual(1);
   });
 });

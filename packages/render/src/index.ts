@@ -7,3 +7,5 @@ export * from './resolve.js';
 export * from './outline.js';
 export * from './assert.js';
 export * from './render-frame.js';
+export * from './eyes.js';
+export * from './budget-fit.js';

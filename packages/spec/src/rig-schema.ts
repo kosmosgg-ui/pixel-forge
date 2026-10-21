@@ -12,6 +12,8 @@ export const boneSchema = z.object({
   depthLayer: depthLayerSchema,
 });
 
+const boneDeltaSchema = z.object({ rot: z.number().optional(), dx: z.number().optional(), dy: z.number().optional() });
+
 export const rigSchema = z
   .object({
     id: z.string().min(1),
@@ -21,6 +23,12 @@ export const rigSchema = z
     baseHeight: z.number().positive(),
     bones: z.record(z.string().min(1), boneSchema),
     drawOrder: z.array(z.string().min(1)),
+    /** rest = 전투 대기 자세. restAngle(차렷) 위에 더하는 뼈별 변화량 */
+    restPose: z.record(z.string().min(1), boneDeltaSchema).default({}),
+    /** 눈 개수(측면 1, 3/4 2)와 두 눈 간격(px, 화면 앞쪽 방향) */
+    eyes: z.object({ count: z.union([z.literal(1), z.literal(2)]), spacing: z.number().int().min(1) }).default({ count: 1, spacing: 3 }),
+    /** Spec 작성 참고값(px). 렌더러는 쓰지 않는다 */
+    metrics: z.object({ chestWidth: z.number().positive() }).partial().default({}),
   })
   .passthrough()
   .superRefine((r, ctx) => {
@@ -37,6 +45,7 @@ export const rigSchema = z
         seen.add(cur);
       }
     }
+    for (const n of Object.keys(r.restPose)) if (!(n in r.bones)) issue(['restPose', n], `없는 뼈: ${n}`);
     const order = [...r.drawOrder].sort().join(',');
     if (order !== [...names].sort().join(',') || new Set(r.drawOrder).size !== r.drawOrder.length) {
       issue(['drawOrder'], 'drawOrder는 모든 뼈를 정확히 한 번씩 포함해야 합니다');

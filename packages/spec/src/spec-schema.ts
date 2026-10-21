@@ -34,7 +34,8 @@ export const specSchema = z
     kind: specKindSchema,
     bible: z.string().min(1),
     sizeClass: z.string().min(1),
-    rig: z.string().min(1),
+    /** 생략하면 bible.defaultRig */
+    rig: z.string().min(1).optional(),
     /** bible.roleColorKey의 키 (선택) */
     role: z.string().min(1).optional(),
     proportions: z
@@ -46,6 +47,17 @@ export const specSchema = z
       })
       .default({}),
     parts: z.array(partSchema).min(1).max(64),
+    /** rule: form.face — 뼈 중간점에서 화면 축으로 pos만큼. 3/4 리그면 먼 쪽 눈(1px)이 자동으로 붙는다 */
+    eyes: z
+      .object({
+        bone: z.string().min(1),
+        pos: z.tuple([z.number().int(), z.number().int()]),
+        /** 세로 픽셀 수 */
+        size: z.union([z.literal(1), z.literal(2)]),
+        /** "<재질>:<램프 단계>" */
+        color: z.string().regex(/^[^:]+:\d+$/, '"<재질>:<단계>" 형식이어야 합니다'),
+      })
+      .optional(),
     animations: z.array(z.string().min(1)).default([]),
     seed: z.number().int().default(1),
   })

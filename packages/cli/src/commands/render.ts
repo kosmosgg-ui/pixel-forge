@@ -11,10 +11,13 @@ export function renderCommand(specPath: string, cwd: string) {
   const p = loadProject(specPath, cwd);
   validateProject(p);
   const palette = buildBiblePalette(p.bible, p.rules);
-  const { raster, clipped } = renderFrame({ ...p, palette });
+  const { raster, clipped, meta } = renderFrame({ ...p, palette });
   const out = join(cwd, 'out', p.spec.id, 'frames', 'rest.png');
   writeFileEnsured(out, encodePng({ w: raster.w, h: raster.h, rgba: toRGBA(raster, palette.palette) }));
   const used = new Set(raster.px);
   used.delete(0);
-  return { ok: true as const, cmd: 'render', id: p.spec.id, frames: 1, size: [raster.w, raster.h], colors: used.size, clipped, out: relative(cwd, out) };
+  return {
+    ok: true as const, cmd: 'render', id: p.spec.id, frames: 1, size: [raster.w, raster.h], colors: used.size,
+    budget: `${meta.budget.before}→${meta.budget.after}/${meta.budget.limit}`, merges: meta.budget.merges.length, clipped, out: relative(cwd, out),
+  };
 }

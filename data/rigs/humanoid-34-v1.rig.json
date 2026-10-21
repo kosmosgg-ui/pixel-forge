@@ -1,0 +1,47 @@
+{
+  "$comment": "측면 3/4 인간형 리그. 몸통이 화면 쪽으로 약 30° 돌아간 자세, 오른쪽을 바라봄, 키 30px. restAngle은 차렷, restPose는 전투 대기 자세(앞다리 앞·뒷다리 뒤·무릎 굽힘·무기 팔이 몸통 앞으로). 어깨는 앞(+x) 2px·뒤(−x) 3px로 벌려 양 어깨가 보이고, 뒤팔은 back 층이라 몸통 뒤로 일부만 보인다.",
+  "id": "humanoid-34-v1",
+  "view": "side",
+  "facing": "right",
+  "baseHeight": 30,
+  "metrics": { "chestWidth": 10 },
+  "eyes": { "count": 2, "spacing": 3 },
+  "bones": {
+    "root":      { "parent": null,        "pivot": [0, 0],  "length": 0, "restAngle": -90, "depthLayer": "mid" },
+    "spine":     { "parent": "root",      "pivot": [0, 0],  "length": 4, "restAngle": 0,   "depthLayer": "mid" },
+    "chest":     { "parent": "spine",     "pivot": [4, 0],  "length": 5, "restAngle": 0,   "depthLayer": "mid" },
+    "neck":      { "parent": "chest",     "pivot": [5, 0],  "length": 1, "restAngle": 0,   "depthLayer": "mid" },
+    "head":      { "parent": "neck",      "pivot": [1, 0],  "length": 7, "restAngle": 0,   "depthLayer": "mid" },
+    "upperArmF": { "parent": "chest",     "pivot": [4, 2],  "length": 5, "restAngle": 175, "depthLayer": "front" },
+    "lowerArmF": { "parent": "upperArmF", "pivot": [5, 0],  "length": 4, "restAngle": -15, "depthLayer": "front" },
+    "handF":     { "parent": "lowerArmF", "pivot": [4, 0],  "length": 1, "restAngle": 0,   "depthLayer": "front" },
+    "weapon":    { "parent": "handF",     "pivot": [1, 0],  "length": 0, "restAngle": 0,   "depthLayer": "front" },
+    "upperArmB": { "parent": "chest",     "pivot": [4, -3], "length": 5, "restAngle": 190, "depthLayer": "back" },
+    "lowerArmB": { "parent": "upperArmB", "pivot": [5, 0],  "length": 4, "restAngle": 10,  "depthLayer": "back" },
+    "handB":     { "parent": "lowerArmB", "pivot": [4, 0],  "length": 1, "restAngle": 0,   "depthLayer": "back" },
+    "thighF":    { "parent": "root",      "pivot": [0, 1],  "length": 6, "restAngle": 180, "depthLayer": "front" },
+    "shinF":     { "parent": "thighF",    "pivot": [6, 0],  "length": 6, "restAngle": 0,   "depthLayer": "front" },
+    "footF":     { "parent": "shinF",     "pivot": [6, 0],  "length": 2, "restAngle": -90, "depthLayer": "front" },
+    "thighB":    { "parent": "root",      "pivot": [0, -1], "length": 6, "restAngle": 180, "depthLayer": "back" },
+    "shinB":     { "parent": "thighB",    "pivot": [6, 0],  "length": 6, "restAngle": 0,   "depthLayer": "back" },
+    "footB":     { "parent": "shinB",     "pivot": [6, 0],  "length": 2, "restAngle": -90, "depthLayer": "back" }
+  },
+  "restPose": {
+    "spine":     { "rot": 4 },
+    "thighF":    { "rot": -15 },
+    "shinF":     { "rot": 20 },
+    "footF":     { "rot": -5 },
+    "thighB":    { "rot": 8 },
+    "shinB":     { "rot": 10 },
+    "footB":     { "rot": -18 },
+    "upperArmF": { "rot": -35 },
+    "lowerArmF": { "rot": -50 },
+    "upperArmB": { "rot": 10 },
+    "lowerArmB": { "rot": -40 }
+  },
+  "drawOrder": [
+    "thighB", "shinB", "footB", "upperArmB", "lowerArmB", "handB",
+    "root", "spine", "chest", "neck", "head",
+    "thighF", "shinF", "footF", "upperArmF", "lowerArmF", "handF", "weapon"
+  ]
+}

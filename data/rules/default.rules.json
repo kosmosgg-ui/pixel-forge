@@ -38,7 +38,7 @@
   "cleanup": {
     "id": "form.cleanup",
     "source": "pixel art fundamentals (orphans, jaggies)",
-    "minCluster": 2,
+    "minCluster": 3,
     "removeOrphans": true,
     "pixelPerfectLines": true
   },
@@ -48,6 +48,16 @@
     "mode": "selout",
     "seloutLitThreshold": 0.35,
     "innerLines": true
+  },
+  "budgetFit": {
+    "id": "color.budget-fit",
+    "source": "고유 색 수가 예산을 넘으면 같은 재질에서 가장 적게 쓰인 단계를 가장 가까운 사용 중 단계로 병합. 작은 소품은 3단계(어둠·기본·하이라이트)로",
+    "smallPartArea": 12
+  },
+  "face": {
+    "id": "form.face",
+    "source": "눈이 보여야 캐릭터가 읽힌다. 3/4 시점 먼 쪽 눈은 1px, 머리 외곽선에서 1px 띄움",
+    "farEyeGap": 1
   },
   "colorBudget": {
     "id": "color.budget",

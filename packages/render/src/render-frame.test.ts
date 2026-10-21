@@ -69,6 +69,26 @@ describe('renderFrame', () => {
     expect(() => assertFrame(raster, c.palette.palette)).toThrow(ForgeError);
   });
 
+  it('눈: 3/4 리그면 2개, 먼 쪽 눈은 머리 외곽에서 1px 띄우고, 정리 단계에서 지워지지 않는다', () => {
+    const eyes = { bone: 'root', pos: [0, 0], size: 1, color: 'm:0' };
+    const c = ctx(spec([circle('root', 9)], { eyes }), bible(), rig(['root', 'back'], { count: 2, spacing: 6 }));
+    const { raster, meta } = renderFrame(c);
+    expect(meta.eyes).toHaveLength(2);
+    const [near, far] = meta.eyes as [number, number];
+    for (const k of meta.eyes) expect(raster.px[k]).toBe(c.palette.ramps.m?.indices[0]);
+    // 원 폭 9: 오른쪽 끝 열에 붙지 않도록 간격 6 → 3으로 당겨진다
+    expect(far - near).toBe(3);
+  });
+
+  it('면적 < smallPartArea 파츠는 3단계(어둠·기본·하이라이트)만', () => {
+    const c = ctx(spec([circle('root', 3)]), bible({ outline: { mode: 'none', globalColor: '#101018' } }));
+    const { raster, meta } = renderFrame(c);
+    expect(meta.smallParts).toEqual([0]);
+    const ramp = c.palette.ramps.m!;
+    const allowed = [ramp.indices[0], ramp.indices[1], ramp.indices[3]];
+    for (const v of raster.px) if (v) expect(allowed).toContain(v);
+  });
+
   it('결정론: 2회 렌더 결과 동일', () => {
     const c = ctx(spec([circle(), { bone: 'root', shape: { type: 'capsule', len: 9, w: 4, angleDeg: 30 }, material: 'm' }]));
     expect(equals(renderFrame(c).raster, renderFrame(c).raster)).toBe(true);

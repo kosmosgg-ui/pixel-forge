@@ -20,6 +20,8 @@ export const bibleSchema = z
     materials: z.record(z.string().min(1), materialSchema),
     fxColors: z.array(hexColorSchema),
     roleColorKey: z.record(z.string().min(1), z.string().min(1)).default({}),
+    /** Spec이 rig를 생략하면 쓰는 리그 id */
+    defaultRig: z.string().min(1).optional(),
   })
   .passthrough()
   .superRefine((b, ctx) => {

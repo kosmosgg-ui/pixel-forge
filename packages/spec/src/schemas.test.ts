@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import bibleJson from '../../../data/bibles/sample-v0.bible.json' with { type: 'json' };
 import rigJson from '../../../data/rigs/humanoid-side-v1.rig.json' with { type: 'json' };
+import rig34Json from '../../../data/rigs/humanoid-34-v1.rig.json' with { type: 'json' };
 import rulesJson from '../../../data/rules/default.rules.json' with { type: 'json' };
 import rogueJson from '../../../data/specs/sample/rogue.spec.json' with { type: 'json' };
 import { bibleSchema } from './bible-schema.js';
@@ -10,7 +11,8 @@ import { rulesSchema } from './rules-schema.js';
 import { specSchema } from './spec-schema.js';
 
 describe('data 파일이 스키마를 통과한다', () => {
-  it('sample-v0, humanoid-side-v1, default rules, rogue', () => {
+  it('sample-v0, humanoid-side-v1·34-v1, default rules, rogue', () => {
+    expect(rigSchema.safeParse(rig34Json).success).toBe(true);
     expect(bibleSchema.safeParse(bibleJson).success).toBe(true);
     expect(rigSchema.safeParse(rigJson).success).toBe(true);
     expect(rulesSchema.safeParse(rulesJson).success).toBe(true);
@@ -58,9 +60,17 @@ describe('specSchema', () => {
 
 describe('checkRefs', () => {
   it('통과하면 빈 목록, 없는 뼈·재질·sizeClass는 오류', () => {
-    const bible = bibleSchema.parse(bibleJson), rig = rigSchema.parse(rigJson), spec = specSchema.parse(rogueJson);
+    const bible = bibleSchema.parse(bibleJson), rig = rigSchema.parse(rig34Json), spec = specSchema.parse(rogueJson);
     expect(checkRefs(spec, bible, rig)).toEqual([]);
     const bad = specSchema.parse({ ...rogueJson, sizeClass: 'giant', parts: [{ bone: 'tail', shape: { type: 'ellipse', w: 3, h: 3 }, material: 'velvet' }] });
     expect(checkRefs(bad, bible, rig)).toHaveLength(3);
+  });
+
+  it('rig 생략 시 바이블 defaultRig, eyes 재질·단계 검사', () => {
+    const bible = bibleSchema.parse(bibleJson), rig = rigSchema.parse(rig34Json);
+    const { rig: _r, ...noRig } = rogueJson;
+    expect(checkRefs(specSchema.parse(noRig), bible, rig)).toEqual([]);
+    const badEye = specSchema.parse({ ...rogueJson, eyes: { bone: 'head', pos: [0, 0], size: 1, color: 'leather:9' } });
+    expect(checkRefs(badEye, bible, rig)[0]).toContain('eyes.color');
   });
 });

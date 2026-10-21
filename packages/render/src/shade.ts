@@ -10,9 +10,12 @@ export interface Light {
 /**
  * rule: form.shade-quantize — 세기 = min(1, ambient + max(0, n·L))를 thresholds로 단계화하고 재질 램프 단계로 옮긴다.
  * rule: form.depth-cue — 뒤쪽 층(depthLayer = back)은 backLimbDarken 단계 어둡게.
+ * rule: color.budget-fit — isSmall인 파츠(면적이 작은 소품)는 램프를 3단계(어둠·기본·하이라이트)로 줄인다.
  * mask legend로 고정된 shade는 그대로 둔다(램프 범위로만 자름).
  */
-export function shadeZoneInPlace(z: FrameZone, light: Light, rules: ShadeRules, stepsOf: (materialId: number) => number): void {
+export function shadeZoneInPlace(
+  z: FrameZone, light: Light, rules: ShadeRules, stepsOf: (materialId: number) => number, isSmall: (partId: number) => boolean = () => false,
+): void {
   const len = Math.hypot(...light.dir) || 1;
   const [lx, ly, lz] = light.dir.map((v) => v / len) as [number, number, number];
   const T = rules.thresholds.length;
@@ -31,6 +34,10 @@ export function shadeZoneInPlace(z: FrameZone, light: Light, rules: ShadeRules, 
     const level = rules.thresholds.filter((t) => intensity >= t).length;
     let step = Math.round((level * (steps - 1)) / T);
     if (z.back[k]) step = Math.max(0, step - rules.backLimbDarken);
+    if (isSmall(z.part[k] ?? 0)) {
+      const mid = Math.floor((steps - 1) / 2);
+      step = step < mid ? 0 : step > mid ? steps - 1 : mid;
+    }
     z.shade[k] = step;
   }
 }

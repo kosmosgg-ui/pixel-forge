@@ -18,6 +18,8 @@ export const rulesSchema = z
     shade: shadeRulesSchema,
     cleanup: z.object({ id: z.string(), minCluster: z.number().int().min(1), removeOrphans: z.boolean(), pixelPerfectLines: z.boolean() }).passthrough(),
     outline: z.object({ id: z.string(), mode: outlineModeSchema, seloutLitThreshold: z.number().min(0).max(1), innerLines: z.boolean() }).passthrough(),
+    budgetFit: z.object({ id: z.string(), smallPartArea: z.number().int().min(0) }).passthrough(),
+    face: z.object({ id: z.string(), farEyeGap: z.number().int().min(0) }).passthrough(),
   })
   .passthrough();
 

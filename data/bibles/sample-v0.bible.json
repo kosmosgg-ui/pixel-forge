@@ -5,6 +5,7 @@
   "view": "side",
   "directions": 1,
   "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
+  "defaultRig": "humanoid-34-v1",
   "pivot": "bottom-center",
   "facing": "right",
   "background": "#2a2238",
