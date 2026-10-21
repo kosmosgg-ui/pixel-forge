@@ -43,3 +43,16 @@ describe('forge palette', () => {
     expect(() => paletteCommand('nope', work)).toThrow(ForgeError);
   });
 });
+
+describe('forge palette 경로 안전', () => {
+  it('../ 로 저장소 밖 파일을 가리키면 io.path-escape', () => {
+    for (const ref of ['../../etc/x.json', '../evil']) {
+      try {
+        paletteCommand(ref, work);
+        expect.unreachable(ref);
+      } catch (e) {
+        expect((e as ForgeError).code).toBe('io.path-escape');
+      }
+    }
+  });
+});

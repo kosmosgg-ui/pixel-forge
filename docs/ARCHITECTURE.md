@@ -256,6 +256,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
 | `forge apply <spec> --target <adapter> [--out <dir>]` | 게임 프로젝트로 산출물 복사 (P5). 기본 어댑터 `dir`: 지정 폴더에 복사만, 엔진 무관 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
+- **경로 안전**: 경로를 받는 명령(palette, apply, ref, palette import)은 `resolveInside(base, path)`로 정규화하고 기준 폴더 밖(`../`, 절대 경로)이면 `ForgeError("io.path-escape")`.
 
 ## §12 성능·품질 목표
 - 48×48 캐릭터 4애니메이션(약 20프레임) build ≤ 1초.

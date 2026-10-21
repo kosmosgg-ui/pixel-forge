@@ -1,14 +1,15 @@
-import { join, relative, resolve } from 'node:path';
+import { join, relative } from 'node:path';
 import { buildBiblePalette, paletteSheet, scaleNearest, toRGBA } from '@pixel-forge/core';
 import { bibleColorsSchema, rulesColorSchema } from '@pixel-forge/spec';
 import { encodePng } from '../io/png.js';
 import { readJson, writeFileEnsured } from '../io/files.js';
+import { resolveInside } from '../io/paths.js';
 
 const SHEET_SCALE = 4;
 
 /** 인자가 .json이면 경로, 아니면 data/bibles/<id>.bible.json */
 export function resolveBiblePath(ref: string, cwd: string): string {
-  return ref.endsWith('.json') ? resolve(cwd, ref) : join(cwd, 'data', 'bibles', `${ref}.bible.json`);
+  return ref.endsWith('.json') ? resolveInside(cwd, ref) : resolveInside(join(cwd, 'data', 'bibles'), `${ref}.bible.json`);
 }
 
 export function paletteCommand(ref: string, cwd: string) {
