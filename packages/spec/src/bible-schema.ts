@@ -25,6 +25,8 @@ export const bibleSchema = z
     defaultRig: z.string().min(1).optional(),
     /** 엔진용 절차 애니 힌트 기본값 (manifest motion) */
     motion: motionSchema.default({ bob: { px: 1, ms: 400 }, squash: { x: 1.1, y: 0.9, ms: 80 }, hitFlash: { ms: 60 } }),
+    /** forge apply 기본값(게임 프로젝트 폴더, 작업 폴더 기준 상대 경로) */
+    apply: z.object({ target: z.string().min(1).default('dir'), out: z.string().min(1).optional() }).optional(),
   })
   .passthrough()
   .superRefine((b, ctx) => {

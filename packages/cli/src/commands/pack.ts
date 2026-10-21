@@ -1,0 +1,49 @@
+import { createHash } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { FORGE_VERSION, ForgeError, toRGBA } from '@pixel-forge/core';
+import { buildManifest, packCharacter } from '@pixel-forge/export';
+import { resolveMotion } from '@pixel-forge/spec';
+import { writeFileEnsured } from '../io/files.js';
+import { encodePng } from '../io/png.js';
+import { loadProject, type Project } from '../io/project.js';
+import { packFiles } from './pack-files.js';
+import { renderProject, type Rendered } from './qa.js';
+
+export const PACK_FORMATS = ['aseprite-json'] as const;
+
+export { packFiles } from './pack-files.js';
+
+/** 렌더 결과 → out/<id>/{<id>.png, <id>.json(Aseprite 호환), manifest.json} (§10) */
+export function writePack(p: Project, r: Rendered, cwd: string): string[] {
+  const dir = join(cwd, 'out', p.spec.id);
+  const W = r.rest.raster.w;
+  // 바이블 facing이 리그와 다르면 렌더가 좌우 반전했으므로 루트 x도 반전
+  const rootX = p.bible.facing !== p.rig.facing ? W - 1 - r.rest.origin[0] : r.rest.origin[0];
+  const loops = Object.fromEntries(Object.entries(p.anims?.anims ?? {}).map(([k, a]) => [k, a.loop]));
+  const packed = packCharacter({
+    id: p.spec.id, bible: p.bible.id, sizeClass: p.spec.sizeClass, rest: r.rest.raster, rootX,
+    frames: r.frames.map((f) => ({ anim: f.anim, index: f.index, raster: f.raster, ms: f.ms })),
+    loops, motion: resolveMotion(p.bible.motion, p.spec.motion), palette: r.palette.palette, version: FORGE_VERSION,
+  }, `${p.spec.id}.png`);
+  const png = encodePng({ w: packed.sheet.w, h: packed.sheet.h, rgba: toRGBA(packed.sheet, r.palette.palette) });
+  const [img = '', data = '', manifest = ''] = packFiles(p.spec.id);
+  writeFileEnsured(join(dir, img), png);
+  writeFileSync(join(dir, data), JSON.stringify(packed.json, null, 1) + '\n');
+  const hash = createHash('sha256').update(png).digest('hex');
+  writeFileSync(join(dir, manifest), JSON.stringify(buildManifest({ ...packed.manifest, hash }), null, 2) + '\n');
+  return [img, data, manifest].map((f) => relative(cwd, join(dir, f)));
+}
+
+/** forge pack: 렌더 → 패킹만(QA 없음, 개발용). 게임에 넣는 산출물은 QA를 거치는 build·apply로 */
+export function packCommand(specPath: string, cwd: string, format = 'aseprite-json') {
+  if (!(PACK_FORMATS as readonly string[]).includes(format)) {
+    throw new ForgeError('cli.format', `지원하지 않는 형식: ${format} (지원: ${PACK_FORMATS.join(', ')})`);
+  }
+  const p = loadProject(specPath, cwd);
+  const r = renderProject(p);
+  const files = writePack(p, r, cwd);
+  // 시트 프레임 = rest 1 + 애니 프레임
+  const frames = 1 + r.frames.length;
+  return { ok: true as const, cmd: 'pack', id: p.spec.id, format, frames, out: files[0], files };
+}

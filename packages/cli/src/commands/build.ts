@@ -5,25 +5,32 @@ import { ForgeError } from '@pixel-forge/core';
 import { cacheKey, restoreCache, storeCache } from '../cache.js';
 import { decodePng } from '../io/png.js';
 import { loadProject, type Project } from '../io/project.js';
-import { runQa, summary } from './qa.js';
+import { writePack } from './pack.js';
+import { runQaRendered, summary } from './qa.js';
 
-/** validate → render → qa (pack은 P5). 같은 입력이면 캐시에서 복원 */
+/** validate → render → qa → pack(QA 통과 시만). 같은 입력이면 캐시에서 복원 */
 export function buildCommand(specPath: string, cwd: string) {
   return buildProject(specPath, loadProject(specPath, cwd), cwd);
 }
 
-function buildProject(specPath: string, p: Project, cwd: string) {
+/** 이 캐릭터 산출물을 결정하는 입력 파일(절대 경로) — 캐시 키와 watch가 같은 목록을 쓴다 */
+export function projectDeps(specPath: string, p: Project, cwd: string): string[] {
   const data = join(cwd, 'data');
-  const key = cacheKey([
+  return [
     resolve(cwd, specPath), join(data, 'bibles', `${p.spec.bible}.bible.json`), join(data, 'rigs', `${p.rig.id}.rig.json`),
     join(data, 'rigs', `${p.rig.id}.anims.json`), join(data, 'rules', 'default.rules.json'),
-  ]);
+  ];
+}
+
+function buildProject(specPath: string, p: Project, cwd: string) {
+  const key = cacheKey(projectDeps(specPath, p, cwd));
   const out = join(cwd, 'out', p.spec.id);
+  // 지난 빌드(다른 입력·forge qa·pack)의 파일이 캐시 복원·새 빌드에 섞이지 않게 출력 폴더를 비우고 시작
+  rmSync(out, { recursive: true, force: true });
   const cached = restoreCache(cwd, key, out);
   if (!cached) {
-    // 지난 빌드의 프레임이 남아 캐시에 섞이지 않게 출력 폴더를 비우고 시작
-    rmSync(out, { recursive: true, force: true });
-    runQa(p, cwd);
+    const { report, rendered } = runQaRendered(p, cwd);
+    if (report.pass) writePack(p, rendered, cwd);
     storeCache(cwd, key, out);
   }
   const report = JSON.parse(readFileSync(join(out, 'qa.json'), 'utf8')) as Report;

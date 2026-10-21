@@ -9,6 +9,7 @@ try {
     options: {
       version: { type: 'boolean' }, pretty: { type: 'boolean' },
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
+      format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
     },
     allowPositionals: true,
     strict: true,
@@ -18,6 +19,9 @@ try {
     ...(values.anim !== undefined ? { anim: values.anim } : {}),
     ...(values.count !== undefined ? { count: values.count } : {}),
     ...(values.seed !== undefined ? { seed: values.seed } : {}),
+    ...(values.format !== undefined ? { format: values.format } : {}),
+    ...(values.target !== undefined ? { target: values.target } : {}),
+    ...(values.out !== undefined ? { out: values.out } : {}),
   });
   process.stdout.write(JSON.stringify(result, null, values.pretty === true ? 2 : undefined) + '\n');
   // QA 불합격은 명령 자체는 성공(ok)이지만 종료 코드 2

@@ -14,12 +14,13 @@
   "dependencies": {
     "@pixel-forge/core": "workspace:*",
     "@pixel-forge/export": "workspace:*",
-    "@pixel-forge/spec": "workspace:*",
-    "pngjs": "7.0.0",
-    "zod": "3.25.76",
+    "@pixel-forge/qa": "workspace:*",
     "@pixel-forge/render": "workspace:*",
     "@pixel-forge/rig": "workspace:*",
-    "@pixel-forge/qa": "workspace:*"
+    "@pixel-forge/spec": "workspace:*",
+    "chokidar": "4.0.3",
+    "pngjs": "7.0.0",
+    "zod": "3.25.76"
   },
   "bin": {
     "forge": "./dist/main.js"

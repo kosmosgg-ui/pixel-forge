@@ -2,9 +2,15 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P5**
+현재 단계: **P6**
 
 ## 로그
+- [P5] 완료 | 완료: export(shelf 패킹 1px·결정론·pow2, Aseprite 호환 JSON hash+frameTags+duration — 근거 doc_exporter.cpp, manifest §10), forge pack, build는 QA 통과 시만 pack, Adapter 인터페이스 + dir 어댑터 + forge apply, forge watch(chokidar 4.0.3), docs/integration.md(Canvas 2D 로더 31줄), FORGE_VERSION 0.5.0(캐시 무효화)
+  - 시트: 우향만 + rest 1프레임(duration 100), 좌향은 엔진 flipX. manifest pivot = 발밑
+  - 수락기준: pnpm build && pnpm test -- --reporter=dot → Tests 199 passed (37 files). forge build rogue → pass:true, exit 0. forge apply rogue --target dir --out out/apply-test → written 3, exit 0
+  - code-reviewer: 높음 1(대상 안 심볼릭 링크로 밖에 쓰기) 수정, 중간 4(폴더·비정규 파일 exit 3, 원자적 쓰기, watch add·error·색인 실패 로그, 남은 pack 파일) 수정 + 1(작업 폴더 밖 --out) 문서화·backlog, 낮음 3 중 2 수정 + 1 backlog
+  - pixel-reviewer: 렌더 바이트 불변(골든 diff 0) → P4 마무리 점수 20/24 유지
+
 - [P4 마무리] 완료 | 전사 투구 앞 열림(눈 둘레 피부 3×2)·튜닉 깃 턱 아래로, 도적 단검 = 곧은 날 7×2 + 날밑 1×4 + 손잡이 일직선, 공용 windup(spine -16·upperArmF -80·lowerArmF 40·weapon 10 → 무기·머리 겹침 0), forge review(캐릭터×애니 전 프레임, 바이블 배경, 4배, 애니 단위 줄)
   - QA: form.face-clear 프레임별 최악 판정 + 머리 위 held 0 + 눈 둘레 창이 얼굴 재질(투구 등 다른 재질 덮임 포함). 재현: 수정 전 warrior 눈 둘레 3/6, rogue·mage windup 가림 0.29·0.46. held-visible 부착은 손 → 같은 뼈 파츠(날밑·손잡이) 8-연결 도달로
   - 엔진: color.budget-fit은 3단계 이상 재질부터 병합(단검처럼 작은 재질이 한 색으로 뭉개짐 방지)

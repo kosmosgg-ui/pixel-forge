@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { buildBiblePalette, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
 import { contactSheet, runChecks, type Check, type HeldInfo, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
@@ -7,6 +7,7 @@ import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
 import { loadProject, type Project } from '../io/project.js';
+import { packFiles } from './pack-files.js';
 import { validateProject } from './validate.js';
 
 /** held 파츠별 손 파츠(부착 뼈의 부모 뼈 파츠), 같은 뼈 파츠(날밑·손잡이), rest 픽셀 수 */
@@ -87,6 +88,11 @@ export function writeFrames(dir: string, r: Rendered): string[] {
 
 /** 렌더 → 검사 → out/<id>/{frames/*, qa.json, sheet.png, motion.json} */
 export function runQa(p: Project, cwd: string, extra: readonly Check[] = []): Report {
+  return runQaRendered(p, cwd, extra).report;
+}
+
+/** runQa + 렌더 결과(build가 같은 렌더로 pack하게) */
+export function runQaRendered(p: Project, cwd: string, extra: readonly Check[] = []): { report: Report; rendered: Rendered } {
   const r = renderProject(p);
   const rows = qaRows(r);
   const report: Report = { ...runChecks(rows.flat(), qaContext(p, r.palette, r.rest), extra), budget: r.rest.meta.budget };
@@ -97,7 +103,9 @@ export function runQa(p: Project, cwd: string, extra: readonly Check[] = []): Re
   writeFileEnsured(join(dir, 'sheet.png'), encodePng({ w: sheet.raster.w, h: sheet.raster.h, rgba: toRGBA(sheet.raster, sheet.palette) }));
   report.sheet.path = relative(cwd, join(dir, 'sheet.png'));
   writeFileSync(join(dir, 'qa.json'), JSON.stringify(report, null, 2) + '\n');
-  return report;
+  // 불합격이면 지난 합격 때의 pack이 남아 게임에 들어가지 않게 지운다
+  if (!report.pass) for (const f of packFiles(p.spec.id)) rmSync(join(dir, f), { force: true });
+  return { report, rendered: r };
 }
 
 export const summary = (r: Report) => ({ pass: r.pass, score: r.score, failed: r.checks.filter((c) => !c.pass).map((c) => c.id) });

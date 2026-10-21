@@ -235,10 +235,11 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 
 ## §10 Export (packages/export)
 - 패커: shelf 패킹(행 단위), 패딩 1px, 2의 거듭제곱 옵션. 프레임 순서 = 애니메이션 순서(결정론).
+- 시트에는 우향(`r`)만 넣는다. 좌향은 엔진에서 좌우 반전(픽셀 동일). 맨 앞에 rest 1프레임(태그 `rest_r`, duration 100). 루프 아닌 애니 태그는 `repeat: "1"`. 형식 근거: Aseprite `src/app/doc_exporter.cpp`. 엔진용 사용법은 `docs/integration.md`
 - 포맷
 - 프레임 이름 규칙: `<anim>_<dir>_<n>` (side 시점은 `dir = "r"`, n은 0부터). frameTags 이름은 `<anim>_<dir>`.
   - `aseprite-json`(기본): `frames`(hash) + `meta.frameTags`(name, from, to, direction) + `meta.size` + 프레임별 `duration`
-  - `manifest`: `{ id, bible, sizeClass, pivot, anims: {name: {frames, ms[], loop}}, motion, palette, hash }`
+  - `manifest`: `{ id, bible, sizeClass, frameSize, pivot, facing, anims: {name: {frames, ms[], loop}}, motion, palette, hash }` — pivot = [루트 x, 가장 아래 불투명 픽셀 아래 줄 y](발밑), palette = 시트에 쓰인 색 hex(인덱스 순), hash = 시트 PNG SHA-256
     - `motion`: 엔진이 실행할 절차 애니 힌트 `{ bob: {px, ms}, squash: {x, y, ms}, hitFlash: {ms} }`. 기본값은 `bible.motion`, Spec `motion`이 키 단위로 덮어쓴다. 툴은 값만 기록하고 프레임을 만들지 않는다
 - Godot `.tres`는 사용자 지시 전까지 구현하지 않는다.
 
@@ -249,7 +250,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge validate <spec>` | 스키마 + 참조 무결성(바이블·리그·재질·뼈 존재) |
 | `forge render <spec> [--anim a,b]` | 프레임 PNG를 `out/<id>/frames/`에 |
 | `forge qa <spec>` | 렌더 결과 검사 → `out/<id>/qa.json`, `out/<id>/sheet.png` |
-| `forge pack <spec> [--format aseprite-json]` | `out/<id>/<id>.png`, `.json`, `manifest.json` |
+| `forge pack <spec> [--format aseprite-json]` | 렌더 → 패킹만(QA 없음, 개발용) → `out/<id>/<id>.png`, `.json`, `manifest.json`. 게임용은 build·apply |
 | `forge build <spec>` | validate → render → qa → pack, 캐시 사용, QA 불합격이면 pack 생략(exit 2) |
 | `forge build-all <project>` | 프로젝트 전체 + 교차 검사(silhouette, scale) |
 | `forge crowd <project> [--count 50] [--seed 1]` | 바이블 배경 위 실제 크기(1배) 무작위 군중 시트 + 2배 확대본 → `out/<project>/crowd.png`, `crowd@2x.png` (QA `crowd.readability`) |
@@ -257,7 +258,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge variants <spec> --rarity --palette-swap --part-swap` | 아이템 변형 생성(P7) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
-| `forge apply <spec> --target <adapter> [--out <dir>]` | 게임 프로젝트로 산출물 복사 (P5). 기본 어댑터 `dir`: 지정 폴더에 복사만, 엔진 무관 |
+| `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 시 어댑터로 복사. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
+| `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
 - **경로 안전**: 경로를 받는 명령(palette, apply, ref, palette import)은 `resolveInside(base, path)`로 정규화하고 기준 폴더 밖(`../`, 절대 경로)이면 `ForgeError("io.path-escape")`.
 

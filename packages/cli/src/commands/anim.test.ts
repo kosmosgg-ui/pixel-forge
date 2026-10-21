@@ -44,6 +44,12 @@ describe('build-all sample (3종 × 4애니)', () => {
       expect(get('form.face-clear')).toMatchObject({ pass: true });
       expect(existsSync(join(work, 'out', id, 'frames', 'death_l_3.png'))).toBe(true);
       expect(JSON.parse(readFileSync(join(work, 'out', id, 'motion.json'), 'utf8'))).toMatchObject({ bob: { px: 1 } });
+      // QA 통과 → pack: 시트 JSON 태그 범위 = 애니 프레임 수, manifest에 같은 프레임 이름
+      const sheet = JSON.parse(readFileSync(join(work, 'out', id, `${id}.json`), 'utf8')) as { frames: Record<string, unknown>; meta: { frameTags: { name: string; from: number; to: number }[] } };
+      const len = Object.fromEntries(sheet.meta.frameTags.map((t) => [t.name, t.to - t.from + 1]));
+      expect(len).toEqual({ rest_r: 1, idle_r: 4, attack_r: 6, hit_r: 3, death_r: 4 });
+      const manifest = JSON.parse(readFileSync(join(work, 'out', id, 'manifest.json'), 'utf8')) as { anims: Record<string, { frames: string[] }> };
+      expect(Object.values(manifest.anims).flatMap((a) => a.frames)).toEqual(Object.keys(sheet.frames));
     }
   });
 });
