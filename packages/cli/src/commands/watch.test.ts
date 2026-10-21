@@ -13,10 +13,11 @@ afterAll(() => rmSync(work, { recursive: true, force: true }));
 describe('forge watch', () => {
   it('Spec 변경 → 그 캐릭터만, 공용 애니·바이블·규칙 변경 → 쓰는 캐릭터 전부', () => {
     const index = watchIndex('sample', work);
+    const all = index.length;
     expect(affectedSpecs(join(work, 'data/specs/sample/rogue.spec.json'), index)).toEqual(['data/specs/sample/rogue.spec.json']);
-    expect(affectedSpecs(join(work, 'data/rigs/humanoid-34-v1.anims.json'), index)).toHaveLength(3);
-    expect(affectedSpecs(join(work, 'data/bibles/sample-v0.bible.json'), index)).toHaveLength(3);
-    expect(affectedSpecs(join(work, 'data/rules/default.rules.json'), index)).toHaveLength(3);
+    expect(affectedSpecs(join(work, 'data/rigs/humanoid-34-v1.anims.json'), index)).toHaveLength(all);
+    expect(affectedSpecs(join(work, 'data/bibles/sample-v0.bible.json'), index)).toHaveLength(all);
+    expect(affectedSpecs(join(work, 'data/rules/default.rules.json'), index)).toHaveLength(all);
     expect(affectedSpecs(join(work, 'README.md'), index)).toEqual([]);
   });
 

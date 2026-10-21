@@ -5,6 +5,7 @@ import { crowdCommand } from './commands/crowd.js';
 import { packCommand } from './commands/pack.js';
 import { paletteCommand } from './commands/palette.js';
 import { qaCommand } from './commands/qa.js';
+import { refAnalyzeCommand, refCompareCommand } from './commands/ref.js';
 import { renderCommand } from './commands/render.js';
 import { reviewCommand } from './commands/review.js';
 import { validateCommand } from './commands/validate.js';
@@ -26,6 +27,10 @@ export interface RunInput {
   target?: string;
   /** --out <dir> */
   out?: string;
+  /** ref analyze: --source <url> --license <id> --id <id> */
+  source?: string;
+  license?: string;
+  id?: string;
 }
 
 function intOption(name: string, raw: string | undefined, fallback: number): number {
@@ -60,6 +65,12 @@ export function run(input: RunInput): RunResult {
     // 감시는 계속 돈다: 시작 요약을 반환하고, 이후 빌드 결과는 한 줄 JSON씩 stdout에
     const log = (line: Record<string, unknown>) => process.stdout.write(JSON.stringify(line) + '\n');
     return watchCommand(need('<프로젝트 이름> [--target dir --out <dir>]'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) }, log).result;
+  }
+  if (cmd === 'ref') {
+    const [, sub, a1, a2] = input.positionals;
+    if (sub === 'analyze' && a1) return refAnalyzeCommand(a1, input.cwd, { ...(input.source ? { source: input.source } : {}), ...(input.license ? { license: input.license } : {}), ...(input.id ? { id: input.id } : {}) });
+    if (sub === 'compare' && a1 && a2) return refCompareCommand(a1, a2, input.cwd);
+    throw new ForgeError('cli.args', '사용법: forge ref analyze <png> --source <url> --license <id> [--id <id>] | forge ref compare <spec> <ref.json>');
   }
   if (cmd === 'build-all') return buildAllCommand(need('<프로젝트 이름>'), input.cwd);
   throw new ForgeError('cli.unknown-command', `알 수 없는 명령: ${cmd}`);

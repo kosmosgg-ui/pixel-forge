@@ -1,0 +1,71 @@
+{
+  "id": "test-knight",
+  "source": "self-made test sprite (pixel-forge P6 acceptance, scratch script)",
+  "license": "CC0",
+  "measuredWith": "0.5.0",
+  "semiTransparent": 0,
+  "measure": {
+    "canvas": [
+      16,
+      24
+    ],
+    "silhouette": {
+      "bbox": [
+        2,
+        1,
+        12,
+        22
+      ],
+      "heightPx": 22,
+      "widthPx": 12,
+      "opaque": 182
+    },
+    "uniqueColors": 11,
+    "ramps": [
+      {
+        "colors": [
+          "#3c2828",
+          "#783c32",
+          "#6e5a46",
+          "#b46e3c",
+          "#be826e",
+          "#e6b48c"
+        ],
+        "hueShiftDeg": 41,
+        "lRange": [
+          0.301,
+          0.806
+        ]
+      },
+      {
+        "colors": [
+          "#1a1020",
+          "#1e1e3c",
+          "#283c8c",
+          "#3c6ec8"
+        ],
+        "hueShiftDeg": -51,
+        "lRange": [
+          0.195,
+          0.55
+        ]
+      },
+      {
+        "colors": [
+          "#503c3c"
+        ],
+        "hueShiftDeg": 0,
+        "lRange": [
+          0.378,
+          0.378
+        ]
+      }
+    ],
+    "outline": {
+      "type": "dark",
+      "darkFraction": 0.944,
+      "seloutFraction": 0.736
+    },
+    "headRatio": 0.318
+  }
+}

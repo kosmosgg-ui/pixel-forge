@@ -10,6 +10,7 @@ try {
       version: { type: 'boolean' }, pretty: { type: 'boolean' },
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
       format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
+      source: { type: 'string' }, license: { type: 'string' }, id: { type: 'string' },
     },
     allowPositionals: true,
     strict: true,
@@ -22,6 +23,9 @@ try {
     ...(values.format !== undefined ? { format: values.format } : {}),
     ...(values.target !== undefined ? { target: values.target } : {}),
     ...(values.out !== undefined ? { out: values.out } : {}),
+    ...(values.source !== undefined ? { source: values.source } : {}),
+    ...(values.license !== undefined ? { license: values.license } : {}),
+    ...(values.id !== undefined ? { id: values.id } : {}),
   });
   process.stdout.write(JSON.stringify(result, null, values.pretty === true ? 2 : undefined) + '\n');
   // QA 불합격은 명령 자체는 성공(ok)이지만 종료 코드 2

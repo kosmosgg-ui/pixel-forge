@@ -258,7 +258,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge review <project>` | 캐릭터마다 rest + Spec 애니 전 프레임(우향)을 애니 묶음 단위로 줄 채움(한 줄 = 가장 긴 애니 칸 수, 판독 시 축소 방지), 바이블 배경, `rules.qa.sheetScale`배 → `out/<project>/review.png`. pixel-reviewer·보고 문서가 보는 유일한 시트 |
 | `forge variants <spec> --rarity --palette-swap --part-swap` | 아이템 변형 생성(P7) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
-| `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
+| `forge ref analyze <png> --source <url> --license <id> [--id <id>]` | 레퍼런스 측정값만 `data/refs/<id>.ref.json`(캔버스·실루엣 키, 고유 색, hue 군집 램프·hue 이동, 외곽선 유형 dark/selout/none, 머리 비율). 원본 이미지는 복사하지 않음. 라이선스·출처 누락 exit 1 (P6) |
+| `forge ref compare <spec> <ref.json>` | Spec rest 프레임을 같은 측정기로 재서 차이 표 → `out/<id>/ref-<refid>.json` (규칙·Spec 조정 근거) |
 | `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 시 어댑터로 복사. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
 | `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.

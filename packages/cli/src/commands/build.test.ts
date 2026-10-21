@@ -58,7 +58,7 @@ describe('forge qa / build-all', () => {
 
   it('build-all: 교차 검사가 각 qa.json에 들어간다', () => {
     const r = buildAllCommand('sample', work);
-    expect(r).toMatchObject({ ok: true, cmd: 'build-all', count: 3 });
+    expect(r).toMatchObject({ ok: true, cmd: 'build-all', count: 5 });
     const report = JSON.parse(bytes('out/mage/qa.json').toString('utf8'));
     const ids = report.checks.map((c: { id: string }) => c.id);
     expect(ids).toContain('form.silhouette');

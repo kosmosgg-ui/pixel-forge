@@ -1,0 +1,324 @@
+{
+  "id": "orc",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "character",
+  "rig": "humanoid-34-v1",
+  "proportions": {
+    "height": 30
+  },
+  "parts": [
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 5
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "shinB",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 4
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "footB",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 6,
+        "w": 5
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "lowerArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 5
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 12
+      },
+      "material": "leather",
+      "name": "loincloth"
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "capsule",
+        "len": 9,
+        "w": 15
+      },
+      "material": "goblin_skin",
+      "name": "torso",
+      "at": [
+        -1,
+        0
+      ]
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 13,
+        "angleDeg": -35
+      },
+      "material": "leather",
+      "orient": "world",
+      "at": [
+        1,
+        0
+      ],
+      "z": 1,
+      "name": "strap"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "rect",
+        "w": 12,
+        "h": 2
+      },
+      "material": "leather",
+      "anchor": "end",
+      "orient": "world",
+      "name": "belt"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "ellipse",
+        "w": 10,
+        "h": 8
+      },
+      "material": "goblin_skin",
+      "orient": "world",
+      "at": [
+        1,
+        0
+      ]
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "poly",
+        "pts": [
+          [
+            -3,
+            -4
+          ],
+          [
+            -1,
+            -8
+          ],
+          [
+            1,
+            -4
+          ]
+        ]
+      },
+      "material": "hair_brown",
+      "orient": "world",
+      "z": 1,
+      "name": "topknot"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "rect",
+        "w": 1,
+        "h": 2
+      },
+      "material": "cloth_white",
+      "orient": "world",
+      "at": [
+        4,
+        3
+      ],
+      "z": 2,
+      "name": "tusk",
+      "decorative": true
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 5
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "shinF",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 4
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "footF",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 6,
+        "w": 5
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "lowerArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 5
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "ellipse",
+        "w": 6,
+        "h": 4
+      },
+      "material": "metal",
+      "anchor": "joint",
+      "orient": "world",
+      "at": [
+        0,
+        2
+      ],
+      "name": "spaulder"
+    },
+    {
+      "bone": "handF",
+      "shape": {
+        "type": "ellipse",
+        "w": 4,
+        "h": 4
+      },
+      "material": "goblin_skin",
+      "orient": "world"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 12,
+        "h": 2,
+        "angleDeg": -63
+      },
+      "material": "wood",
+      "anchor": "joint",
+      "at": [
+        3,
+        -5
+      ],
+      "orient": "world",
+      "name": "axeHandle"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "poly",
+        "pts": [
+          [
+            0,
+            -3
+          ],
+          [
+            4,
+            -5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            0,
+            3
+          ]
+        ]
+      },
+      "material": "metal",
+      "anchor": "joint",
+      "at": [
+        5,
+        -10
+      ],
+      "orient": "world",
+      "name": "axeHead",
+      "held": true
+    }
+  ],
+  "eyes": {
+    "bone": "head",
+    "pos": [
+      2,
+      0
+    ],
+    "size": 1,
+    "color": "leather:0"
+  },
+  "animations": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "seed": 1,
+  "overrides": {
+    "attack": {
+      "strike": {
+        "pose": {
+          "weapon": {
+            "rot": 5
+          }
+        }
+      },
+      "follow": {
+        "pose": {
+          "weapon": {
+            "rot": 0
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,307 @@
+{
+  "id": "cleric",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "character",
+  "rig": "humanoid-34-v1",
+  "role": "priest",
+  "proportions": {
+    "height": 30
+  },
+  "parts": [
+    {
+      "bone": "handB",
+      "shape": {
+        "type": "ellipse",
+        "w": 12,
+        "h": 14
+      },
+      "material": "metal",
+      "orient": "world",
+      "at": [
+        -4,
+        -1
+      ],
+      "name": "shield"
+    },
+    {
+      "bone": "handB",
+      "shape": {
+        "type": "ellipse",
+        "w": 3,
+        "h": 3
+      },
+      "material": "gold",
+      "orient": "world",
+      "at": [
+        -5,
+        -1
+      ],
+      "z": 1,
+      "name": "shieldBoss"
+    },
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 4
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "shinB",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "footB",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 6,
+        "w": 4
+      },
+      "material": "cloth_white"
+    },
+    {
+      "bone": "lowerArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 4
+      },
+      "material": "cloth_white"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 10
+      },
+      "material": "cloth_white",
+      "name": "tabard"
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 12
+      },
+      "material": "cloth_white",
+      "name": "tunic",
+      "at": [
+        -1,
+        0
+      ]
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "rect",
+        "w": 11,
+        "h": 2
+      },
+      "material": "gold",
+      "anchor": "end",
+      "orient": "world",
+      "name": "belt"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "ellipse",
+        "w": 9,
+        "h": 8
+      },
+      "material": "skin",
+      "orient": "world"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "poly",
+        "pts": [
+          [
+            -5,
+            -5
+          ],
+          [
+            3,
+            -5
+          ],
+          [
+            5,
+            -3
+          ],
+          [
+            5,
+            -2
+          ],
+          [
+            0,
+            -2
+          ],
+          [
+            -1,
+            2
+          ],
+          [
+            -2,
+            4
+          ],
+          [
+            -6,
+            4
+          ],
+          [
+            -6,
+            0
+          ]
+        ]
+      },
+      "material": "cloth_white",
+      "orient": "world",
+      "z": 1,
+      "name": "hood"
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 4
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "shinF",
+      "shape": {
+        "type": "capsule",
+        "len": 7,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "footF",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 3
+      },
+      "material": "leather"
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 6,
+        "w": 4
+      },
+      "material": "cloth_white"
+    },
+    {
+      "bone": "lowerArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 4
+      },
+      "material": "cloth_white"
+    },
+    {
+      "bone": "handF",
+      "shape": {
+        "type": "ellipse",
+        "w": 4,
+        "h": 4
+      },
+      "material": "skin",
+      "orient": "world"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 8,
+        "h": 2,
+        "angleDeg": -63
+      },
+      "material": "wood",
+      "anchor": "joint",
+      "at": [
+        2,
+        -3
+      ],
+      "orient": "world",
+      "name": "maceHandle"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 5,
+        "angleDeg": -63
+      },
+      "material": "metal",
+      "anchor": "joint",
+      "at": [
+        4,
+        -8
+      ],
+      "orient": "world",
+      "name": "maceHead",
+      "held": true
+    }
+  ],
+  "eyes": {
+    "bone": "head",
+    "pos": [
+      2,
+      0
+    ],
+    "size": 2,
+    "color": "leather:0"
+  },
+  "animations": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "seed": 1,
+  "overrides": {
+    "attack": {
+      "strike": {
+        "pose": {
+          "weapon": {
+            "rot": 40
+          }
+        }
+      },
+      "follow": {
+        "pose": {
+          "weapon": {
+            "rot": 30
+          }
+        }
+      }
+    }
+  }
+}

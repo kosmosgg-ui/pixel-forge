@@ -5,6 +5,13 @@
 현재 단계: **P6**
 
 ## 로그
+- [P6] 진행 중(go/no-go 대기) | 완료: /forge 스킬(.claude/skills/forge), forge ref analyze·compare(측정값 JSON만, 라이선스·출처 필수). CC0 외부 이미지는 네트워크 차단으로 못 받아 자작 CC0 테스트 스프라이트로 수락 명령 실행(data/refs/test-knight.ref.json)
+  - cleric | 반복 3 | QA pass(선택 실패 face-clear death_r_3, silhouette 0.873) | reviewer 20/24 | 3분 — 3회째(주교관) 필수 실패라 2회째로 되돌림
+  - archer | 반복 3 | QA pass(선택 실패 detail-min 4) | reviewer 17/24 미달 → 3회 상한으로 중단(제안: 화살통·attack 무기 회전) | 2분
+  - orc | 반복 3 | QA fail(bounds.canvas: 큰 도끼가 strike·kneel·windup에서 차례로 캔버스 끝) → 중단, data/specs/wip/로 격리 | - | 1분
+  - goblin·skeleton | 바이블 재질 필요(bone·metal_rust) → docs/proposals/bible-monster-materials.md, 승인 대기
+  - 실수: cleric·archer를 검수 전에 apply(out/apply-test만). 스킬 순서는 review → apply
+
 - [P5 보정] 완료 | 사용자 승인 2건: rule form.held-thin-shade(두께 ≤3px held 몸체는 밝은 2단계, 손잡이·날끝 1px만 0단계), 출력 허용 목록 .forge/targets.local.json + --out @이름(gitignore, 사람이 작성)
   - 수락: Tests 202 passed (39 files). 도적 단검 날 배경 대비 최악 프레임 ≥ contrastMinL 0.18(실측 0.48). build-all sample 3/3
 
