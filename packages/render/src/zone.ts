@@ -27,6 +27,7 @@ export function writePartInPlace(z: FrameZone, p: PlacedPart, r: PartRaster, tx:
     z.part[k] = p.index + 1;
     z.back[k] = p.layer === 'back' ? 1 : 0;
     z.fixed[k] = r.fixed[s] ?? 0;
+    z.special[k] = r.special?.[s] ?? 0;
     // 법선이 없는 도형(선·mask)은 화면을 정면으로 본다
     z.normal[k * 3] = r.normals?.[s * 3] ?? 0;
     z.normal[k * 3 + 1] = r.normals?.[s * 3 + 1] ?? 0;

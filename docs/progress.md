@@ -2,9 +2,14 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P7**
+현재 단계: **P6.5**
 
 ## 로그
+- [P6.5] 진행 중 | 픽셀 그리드 모드(사용자 승인): grid 파츠(재질:단계·@eye·@outline, 외곽선은 엔진), 프레임 모드(base+patch, 깜빡임은 patch 밖), 아톰 모드(각도 변형 + 남은 각도 RotSprite, 머리 upright, 경고 qa.json), render --sheet 8, manifest motion.shadow, pixel-studio 스킬
+  - 도적 아톰 비교: data/specs/compare/(rogue-atoms·rogue-shapes) → out/compare/review.png. 아톰 QA 필수 통과
+  - 막힘: quality-ref.zip이 컨테이너에 없음(업로드 없음) → 고블린·스켈레톤 프레임 모드 재제작 대기
+  - P6 소형 몬스터 보정(등급별 외곽선·소형 리그·signature)은 이미 반영돼 있어 유지 — 그리드 모드가 등급별 외곽선을 쓴다
+
 - [P6] 완료 | /forge 스킬, forge ref analyze·compare, 크기 등급 자동 맞춤(렌더 판정, sizeClassLock), 등급별 외곽선·기본 리그(smallMonster = dark·humanoid-small-v1, 예산 9), signature·form.signature, apply 검수 게이트(review-score, 입력+시트 해시, QA 통과 필수), form.head-clearance, fx 축척. 사용자 승인: 바이블 bone·metal_rust·large·smallMonster 설정, rules signatureMin
   | 캐릭터 | build 횟수 | reviewer 최종 | 비고 |
   | cleric | 3+4 | 21 | 방패 등 뒤로, death lie 오버라이드 |

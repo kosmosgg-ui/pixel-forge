@@ -1,16 +1,27 @@
 import { join, relative } from 'node:path';
+import { ForgeError, toRGBA } from '@pixel-forge/core';
+import { reviewSheet } from '@pixel-forge/qa';
+import { writeFileEnsured } from '../io/files.js';
+import { encodePng } from '../io/png.js';
 import { loadProject } from '../io/project.js';
-import { renderProject, writeFrames } from './qa.js';
+import { qaRows, renderProject, writeFrames } from './qa.js';
 
 /**
  * 인자 없이: rest 1프레임 → out/<id>/frames/rest.png
  * --anim a,b: rest + 그 애니들(색 예산은 함께 맞춤) → frames/<anim>_r_<n>.png, 좌향 _l_
+ * --sheet k: 스튜디오 시트 1장(rest + Spec 애니 전 프레임, 바이블 배경, k배) → out/<id>/studio.png (pixel-studio 루프)
  */
-export function renderCommand(specPath: string, cwd: string, anims: readonly string[] = []) {
+export function renderCommand(specPath: string, cwd: string, anims: readonly string[] = [], sheet?: number) {
   const p = loadProject(specPath, cwd);
-  const r = renderProject(p, anims);
+  const r = sheet === undefined ? renderProject(p, anims) : renderProject(p);
   const dir = join(cwd, 'out', p.spec.id);
   const files = writeFrames(dir, r);
+  if (sheet !== undefined) {
+    if (!Number.isInteger(sheet) || sheet < 1 || sheet > 16) throw new ForgeError('cli.args', `--sheet는 1~16 정수여야 합니다: ${sheet}`);
+    const s = reviewSheet([qaRows(r).map((row) => row.map((f) => f.raster))], r.palette.palette, { scale: sheet, background: p.bible.background });
+    writeFileEnsured(join(dir, 'studio.png'), encodePng({ w: s.raster.w, h: s.raster.h, rgba: toRGBA(s.raster, s.palette) }));
+    files.push('studio.png');
+  }
   const all = [r.rest.raster, ...r.frames.map((f) => f.raster)];
   const used = new Set(all.flatMap((x) => Array.from(x.px)));
   used.delete(0);
@@ -18,6 +29,6 @@ export function renderCommand(specPath: string, cwd: string, anims: readonly str
   return {
     ok: true as const, cmd: 'render', id: p.spec.id, frames: all.length, size: [r.rest.raster.w, r.rest.raster.h], colors: used.size,
     budget: `${budget.before}→${budget.after}/${budget.limit}`, merges: budget.merges.length, clipped: r.rest.clipped,
-    out: relative(cwd, join(dir, files.length === 1 ? (files[0] ?? '') : 'frames')),
+    out: relative(cwd, join(dir, sheet !== undefined ? 'studio.png' : files.length === 1 ? (files[0] ?? '') : 'frames')),
   };
 }

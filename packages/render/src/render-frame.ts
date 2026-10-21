@@ -1,4 +1,4 @@
-import { flipX, ForgeError, mergeSmallClustersInPlace, removeOrphansInPlace, type BiblePalette, type IndexedRaster, type Ramp } from '@pixel-forge/core';
+import { flipX, ForgeError, mergeSmallClustersInPlace, removeOrphansInPlace, SPECIAL_EYE, SPECIAL_EYE_COLOR, SPECIAL_OUTLINE, type BiblePalette, type IndexedRaster, type Ramp } from '@pixel-forge/core';
 import { solveRig, type BoneWorld, type Pose } from '@pixel-forge/rig';
 import type { Bible, FxDef, Rig, Rules, Spec } from '@pixel-forge/spec';
 import { assertFrame } from './assert.js';
@@ -49,6 +49,8 @@ export interface RenderMeta {
   layers: { material: Uint8Array; part: Uint16Array; mark: Uint8Array };
   /** spec.parts 순번별 [x, y, angle] — 프레임 간 같은 변환인 파츠 판정(anim.flicker) */
   partTransforms: [number, number, number][];
+  /** 아톰 회전 품질 경고 등 */
+  warnings: string[];
 }
 
 export interface RenderResult {
@@ -74,7 +76,7 @@ export function outlineModeOf(bible: Bible, sizeClass: string): Bible['outline']
 /** 가장 아래 파츠 픽셀 아래 빈 줄 수: 외곽선 1px + 여백 1px */
 export const BOTTOM_GAP = 2;
 
-function flipLayer<T extends Uint8Array | Uint16Array>(a: T, w: number): T {
+export function flipLayer<T extends Uint8Array | Uint16Array>(a: T, w: number): T {
   const out = a.slice() as T;
   for (let i = 0; i < a.length; i++) out[i] = a[i - (i % w) + (w - 1 - (i % w))] ?? 0;
   return out;
@@ -93,6 +95,7 @@ interface Layout {
   clipped: number;
   small: Set<number>;
   thin: Set<number>;
+  warnings: string[];
 }
 
 /**
@@ -112,17 +115,21 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
   const zone = createFrameZone(W, H);
   let clipped = 0;
   const small = new Set<number>(), thin = new Set<number>();
+  const warnings: string[] = [];
   const stepsOf = (m: number) => rampsById[m - 1]?.indices.length ?? 1;
   placed.forEach((p, i) => {
     const r = rasters[i];
     if (!r) return;
     if (r.mask.reduce((a, v) => a + v, 0) < rules.budgetFit.smallPartArea) small.add(p.index + 1);
+    if (r.warning) warnings.push(r.warning);
+    // 직접 설계한 그리드 아톰은 그린 그대로(정리·얇은 획 규칙 제외), 셰이딩은 범례 단계(고정)
+    const authored = r.authored === true;
     const held = p.part.held && !p.part.decorative;
     // rule: form.held-min-width — rest 모양으로 한 번만 판정(포즈 회전으로 얇아 보이는 프레임은 판정하지 않는다)
     if (held && !opts.pose && isThinMask(r.mask, r.w, r.h, rules.held.minWidth)) {
       throw new ForgeError('spec.held-too-thin', `손에 든 파츠는 두께 ${rules.held.minWidth}px 이상이어야 합니다: ${p.part.name ?? p.part.bone}`, { part: p.index });
     }
-    if (!held && isThinMask(r.mask, r.w, r.h)) thin.add(p.index + 1);
+    if (!held && !authored && isThinMask(r.mask, r.w, r.h)) thin.add(p.index + 1);
     const local = partZone(p, r);
     shadeZoneInPlace(local, bible.light, rules.shade, stepsOf, (id) => small.has(id));
     const joint = bones[p.part.bone];
@@ -130,13 +137,13 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
       heldThinShadeInPlace(local, r, [joint.x, joint.y], stepsOf(r.material.find((m) => m > 0) ?? 0), rules.heldThinShade.brightSteps);
     }
     // 손에 든 파츠는 눈처럼 정리 대상에서 뺀다(작은 날·자루가 지워지지 않게)
-    if (!held) {
+    if (!held && !authored) {
       mergeSmallClustersInPlace(local, rules.cleanup.minCluster);
       if (rules.cleanup.removeOrphans) removePartOrphansInPlace(local, rampsById);
     }
     clipped += writePartInPlace(zone, p, r, origin[0], origin[1], local);
   });
-  return { bones, placed, rasters, origin, zone, clipped, small, thin };
+  return { bones, placed, rasters, origin, zone, clipped, small, thin, warnings };
 }
 
 /** §6 단계 1~9 (+ 눈, fx, 6.5 색 예산 맞춤) */
@@ -159,7 +166,9 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, strokes);
   outerOutlineInPlace(raster, zone, rampsById, { mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, strokes);
   thinStrokesInPlace(raster, zone, rampsById, strokes, protect);
-  const eyes = drawEyesInPlace(raster, zone, spec, rig, L.bones, palette.ramps, origin, rules.face.farEyeGap, protect);
+  const gridEyes = applySpecialsInPlace(raster, zone, palette.outlineIndex, protect);
+  const eyes0 = drawEyesInPlace(raster, zone, spec, rig, L.bones, palette.ramps, origin, rules.face.farEyeGap, protect);
+  const eyes = gridEyes.length ? { pixels: [...(eyes0?.pixels ?? []), ...gridEyes], colorIndex: eyes0?.colorIndex ?? palette.outlineIndex } : eyes0;
   const rigScale = (spec.proportions.height ?? rig.baseHeight) / rig.baseHeight;
   if (opts.fx) applyFxInPlace(raster, scaleFx(opts.fx, rigScale), L.bones, origin, palette.fxIndices, protect);
   // 6.5 색 예산 맞춤: 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
@@ -176,7 +185,7 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   const meta: RenderMeta = {
     budget, budgetExclude: exclude, eyes: eyes?.pixels ?? [], smallParts: [...L.small].map((id) => id - 1).sort((a, b) => a - b),
     face: faceStats(zone, spec, L.rasters, L.placed.map((p) => p.index), origin, eyes?.pixels ?? [], (m) => Object.keys(bible.materials).sort().indexOf(m) + 1),
-    layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) }, partTransforms,
+    layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) }, partTransforms, warnings: L.warnings,
   };
   return { raster: final, origin, clipped: L.clipped, meta, ...(opts.debug ? { debug: { zone, resolved } } : {}) };
 }
@@ -195,8 +204,24 @@ function removePartOrphansInPlace(local: FrameZone, rampsById: readonly Ramp[]):
   }
 }
 
-function noFit(r: IndexedRaster, limit: number): BudgetFitResult {
+export function noFit(r: IndexedRaster, limit: number): BudgetFitResult {
   const used = new Set(r.px);
   used.delete(0);
   return { limit, before: used.size, after: used.size, merges: [] };
+}
+
+/**
+ * 그리드 특수 칸: SPECIAL_OUTLINE·"@eye"(검은 눈) = 전역 외곽선색, "@eye:<재질>:<단계>" = 그 색 그대로. 모두 정리 보호.
+ * 눈 칸 위치를 돌려준다(form.face-clear·눈 메타).
+ */
+export function applySpecialsInPlace(r: IndexedRaster, z: FrameZone, outlineIndex: number, protect: Uint8Array): number[] {
+  const eyes: number[] = [];
+  for (let k = 0; k < z.special.length; k++) {
+    const sp = z.special[k] ?? 0;
+    if (!sp) continue;
+    protect[k] = 1;
+    if (sp === SPECIAL_OUTLINE || sp === SPECIAL_EYE) r.px[k] = outlineIndex;
+    if (sp === SPECIAL_EYE || sp === SPECIAL_EYE_COLOR) eyes.push(k);
+  }
+  return eyes;
 }

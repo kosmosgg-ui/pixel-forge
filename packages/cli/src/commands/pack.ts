@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { FORGE_VERSION, ForgeError, toRGBA } from '@pixel-forge/core';
+import { FORGE_VERSION, ForgeError, toRGBA, type IndexedRaster } from '@pixel-forge/core';
 import { buildManifest, packCharacter } from '@pixel-forge/export';
 import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
@@ -22,11 +22,13 @@ export function writePack(r: Rendered, cwd: string): string[] {
   const W = r.rest.raster.w;
   // 바이블 facing이 리그와 다르면 렌더가 좌우 반전했으므로 루트 x도 반전
   const rootX = p.bible.facing !== p.rig.facing ? W - 1 - r.rest.origin[0] : r.rest.origin[0];
-  const loops = Object.fromEntries(Object.entries(p.anims?.anims ?? {}).map(([k, a]) => [k, a.loop]));
+  const loops = p.spec.mode === 'frames'
+    ? Object.fromEntries(Object.keys(p.spec.frames ?? {}).map((k) => [k, p.spec.loop.includes(k)]))
+    : Object.fromEntries(Object.entries(p.anims?.anims ?? {}).map(([k, a]) => [k, a.loop]));
   const packed = packCharacter({
     id: p.spec.id, bible: p.bible.id, sizeClass: p.spec.sizeClass, rest: r.rest.raster, rootX,
     frames: r.frames.map((f) => ({ anim: f.anim, index: f.index, raster: f.raster, ms: f.ms })),
-    loops, motion: resolveMotion(p.bible.motion, p.spec.motion), palette: r.palette.palette, version: FORGE_VERSION,
+    loops, motion: { ...resolveMotion(p.bible.motion, p.spec.motion), shadow: shadowOf(r.rest.raster) }, palette: r.palette.palette, version: FORGE_VERSION,
   }, `${p.spec.id}.png`);
   const png = encodePng({ w: packed.sheet.w, h: packed.sheet.h, rgba: toRGBA(packed.sheet, r.palette.palette) });
   const [img = '', data = '', manifest = ''] = packFiles(p.spec.id);
@@ -48,4 +50,14 @@ export function packCommand(specPath: string, cwd: string, format = 'aseprite-js
   // 시트 프레임 = rest 1 + 애니 프레임
   const frames = 1 + r.frames.length;
   return { ok: true as const, cmd: 'pack', id: p.spec.id, format, frames, out: files[0], files };
+}
+
+/** 바닥 그림자 힌트(엔진이 그린다, 스프라이트에 굽지 않음): 폭 = rest 가장 아래 불투명 줄의 폭 + 4, 높이 3 */
+export function shadowOf(r: IndexedRaster): { w: number; h: number } {
+  for (let y = r.h - 1; y >= 0; y--) {
+    let x0 = -1, x1 = -1;
+    for (let x = 0; x < r.w; x++) if (r.px[y * r.w + x]) { if (x0 < 0) x0 = x; x1 = x; }
+    if (x0 >= 0) return { w: x1 - x0 + 1 + 4, h: 3 };
+  }
+  return { w: 4, h: 3 };
 }

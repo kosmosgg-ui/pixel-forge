@@ -50,6 +50,8 @@ describe('build-all sample (8종 × 4애니, P4 기준 3종은 얼굴 가림까�
       expect(len).toEqual({ rest_r: 1, idle_r: 4, attack_r: 6, hit_r: 3, death_r: 4 });
       const manifest = JSON.parse(readFileSync(join(work, 'out', id, 'manifest.json'), 'utf8')) as { anims: Record<string, { frames: string[] }> };
       expect(Object.values(manifest.anims).flatMap((a) => a.frames)).toEqual(Object.keys(sheet.frames));
+      // 바닥 그림자 힌트: 발 폭 + 4, 높이 3 (엔진이 그린다)
+      expect((JSON.parse(readFileSync(join(work, 'out', id, 'manifest.json'), 'utf8')) as { motion: { shadow: { w: number; h: number } } }).motion.shadow).toMatchObject({ h: 3 });
     }
   });
 });

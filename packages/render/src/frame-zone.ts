@@ -12,9 +12,11 @@ export interface FrameZone extends ZoneBuffer {
   fixed: Uint8Array;
   /** max(0, n·L), 외곽선 판정용 */
   lit: Float32Array;
+  /** 그리드 특수 칸(눈·외곽선 강제) */
+  special: Uint8Array;
 }
 
 export function createFrameZone(w: number, h: number): FrameZone {
   const n = w * h;
-  return { ...createZone(w, h), normal: new Int8Array(n * 3), back: new Uint8Array(n), fixed: new Uint8Array(n).fill(AUTO), lit: new Float32Array(n) };
+  return { ...createZone(w, h), normal: new Int8Array(n * 3), back: new Uint8Array(n), fixed: new Uint8Array(n).fill(AUTO), lit: new Float32Array(n), special: new Uint8Array(n) };
 }

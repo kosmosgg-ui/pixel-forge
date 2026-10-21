@@ -1,0 +1,1972 @@
+{
+ "id": "rogue-atoms",
+ "kind": "character",
+ "bible": "sample-v0",
+ "sizeClass": "character",
+ "rig": "humanoid-34-v1",
+ "role": "rogue",
+ "mode": "atoms",
+ "proportions": {
+  "height": 30
+ },
+ "parts": [
+  {
+   "bone": "thighB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaaaa",
+     "bbbbbbbb",
+     "bbbbbbbb",
+     "cccccccc"
+    ],
+    "legend": {
+     "a": "leather:2",
+     "b": "leather:1",
+     "c": "leather:0"
+    },
+    "origin": [
+     4,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...ab.",
+      "..abbb",
+      ".abbbc",
+      "abbbc.",
+      "bbbc..",
+      ".bc..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "aaaaaaaa",
+      "bbbbbbbb",
+      "bbbbbbbb",
+      "cccccccc"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      4,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...ab.",
+      "..abbb",
+      ".abbbc",
+      "abbbc.",
+      "bbbc..",
+      ".bc..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "shinB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaaaa",
+     "bbbbbbbb",
+     "bbbbbbbb",
+     "cccccccc"
+    ],
+    "legend": {
+     "a": "leather:2",
+     "b": "leather:1",
+     "c": "leather:0"
+    },
+    "origin": [
+     4,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "...aaaaa",
+      "bbbbbbbb",
+      "bbbbbbbb",
+      "ccccc..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      4,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb.",
+      "abb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "footB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "leather:1",
+     "b": "leather:0",
+     "c": "leather:0"
+    },
+    "origin": [
+     3,
+     1
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      "aa..",
+      "caa.",
+      ".cca",
+      "..cc"
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac"
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      1,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "..ac",
+      ".acc",
+      "aac.",
+      "ac.."
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "aaaaaa",
+      "cccccc"
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      1
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "..aa",
+      ".aac",
+      "acc.",
+      "cc.."
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac"
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      1,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      "ca..",
+      "cca.",
+      ".caa",
+      "..ca"
+     ],
+     "legend": {
+      "a": "leather:1",
+      "b": "leather:0",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "bone": "upperArmB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "bbbbbb",
+     "bbbbbb",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "cloth_green:2",
+     "b": "cloth_green:1",
+     "c": "cloth_green:0"
+    },
+    "origin": [
+     3,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "..aaaa",
+      "bbbbbb",
+      "bbbbbb",
+      "cccc.."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      3,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "cloth_green:2",
+      "b": "cloth_green:1",
+      "c": "cloth_green:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "lowerArmB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "bbbbbb",
+     "bbbbbb",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "leather:2",
+     "b": "leather:1",
+     "c": "leather:0"
+    },
+    "origin": [
+     3,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      "..b...",
+      ".bbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbb.",
+      "...b.."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...a..",
+      "..aab.",
+      ".aabcc",
+      "aabcc.",
+      ".bcc..",
+      "..c..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "..aaaa",
+      "bbbbbb",
+      "bbbbbb",
+      "cccc.."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...a..",
+      "..aab.",
+      ".aabcc",
+      "aabcc.",
+      ".bcc..",
+      "..c..."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      "..b...",
+      ".bbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbb.",
+      "...b.."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "handB",
+   "orient": "world",
+   "name": "handB",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "ss",
+     "st"
+    ],
+    "legend": {
+     "s": "skin:2",
+     "t": "skin:1"
+    },
+    "origin": [
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "bone": "chest",
+   "orient": "world",
+   "name": "tunic",
+   "shape": {
+    "type": "grid",
+    "origin": [
+     5,
+     5
+    ],
+    "legend": {
+     "G": "cloth_green:3",
+     "g": "cloth_green:2",
+     "d": "cloth_green:1",
+     "B": "leather:2",
+     "b": "leather:1",
+     "m": "metal:3"
+    },
+    "rows": [
+     "..GGGggg..",
+     ".GGGggggdd",
+     "GGGgggggdd",
+     "GGggggggdd",
+     "Gggggggddd",
+     "gggggggddd",
+     "ggggggdddd",
+     "BBBBmBbbbb",
+     "gggggggddd",
+     ".ggggggdd.",
+     ".gggggddd."
+    ]
+   },
+   "variants": {
+    "90": {
+     "type": "grid",
+     "rows": [
+      "..gBggGGG..",
+      "gggBgggGGG.",
+      "gggBggggGGG",
+      "gggBgggggGG",
+      "gggmggggggG",
+      "gggBggggggg",
+      "dggbdgggggg",
+      "dddbdddgggg",
+      "dddbdddddd.",
+      "..dbdddddd."
+     ],
+     "legend": {
+      "G": "cloth_green:3",
+      "g": "cloth_green:2",
+      "d": "cloth_green:1",
+      "B": "leather:2",
+      "b": "leather:1",
+      "m": "metal:3"
+     }
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".ddddddbd..",
+      ".ddddddbddd",
+      "ggggdddbddd",
+      "ggggggdbggd",
+      "gggggggBggg",
+      "Gggggggmggg",
+      "GGgggggBggg",
+      "GGGggggBggg",
+      ".GGGgggBggg",
+      "..GGGggBg.."
+     ],
+     "legend": {
+      "G": "cloth_green:3",
+      "g": "cloth_green:2",
+      "d": "cloth_green:1",
+      "B": "leather:2",
+      "b": "leather:1",
+      "m": "metal:3"
+     }
+    }
+   }
+  },
+  {
+   "bone": "head",
+   "orient": "world",
+   "upright": true,
+   "name": "head",
+   "shape": {
+    "type": "grid",
+    "origin": [
+     6,
+     5
+    ],
+    "legend": {
+     "H": "cloth_green:3",
+     "h": "cloth_green:2",
+     "d": "cloth_green:1",
+     "S": "skin:3",
+     "s": "skin:2",
+     "t": "skin:1",
+     "k": "@eye"
+    },
+    "rows": [
+     "....HHHhh...",
+     "..HHHHhhhh..",
+     ".HHHhhhhhhh.",
+     ".HHhhhhhhhhd",
+     "HHhhhhhSSssd",
+     "Hhhhhhdsskst",
+     "Hhhhhhdsskst",
+     "hhhhhhdsssst",
+     "hhhhhdhssstd",
+     "hhhhhddhtt..",
+     ".hhhhdd.....",
+     "..hhdd......"
+    ]
+   }
+  },
+  {
+   "bone": "thighF",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaaaa",
+     "bbbbbbbb",
+     "bbbbbbbb",
+     "cccccccc"
+    ],
+    "legend": {
+     "a": "leather:3",
+     "b": "leather:2",
+     "c": "leather:1"
+    },
+    "origin": [
+     4,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb"
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...ab.",
+      "..abbb",
+      ".abbbc",
+      "abbbc.",
+      "bbbc..",
+      ".bc..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "aaaaaaaa",
+      "bbbbbbbb",
+      "bbbbbbbb",
+      "cccccccc"
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      4,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...ab.",
+      "..abbb",
+      ".abbbc",
+      "abbbc.",
+      "bbbc..",
+      ".bc..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb",
+      "bbbb"
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "shinF",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaaaa",
+     "bbbbbbbb",
+     "bbbbbbbb",
+     "cccccccc"
+    ],
+    "legend": {
+     "a": "leather:3",
+     "b": "leather:2",
+     "c": "leather:1"
+    },
+    "origin": [
+     4,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "...aaaaa",
+      "bbbbbbbb",
+      "bbbbbbbb",
+      "ccccc..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      4,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb.",
+      "abb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      4
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "footF",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "leather:2",
+     "b": "leather:1",
+     "c": "leather:0"
+    },
+    "origin": [
+     3,
+     1
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      "aa..",
+      "caa.",
+      ".cca",
+      "..cc"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      1,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "..ac",
+      ".acc",
+      "aac.",
+      "ac.."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "aaaaaa",
+      "cccccc"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      3,
+      1
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "..aa",
+      ".aac",
+      "acc.",
+      "cc.."
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac",
+      "ac"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      1,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      "ca..",
+      "cca.",
+      ".caa",
+      "..ca"
+     ],
+     "legend": {
+      "a": "leather:2",
+      "b": "leather:1",
+      "c": "leather:0"
+     },
+     "origin": [
+      2,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "bone": "upperArmF",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "bbbbbb",
+     "bbbbbb",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "cloth_green:3",
+     "b": "cloth_green:2",
+     "c": "cloth_green:1"
+    },
+    "origin": [
+     3,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "..aaaa",
+      "bbbbbb",
+      "bbbbbb",
+      "cccc.."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      3,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...aa.",
+      "..aabc",
+      ".aabcc",
+      "aabcc.",
+      "abcc..",
+      ".cc..."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".bb...",
+      "bbbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbbb",
+      "...bb."
+     ],
+     "legend": {
+      "a": "cloth_green:3",
+      "b": "cloth_green:2",
+      "c": "cloth_green:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "lowerArmF",
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "aaaaaa",
+     "bbbbbb",
+     "bbbbbb",
+     "cccccc"
+    ],
+    "legend": {
+     "a": "leather:3",
+     "b": "leather:2",
+     "c": "leather:1"
+    },
+    "origin": [
+     3,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      "..b...",
+      ".bbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbb.",
+      "...b.."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      "abb.",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      ".bbc"
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "...a..",
+      "..aab.",
+      ".aabcc",
+      "aabcc.",
+      ".bcc..",
+      "..c..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "..aaaa",
+      "bbbbbb",
+      "bbbbbb",
+      "cccc.."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "...a..",
+      "..aab.",
+      ".aabcc",
+      "aabcc.",
+      ".bcc..",
+      "..c..."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".bbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abbc",
+      "abb."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      2,
+      3
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      "..b...",
+      ".bbb..",
+      "bbbbb.",
+      ".bbbbb",
+      "..bbb.",
+      "...b.."
+     ],
+     "legend": {
+      "a": "leather:3",
+      "b": "leather:2",
+      "c": "leather:1"
+     },
+     "origin": [
+      3,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "bone": "handF",
+   "orient": "world",
+   "name": "handF",
+   "z": 1,
+   "shape": {
+    "type": "grid",
+    "rows": [
+     ".Ss",
+     "Sss",
+     "sst"
+    ],
+    "legend": {
+     "S": "skin:3",
+     "s": "skin:2",
+     "t": "skin:1"
+    },
+    "origin": [
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "bone": "weapon",
+   "orient": "world",
+   "anchor": "joint",
+   "name": "dagger",
+   "held": true,
+   "shape": {
+    "type": "grid",
+    "rows": [
+     "..L......",
+     "llmmmmmmm",
+     "llMMMMMMM",
+     "..L......"
+    ],
+    "legend": {
+     "l": "leather:1",
+     "L": "leather:0",
+     "M": "metal:4",
+     "m": "metal:3"
+    },
+    "origin": [
+     0,
+     2
+    ]
+   },
+   "variants": {
+    "45": {
+     "type": "grid",
+     "rows": [
+      ".l......",
+      "lllL....",
+      ".lLm....",
+      ".LMMm...",
+      "...MMm..",
+      "....MMm.",
+      ".....MMm",
+      "......M."
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      1,
+      1
+     ]
+    },
+    "90": {
+     "type": "grid",
+     "rows": [
+      ".ll.",
+      ".ll.",
+      "LmML",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM."
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      2,
+      0
+     ]
+    },
+    "135": {
+     "type": "grid",
+     "rows": [
+      "......l.",
+      "....Llll",
+      "....mLl.",
+      "...mmML.",
+      "..mmM...",
+      ".mmM....",
+      "mmM.....",
+      ".M......"
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      7,
+      1
+     ]
+    },
+    "180": {
+     "type": "grid",
+     "rows": [
+      "......L...",
+      "mmmmmmLll.",
+      "MMMMMMLlll",
+      "......L..."
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      9,
+      2
+     ]
+    },
+    "-45": {
+     "type": "grid",
+     "rows": [
+      "......m.",
+      ".....mMM",
+      "....mMM.",
+      "...mMM..",
+      ".LmMM...",
+      ".lLM....",
+      "lllL....",
+      ".l......"
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      1,
+      7
+     ]
+    },
+    "-90": {
+     "type": "grid",
+     "rows": [
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      ".mM.",
+      "LLLL",
+      ".ll.",
+      ".ll.",
+      ".ll."
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      2,
+      9
+     ]
+    },
+    "-135": {
+     "type": "grid",
+     "rows": [
+      ".m......",
+      "Mmm.....",
+      ".Mmm....",
+      "..Mmm...",
+      "...MmmL.",
+      "....MLl.",
+      "....Llll",
+      "......l."
+     ],
+     "legend": {
+      "l": "leather:1",
+      "L": "leather:0",
+      "M": "metal:4",
+      "m": "metal:3"
+     },
+     "origin": [
+      7,
+      7
+     ]
+    }
+   }
+  }
+ ],
+ "animations": [
+  "idle",
+  "attack",
+  "hit",
+  "death"
+ ],
+ "seed": 1,
+ "overrides": {}
+}

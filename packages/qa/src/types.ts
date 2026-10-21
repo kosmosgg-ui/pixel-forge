@@ -21,6 +21,8 @@ export interface Report {
   checks: Check[];
   /** 렌더 meta.budget 그대로(색 예산 병합 내역) */
   budget?: unknown;
+  /** 렌더 경고(아톰 회전을 각도 변형 없이 RotSprite로 처리 등), 전 프레임 합집합 */
+  warnings?: string[];
   /** 크기 등급 맞춤 결과 { requested, used, reason } */
   sizeClass?: { requested: string; used: string; reason: string };
   sheet: { path?: string; legend: string };

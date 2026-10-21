@@ -38,7 +38,8 @@ export function rotateMaskGrid(g: MaskGrid, angleDeg: number): MaskGrid {
       const sx = Math.floor(ax + px * c + py * s) - g.ox, sy = Math.floor(ay - px * s + py * c) - g.oy;
       const i = sy * g.w + sx;
       const inside = sx >= 0 && sy >= 0 && sx < g.w && sy < g.h && g.mask[i] === 1;
-      samples[l * SUB + k] = inside ? (g.material[i] ?? 0) * 256 + (g.shade[i] ?? 0) : 0;
+      // 키 = 재질 << 10 | 단계 << 2 | 특수(눈·외곽선) — 회전 후에도 그리드 특수 칸을 잃지 않게
+      samples[l * SUB + k] = inside ? ((g.material[i] ?? 0) << 10) | ((g.shade[i] ?? 0) << 2) | (g.special[i] ?? 0) : 0;
     }
     keys[Y * W + X] = modeOf(samples);
   }
@@ -51,12 +52,12 @@ function trimKeys(keys: Int32Array, W: number, H: number, x0: number, y0: number
     minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
   }
   const w = Math.max(0, maxX - minX + 1), h = Math.max(0, maxY - minY + 1);
-  const mask = new Uint8Array(w * h), material = new Uint8Array(w * h), shade = new Uint8Array(w * h);
+  const mask = new Uint8Array(w * h), material = new Uint8Array(w * h), shade = new Uint8Array(w * h), special = new Uint8Array(w * h);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const key = keys[(y + minY) * W + (x + minX)] ?? 0;
     if (!key) continue;
     const k = y * w + x;
-    mask[k] = 1; material[k] = key >> 8; shade[k] = key & 255;
+    mask[k] = 1; material[k] = key >> 10; shade[k] = (key >> 2) & 255; special[k] = key & 3;
   }
-  return { w, h, ox: x0 + (w ? minX : 0), oy: y0 + (h ? minY : 0), mask, materials, material, shade };
+  return { w, h, ox: x0 + (w ? minX : 0), oy: y0 + (h ? minY : 0), mask, materials, material, shade, special };
 }

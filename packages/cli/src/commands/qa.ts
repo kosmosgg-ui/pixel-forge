@@ -2,7 +2,7 @@ import { rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { buildBiblePalette, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
 import { contactSheet, runChecks, type Check, type HeldInfo, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
-import { mirrorFrame, renderAnimations, renderFitted, renderFrame, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
+import { mirrorFrame, renderAnimations, renderFitted, renderFrame, renderGridAnimations, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
 import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
@@ -51,14 +51,16 @@ export interface Rendered {
  * rest + 지정 애니(없으면 Spec의 animations 전부). 공용 애니 파일이 없으면 rest만.
  * 크기 등급은 Spec 애니 전부를 렌더해 정한다(일부 애니만 요청해도 같은 등급이 나오게) — 넘치면 큰 등급으로 다시 렌더.
  */
-export function renderProject(p: Project, ids: readonly string[] = p.spec.animations): Rendered {
+export function renderProject(p: Project, ids: readonly string[] = p.spec.mode === 'frames' ? Object.keys(p.spec.frames ?? {}) : p.spec.animations): Rendered {
   validateProject(p);
   const palette = buildBiblePalette(p.bible, p.rules);
   const anims = p.anims;
-  const all = anims ? p.spec.animations : [];
+  // 프레임 모드는 Spec frames의 애니(공용 애니 파일·리그 포즈를 쓰지 않는다)
+  const frames = p.spec.mode === 'frames';
+  const all = frames ? Object.keys(p.spec.frames ?? {}) : anims ? p.spec.animations : [];
   const { result, fit } = renderFitted(
     { ...p, palette },
-    (c) => (anims && all.length ? renderAnimations(c, anims, all) : { rest: renderFrame(c), frames: [] as AnimFrame[] }),
+    (c) => (frames ? renderGridAnimations(c, all) : anims && all.length ? renderAnimations(c, anims, all) : { rest: renderFrame(c), frames: [] as AnimFrame[] }),
     (t) => [{ raster: t.rest.raster, clipped: t.rest.clipped }, ...t.frames.map((f) => ({ raster: f.raster, clipped: f.clipped }))],
   );
   const project: Project = { ...p, spec: { ...p.spec, sizeClass: fit.used } };
@@ -108,7 +110,11 @@ export function runQa(p: Project, cwd: string, extra: readonly Check[] = []): Re
 export function runQaRendered(p: Project, cwd: string, extra: readonly Check[] = []): { report: Report; rendered: Rendered } {
   const r = renderProject(p);
   const rows = qaRows(r);
-  const report: Report = { ...runChecks(rows.flat(), qaContext(r.project, r.palette, r.rest), extra), budget: r.rest.meta.budget, sizeClass: r.sizeClass };
+  const warnings = [...new Set([r.rest, ...r.frames].flatMap((f) => f.meta.warnings))].sort();
+  const report: Report = {
+    ...runChecks(rows.flat(), qaContext(r.project, r.palette, r.rest), extra), budget: r.rest.meta.budget, sizeClass: r.sizeClass,
+    ...(warnings.length ? { warnings } : {}),
+  };
   const dir = join(cwd, 'out', p.spec.id);
   writeFrames(dir, r);
   writeFileSync(join(dir, 'motion.json'), JSON.stringify(resolveMotion(p.bible.motion, p.spec.motion), null, 2) + '\n');

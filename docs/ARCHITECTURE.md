@@ -186,6 +186,12 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "legend": { "a": { "material": "cloth_green", "shade": 1 }, "A": { "material": "cloth_green", "shade": 2 } } } }
 ```
 - `.`=비어 있음. shade 생략 시 §6.4 자동 셰이딩. 한 mask ≤ 16×16.
+### §7.3.1 그리드 파츠·프레임 모드·아톰 모드 (P6.5, 픽셀 직접 설계)
+- 그리드: `{ "type": "grid", "rows": [...], "legend": { "<문자>": "<재질>:<단계>" | "@eye" | "@eye:<재질>:<단계>" | "@outline" }, "origin"?: [열, 행] }`. `.` = 투명. 범례가 재질·단계를 가리키므로 팔레트 교체·색 변형이 그대로 적용된다. `@eye` = 검은 눈(외곽선색), `@eye:…` = 그 색 눈, 둘 다 정리 보호. `@outline` = 그 칸에 외곽선색 강제. **외곽선은 그리드에 그리지 않는다** — 엔진이 크기 등급 outline 모드로 붙인다. 그리드 파츠는 범례 단계 그대로(자동 셰이딩·작은 섬 병합·고립 정리·얇은 획 규칙 제외), 한 변 최대 96칸.
+- `mode: "frames"`(소형·형태 중요): `grid`(rest, `pivot` = 발밑 칸, 생략하면 불투명 칸 아래 가운데) + `frames: { <애니>: [ { grid | patch, ms, fx?: "flash", grounded? } ] }` + `loop`(기본 `["idle"]`). patch = `{ at: [열, 행], rows, legend }`(`.` = base 유지, `~` = 지움). 리그·공용 애니를 쓰지 않는다. QA 레이어 파츠 id: base = 1, patch = 2 → anim.flicker는 patch 밖(base) 영역 기준. 좌향은 반전.
+- `mode: "atoms"`(character 이상): 파츠 shape가 그리드, 뼈가 배치. 파츠 `variants: { "<도>": grid }`(화면 방향으로 그린 각도 변형) 중 파츠 각도에 가장 가까운 것 + 남은 각도만 RotSprite. 변형 없이 22.5°보다 크게 돌면 qa.json `warnings`. `upright: true`(머리)는 ±15° 이내면 돌리지 않고 1px 이동.
+- 바닥 그림자: manifest `motion.shadow = { w: rest 가장 아래 불투명 줄 폭 + 4, h: 3 }` — 엔진이 그린다(스프라이트에 굽지 않음).
+- `forge render <spec> --sheet 8` → `out/<id>/studio.png`(rest + 전 프레임, 게임 배경, 8배) — pixel-studio 루프용.
 ### §7.4 Rules (`data/rules/default.rules.json`) — 수치와 근거 id를 함께 보관. 렌더러는 rule id를 로그로 남긴다.
 
 ## §8 리그와 애니메이션 (packages/rig)

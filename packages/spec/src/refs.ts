@@ -15,8 +15,18 @@ export function checkRefs(spec: Spec, bible: Bible, rig: Rig): string[] {
   spec.parts.forEach((p, i) => {
     const where = `parts[${i}]${p.name ? `(${p.name})` : ''}`;
     if (!(p.bone in rig.bones)) errors.push(`${where}.bone: 리그에 없는 뼈 ${p.bone}`);
+    if (p.shape.type === 'grid') {
+      errors.push(...gridRefs(p.shape.legend, bible, `${where}.shape`));
+      for (const [k, g] of Object.entries(p.variants ?? {})) errors.push(...gridRefs(g.legend, bible, `${where}.variants.${k}`));
+      return;
+    }
     const mats = p.shape.type === 'mask' ? Object.values(p.shape.legend).map((e) => e.material) : [p.material ?? ''];
     for (const m of mats) if (!(m in bible.materials)) errors.push(`${where}.material: 바이블에 없는 재질 ${m}`);
+  });
+  if (spec.grid) errors.push(...gridRefs(spec.grid.legend, bible, 'grid'));
+  for (const [a, list] of Object.entries(spec.frames ?? {})) list.forEach((f, i) => {
+    const g = f.grid ?? f.patch;
+    if (g) errors.push(...gridRefs(g.legend, bible, `frames.${a}[${i}]`));
   });
   if (spec.eyes) {
     const [mat, step] = spec.eyes.color.split(':');
@@ -48,6 +58,19 @@ export function checkAnimRefs(spec: Spec, anims: AnimsFile, rig: Rig, bible: Bib
       if (!anim.keys.some((k) => k.name === key)) errors.push(`overrides.${id}.${key}: 없는 키`);
       bones(o.pose, `overrides.${id}.${key}`);
     }
+  }
+  return errors;
+}
+
+/** 그리드 범례 "<재질>:<단계>"(·"@eye:<재질>:<단계>")의 재질이 바이블에 있고 단계가 램프 안인지 */
+export function gridRefs(legend: Readonly<Record<string, string>>, bible: Bible, where: string): string[] {
+  const errors: string[] = [];
+  for (const [ch, v] of Object.entries(legend)) {
+    if (v === '@outline' || v === '@eye') continue;
+    const [mat = '', step = '0'] = v.replace(/^@eye:/, '').split(':');
+    const m = bible.materials[mat];
+    if (!m) errors.push(`${where}.legend.${ch}: 바이블에 없는 재질 ${mat}`);
+    else if (Number(step) >= m.steps) errors.push(`${where}.legend.${ch}: ${mat}의 단계는 0~${m.steps - 1}`);
   }
   return errors;
 }

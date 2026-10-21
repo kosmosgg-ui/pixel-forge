@@ -18,6 +18,8 @@ export interface RunInput {
   cwd: string;
   /** --anim a,b */
   anim?: string;
+  /** render --sheet k (스튜디오 시트 배율) */
+  sheet?: string;
   /** --count n */
   count?: string;
   /** --seed n */
@@ -60,7 +62,7 @@ export function run(input: RunInput): RunResult {
   };
   if (cmd === 'palette') return paletteCommand(need('<bible id 또는 경로>'), input.cwd);
   if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
-  if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : []);
+  if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b] [--sheet 8]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : [], input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'crowd') return crowdCommand(need('<프로젝트 이름> [--count 50] [--seed 1]'), input.cwd, intOption('count', input.count, 50), intOption('seed', input.seed, 1));
   if (cmd === 'review') return reviewCommand(need('<프로젝트 이름>'), input.cwd);
   if (cmd === 'review-score') return reviewScoreCommand(need('<spec 경로> --score <0~24> [--note 문장]'), input.cwd, Number(input.score), input.note);

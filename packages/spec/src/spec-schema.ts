@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { motionOverrideSchema, poseSchema } from './anim-schema.js';
-import { maskShapeSchema, partShapeSchema } from './shape-schema.js';
+import { checkGridShape, frameGridSchema, gridPatchSchema, gridShapeSchema, maskShapeSchema, partShapeSchema } from './shape-schema.js';
 
 export const specKindSchema = z.enum(['character', 'item', 'tile', 'fx', 'ui']);
 
@@ -25,14 +25,21 @@ export const partSchema = z
     signature: z.boolean().default(false),
     /** 도형 축: bone = 도형 로컬 x축이 뼈 방향(팔다리·몸통), world = 화면 축 그대로(머리·모자 등) */
     orient: z.enum(['bone', 'world']).default('bone'),
+    /** 아톰 모드: 각도별로 따로 그린 그리드(키 = 도, 예 "0", "45", "-45", "90"). 가장 가까운 변형 + 남은 각도만 RotSprite */
+    variants: z.record(z.string().regex(/^-?\d+$/), gridShapeSchema).optional(),
+    /** 회전 금지(머리 아톰): ±15° 이내는 1px 이동, 그 밖은 변형·RotSprite */
+    upright: z.boolean().default(false),
   })
   .superRefine((p, ctx) => {
     if (p.shape.type === 'mask') {
       const r = maskShapeSchema.safeParse(p.shape);
       if (!r.success) for (const i of r.error.issues) ctx.addIssue({ ...i, path: ['shape', ...i.path] });
+    } else if (p.shape.type === 'grid') {
+      checkGridShape(p.shape, ctx, ['shape']);
     } else if (p.material === undefined) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['material'], message: 'mask가 아닌 파츠는 material이 필요합니다' });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['material'], message: 'mask·grid가 아닌 파츠는 material이 필요합니다' });
     }
+    for (const [k, g] of Object.entries(p.variants ?? {})) checkGridShape(g, ctx, ['variants', k]);
   });
 
 export const specSchema = z
@@ -57,7 +64,20 @@ export const specSchema = z
         bulk: z.number().positive().optional(),
       })
       .default({}),
-    parts: z.array(partSchema).min(1).max(64),
+    /** shapes = 도형 조합(기본), frames = 프레임마다 픽셀 그리드 직접 설계, atoms = 파츠가 그리드 아톰 */
+    mode: z.enum(['shapes', 'frames', 'atoms']).default('shapes'),
+    parts: z.array(partSchema).max(64).default([]),
+    /** 프레임 모드: rest(=base) 그리드 */
+    grid: frameGridSchema.optional(),
+    /** 프레임 모드: 애니 → 프레임들. grid(전체) 또는 patch(base 위 바뀌는 부분만) */
+    frames: z.record(z.string().min(1), z.array(z.object({
+      grid: frameGridSchema.optional(), patch: gridPatchSchema.optional(), ms: z.number().int().min(1),
+      fx: z.literal('flash').optional(),
+      /** 발이 바닥에 붙은 프레임(baseline.stable 대상) — 쓰러짐 등은 false */
+      grounded: z.boolean().default(true),
+    })).min(1)).optional(),
+    /** 프레임 모드: 반복 재생할 애니 */
+    loop: z.array(z.string().min(1)).default(['idle']),
     /** rule: form.face — 뼈 중간점에서 화면 축으로 pos만큼. 3/4 리그면 먼 쪽 눈(1px)이 자동으로 붙는다 */
     eyes: z
       .object({
@@ -76,7 +96,17 @@ export const specSchema = z
     motion: motionOverrideSchema.default({}),
     seed: z.number().int().default(1),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((s, ctx) => {
+    const issue = (path: string[], message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    if (s.mode === 'frames') {
+      if (!s.grid) issue(['grid'], '프레임 모드는 grid(rest)가 필요합니다');
+      if (!s.frames) issue(['frames'], '프레임 모드는 frames가 필요합니다');
+      for (const [a, list] of Object.entries(s.frames ?? {})) list.forEach((f, i) => {
+        if (!f.grid === !f.patch) issue(['frames', a, String(i)], 'grid와 patch 중 하나만 있어야 합니다');
+      });
+    } else if (s.parts.length === 0) issue(['parts'], '파츠가 하나 이상 필요합니다');
+  });
 
 export type Spec = z.infer<typeof specSchema>;
 export type Part = z.infer<typeof partSchema>;
