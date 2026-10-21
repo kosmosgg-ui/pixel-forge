@@ -2,15 +2,14 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P4**
+현재 단계: **P5**
 
 ## 로그
-- [P4] 중단(결정 대기) | 완료: form.outline-thin, Animation·anims·overrides·motion 스키마, 타임라인(inbetween 앞/뒤만·ease·정수 스냅), humanoid-34-v1.anims.json 4종, 애니 렌더(rest 원점·전 프레임 공동 예산·fx flash/arc·좌향 flipX), forge render --anim·crowd, QA 애니 판정(최악 프레임 기준)
-  - 현황: 테스트 162개 통과(골든 갱신). build-all: warrior anim.flicker 4px(attack 3~4프레임), 3종 모두 cleanup.orphans 4~5(임계 2), rogue form.detail-min 3. bounds.canvas는 death 포즈 dy·마법사 overrides로 해결
-  - anim.flicker 수정 3회(① 고립 정리 파츠 단위 ② 셰이딩·섬 정리를 파츠별 원본 모양에서 ③ 고립 정리를 선 긋기 전으로) → 15/8/1px → 4/0/0px
-  - 원인 가설: ① 남은 전사 깜빡임은 공격 중 팔·검이 허벅지를 일부 가려 고립 정리의 같은 파츠 이웃 집합이 달라짐 → 고립 정리도 파츠별 원본 모양 단계로 옮기면 해결 예상 ② orphans 증가는 정리 뒤에 내부선·눈을 그려 같은 색 이웃을 잃은 픽셀 ③ 정적 깔끔함(프레임별 정리)과 시간 안정성(애니 깜빡임 0)이 충돌
-  - 필요한 결정: QA cleanup.orphans를 (A) 선·눈(mark) 이웃 때문에 생긴 고립은 제외 (B) 지금처럼 최종 이미지 기준 유지 + orphanMax 상향 (C) 선 그린 뒤 2차 정리 추가(깜빡임 재발 위험)
-  - 결정(사용자): (A) — 선·눈(mark) 이웃 때문에 생긴 고립은 cleanup.orphans에서 세지 않음
+- [P4] 완료 | 완료: form.outline-thin, Animation·anims·overrides·motion 스키마, 타임라인(inbetween 앞/뒤만·ease·정수 스냅·가장자리 거부), humanoid-34-v1.anims.json 4종, 애니 렌더(rest 원점·전 프레임 공동 예산·fx·좌향 flipX), 파츠별 셰이딩·섬·고립 정리(깜빡임 0), forge render --anim·crowd, QA 최악 프레임 판정·결정 A
+  - 수락기준: pnpm build·test → Tests 176 passed (32 files). build-all sample → pass:true 3/3(선택 실패: rogue form.detail-min 3/2). crowd sample --count 50 --seed 1 → 320×180
+  - code-reviewer: 높음 0, 중간 2(rules anim.inbetweenMs 승인 필요 → 사용자 확인 요청, inbetween 가장자리 → 수정), 낮음 4(죽은 인자 되돌림, 1건 backlog)
+  - pixel-reviewer 15/20(warrior 15, rogue 14, mage 16). 키포즈: attack·death 분명, idle·hit은 rest와 구분 약함. 군중: 색으로 3종 바로 구분, 형태로는 mage만 확실
+  - 다음 후보(승인·결정 필요): hit 키 추가(프레임 수 변경), 1px 검 → 2px(outline-thin과 충돌), idle·flinch 포즈 크게
 
 - [P3] 완료 | 완료: qa 패키지(필수 6 + 선택 6 + 교차 2 검사, render 미참조), 렌더 meta 레이어·얼굴 통계, 컨택트 시트(체커+배경 2벌, 실패 위치 빨간 테두리, 시트 전용 팔레트), 캐시(파일 바이트+엔진 버전), forge qa·build·build-all(불합격 exit 2)
   - 수락기준: 테스트 145개 통과, build-all sample 3/3 합격(점수 1.0/1.0/1.0), 2회째 cached

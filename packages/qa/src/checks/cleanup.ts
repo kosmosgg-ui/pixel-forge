@@ -1,18 +1,24 @@
 import { check, worstFrame, type Check, type QaContext, type QaFrame } from '../types.js';
 
-/** 8-이웃에 같은 색이 없는 픽셀 수 ≤ orphanMax (외곽선·눈 등 mark 위치 제외). 값은 가장 나쁜 프레임 기준 */
+/**
+ * 8-이웃에 같은 색이 없는 픽셀 수 ≤ orphanMax. 값은 가장 나쁜 프레임 기준.
+ * mark 위치(외곽선·내부선·눈·fx)와, 이웃에 mark가 있어 선·눈이 같은 색 이웃을 덮어 생긴 고립은 세지 않는다
+ * (사용자 결정 A: 애니 깜빡임 0을 정적 깔끔함보다 우선).
+ */
 export function cleanupOrphans(frames: readonly QaFrame[], ctx: QaContext): Check {
   const perFrame = frames.map(({ raster: r, mark }) => {
     const where: [number, number][] = [];
     for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) {
       const k = y * r.w + x, v = r.px[k] ?? 0;
       if (!v || mark?.[k]) continue;
-      let same = false;
+      let same = false, nearMark = false;
       for (let dy = -1; dy <= 1 && !same; dy++) for (let dx = -1; dx <= 1 && !same; dx++) {
-        const X = x + dx, Y = y + dy;
-        if ((dx || dy) && X >= 0 && Y >= 0 && X < r.w && Y < r.h && r.px[Y * r.w + X] === v) same = true;
+        const X = x + dx, Y = y + dy, j = Y * r.w + X;
+        if (!(dx || dy) || X < 0 || Y < 0 || X >= r.w || Y >= r.h) continue;
+        if (r.px[j] === v) same = true;
+        if (mark?.[j]) nearMark = true;
       }
-      if (!same) where.push([x, y]);
+      if (!same && !nearMark) where.push([x, y]);
     }
     return where;
   });

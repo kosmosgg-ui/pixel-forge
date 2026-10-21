@@ -41,6 +41,13 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     expect(cleanupOrphans([frame(rows, { mark })], ctx()).pass).toBe(true);
   });
 
+  it('(A) 선·눈(mark)이 이웃을 덮어 생긴 고립은 세지 않는다', () => {
+    const rows = ['.....', '.343.', '.....'];
+    const mark = new Uint8Array(15); mark[6] = 1; mark[8] = 1;
+    expect(cleanupOrphans([frame(rows, { mark })], ctx()).value).toBe(0);
+    expect(cleanupOrphans([frame(rows)], ctx()).value).toBe(3);
+  });
+
   it('1px 단계 띠가 2px 이상 이어진 구간이 여럿 → cleanup.banding, 외딴 1px은 세지 않음', () => {
     const block = ['.123.123.123.123.', '.123.123.123.123.'];
     const c = cleanupBanding([frame(['.................', ...block, '.................'])], ctx());

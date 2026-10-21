@@ -19,8 +19,17 @@ const ease = (kind: 'in' | 'out', u: number): number => (kind === 'in' ? u * u :
 
 /** rule: anim.pose-to-pose — 균등 보간·개수 초과·긴 타격 키는 거부 */
 function validate(a: Animation, rules: AnimRules, isStrikeFx: (fx: string) => boolean): void {
+  const last = a.keys.length - 1;
   for (const b of a.inbetween) {
     if (b.ease === 'linear') throw new ForgeError('anim.even-inbetween', `${a.id}: 키 사이 균등 보간은 쓰지 않습니다(ease in/out만)`, { inbetween: b });
+    const at = a.keys.findIndex((k) => k.name === (b.after ?? b.before));
+    if (at < 0 || (b.after !== undefined) === (b.before !== undefined)) {
+      throw new ForgeError('anim.inbetween-key', `${a.id}: inbetween은 있는 키 하나를 after 또는 before로 가리켜야 합니다`, { inbetween: b });
+    }
+    // 비루프 애니의 처음 앞·마지막 뒤는 이웃 키가 없어 같은 포즈가 중복된다
+    if (!a.loop && ((b.before !== undefined && at === 0) || (b.after !== undefined && at === last))) {
+      throw new ForgeError('anim.inbetween-edge', `${a.id}: 루프가 아닌 애니의 첫 키 앞·마지막 키 뒤에는 사이 프레임을 둘 수 없습니다`, { inbetween: b });
+    }
     if (b.count > rules.maxInbetweenPerKey) throw new ForgeError('anim.inbetween-count', `${a.id}: inbetween ${b.count}개 > ${rules.maxInbetweenPerKey}`, { inbetween: b });
   }
   const strikes = a.keys.filter((k) => k.fx !== undefined && isStrikeFx(k.fx));

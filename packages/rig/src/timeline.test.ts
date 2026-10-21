@@ -40,6 +40,15 @@ describe('buildTimeline', () => {
     expect(() => buildTimeline(slow, rules)).toThrow(/타격/);
   });
 
+  it('없는 키를 가리키거나, 비루프 애니의 첫 키 앞·마지막 키 뒤 inbetween은 ForgeError', () => {
+    const keys = [{ name: 'a', ms: 100 }, { name: 'b', ms: 100 }];
+    const parse = (loop: boolean, inbetween: object[]) => animationSchema.parse({ id: 'x', loop, keys, inbetween });
+    expect(() => buildTimeline(parse(false, [{ after: 'zz', count: 1, ease: 'out' }]), rules)).toThrow(/있는 키/);
+    expect(() => buildTimeline(parse(false, [{ before: 'a', count: 1, ease: 'in' }]), rules)).toThrow(/첫 키 앞/);
+    expect(() => buildTimeline(parse(false, [{ after: 'b', count: 1, ease: 'out' }]), rules)).toThrow(/마지막 키 뒤/);
+    expect(buildTimeline(parse(true, [{ after: 'b', count: 1, ease: 'out' }]), rules)).toHaveLength(3);
+  });
+
   it('hold 키는 hold 표시 + defaultKeyMs', () => {
     const f = buildTimeline(anims.anims.death!, rules);
     expect(f[f.length - 1]).toMatchObject({ keyName: 'lie', hold: true, ms: rules.defaultKeyMs });

@@ -114,6 +114,7 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     const local = partZone(p, r);
     shadeZoneInPlace(local, bible.light, rules.shade, stepsOf, (id) => small.has(id));
     mergeSmallClustersInPlace(local, rules.cleanup.minCluster);
+    if (rules.cleanup.removeOrphans) removePartOrphansInPlace(local, rampsById);
     clipped += writePartInPlace(zone, p, r, origin[0], origin[1], local);
   });
   return { bones, placed, rasters, origin, zone, clipped, small, thin };
@@ -133,9 +134,6 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   const resolved = resolveZone(zone, rampsById);
   const raster: IndexedRaster = { w: resolved.w, h: resolved.h, px: resolved.px.slice() };
   const protect = new Uint8Array(W * H);
-  // 8. 고립 픽셀 정리는 선을 긋기 전, 파츠 자기 색만으로 판정한다 — 움직이는 이웃 때문에 바뀌는 내부선이
-  //    정지한 파츠의 정리 결과로 번지면 깜빡인다(anim.flicker)
-  if (rules.cleanup.removeOrphans) removeOrphansInPlace(raster, new Set(), undefined, zone.part);
   if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, thin);
   // 외곽선 모드는 게임별 화풍이므로 바이블이 규칙 기본값보다 우선
   outerOutlineInPlace(raster, zone, rampsById, { mode: bible.outline.mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, thin);
@@ -159,6 +157,20 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
     layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) }, partTransforms,
   };
   return { raster: final, origin, clipped: L.clipped, meta, ...(opts.debug ? { debug: { zone, resolved } } : {}) };
+}
+
+/**
+ * §6.8 고립 픽셀 정리를 파츠 하나의 가려지기 전 전체 모양에서 한다 — 다른 파츠가 움직이거나 가리거나
+ * 내부선이 바뀌어도 이 파츠의 정리 결과가 같다(anim.flicker). 결과 색을 다시 램프 단계로 돌려 shade에 쓴다.
+ */
+function removePartOrphansInPlace(local: FrameZone, rampsById: readonly Ramp[]): void {
+  const r = resolveZone(local, rampsById);
+  removeOrphansInPlace(r);
+  for (let k = 0; k < r.px.length; k++) {
+    const ramp = rampsById[(local.material[k] ?? 0) - 1];
+    const step = ramp ? ramp.indices.indexOf(r.px[k] ?? 0) : -1;
+    if (step >= 0) local.shade[k] = step;
+  }
 }
 
 function noFit(r: IndexedRaster, limit: number): BudgetFitResult {

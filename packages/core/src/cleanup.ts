@@ -16,10 +16,8 @@ function majority(values: readonly number[]): number {
 /**
  * rule: form.cleanup — 8-이웃에 같은 색이 하나도 없는 픽셀을 이웃의 다수 색으로 바꾼다.
  * 칠해진 이웃이 없으면 투명. keep의 인덱스, protect가 1인 위치(외곽선 등)는 건드리지 않는다. 판정은 원본 기준이라 순서와 무관.
- * part(픽셀별 파츠 id)를 주면 같은 파츠 이웃만 본다 — 옆 파츠가 움직여도 정지한 파츠 픽셀이 바뀌지 않게(anim.flicker).
- * 이때 같은 파츠 이웃이 하나도 없는 픽셀은 판단할 근거가 없어 그대로 둔다.
  */
-export function removeOrphansInPlace(r: IndexedRaster, keep: ReadonlySet<number> = new Set(), protect?: Uint8Array, part?: Uint16Array): number {
+export function removeOrphansInPlace(r: IndexedRaster, keep: ReadonlySet<number> = new Set(), protect?: Uint8Array): number {
   const changes: [number, number][] = [];
   const around: number[] = [];
   for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) {
@@ -28,9 +26,8 @@ export function removeOrphansInPlace(r: IndexedRaster, keep: ReadonlySet<number>
     around.length = 0;
     for (const [dx, dy] of N8) {
       const X = x + dx, Y = y + dy, j = Y * r.w + X;
-      if (X >= 0 && Y >= 0 && X < r.w && Y < r.h && (!part || part[j] === part[k])) around.push(r.px[j] ?? 0);
+      if (X >= 0 && Y >= 0 && X < r.w && Y < r.h) around.push(r.px[j] ?? 0);
     }
-    if (part && !around.some((n) => n !== 0)) continue;
     if (around.includes(v)) continue;
     const filled = around.filter((n) => n !== 0);
     changes.push([y * r.w + x, filled.length ? majority(filled) : 0]);

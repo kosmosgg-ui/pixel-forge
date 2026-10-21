@@ -115,7 +115,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
-8. **정리**: 고립 픽셀 제거(같은 파츠 8-이웃 중 같은 색 0개), 1px 획의 L자 모서리 제거. 실행은 6 직후(선·눈·fx를 그리기 전) — 움직이는 이웃 때문에 바뀌는 선이 정리 판정에 번지지 않게
+8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개), 1px 획의 L자 모서리 제거. 고립 정리는 4~5와 함께 **파츠마다 가려지기 전 전체 모양에서** 한다 — 다른 파츠의 움직임·가림·내부선이 정리 결과로 번지지 않게(anim.flicker)
 6.5 **색 예산 맞춤** (rule `color.budget-fit`, 실행은 8 다음): 고유 색 수 > `bible.colorBudget[sizeClass]`이면 같은 재질에서 사용 픽셀이 가장 적은 단계를 OKLab으로 가장 가까운 사용 중 단계로 병합, 예산 이하까지 반복. 외곽선 톤·눈 색·예약 색은 제외. 동률이면 재질 키 순 → 단계 인덱스 낮은 쪽. 병합 내역은 렌더 결과 `meta.budget`에 기록(QA 리포트에 표시). 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
 9. **검증 훅**: 팔레트 밖 인덱스, 반투명 알파가 없음을 assert (개발 모드)
 
@@ -228,7 +228,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
-- 프레임 1장 기준 임계값(`cleanup.orphans`·`cleanup.banding`·`form.detail-min`)은 애니 전 프레임 중 가장 나쁜 프레임으로 판정한다. `anim.flicker`는 외곽선·내부선·눈·fx 표시 위치를 뺀다.
+- 프레임 1장 기준 임계값(`cleanup.orphans`·`cleanup.banding`·`form.detail-min`)은 애니 전 프레임 중 가장 나쁜 프레임으로 판정한다. `anim.flicker`는 외곽선·내부선·눈·fx 표시 위치를 뺀다. `cleanup.orphans`는 표시 위치와, 이웃에 표시 위치가 있는 픽셀(선·눈이 같은 색 이웃을 덮어 생긴 고립)을 세지 않는다(사용자 결정 A).
 - **컨택트 시트**: 애니메이션별 1행, 프레임을 `rules.qa.sheetScale`(기본 4)배 최근접 확대, 체커 배경 + 바이블 배경 2벌, 실패 검사 위치는 빨간 테두리. 1장 PNG + 1줄 범례 텍스트는 리포트 JSON에.
 
 ## §10 Export (packages/export)
