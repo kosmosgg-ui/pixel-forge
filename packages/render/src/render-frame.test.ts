@@ -113,4 +113,12 @@ describe('renderFrame', () => {
     const c = ctx(spec([circle(), { bone: 'root', shape: { type: 'capsule', len: 9, w: 4, angleDeg: 30 }, material: 'm' }]));
     expect(equals(renderFrame(c).raster, renderFrame(c).raster)).toBe(true);
   });
+  it('rule: form.held-min-width — 손에 든 1px 획은 spec.held-too-thin, decorative·held 아님은 허용', () => {
+    const stick = (over: Record<string, unknown>) => ({ bone: 'root', shape: { type: 'line', to: [0, -8] }, material: 'm', orient: 'world', name: 'stick', ...over });
+    expect(() => renderFrame(ctx(spec([circle(), stick({ held: true })])))).toThrow(expect.objectContaining({ code: 'spec.held-too-thin' }));
+    expect(() => renderFrame(ctx(spec([circle(), stick({ held: true, decorative: true })])))).not.toThrow();
+    expect(() => renderFrame(ctx(spec([circle(), stick({})])))).not.toThrow();
+    const thick = { bone: 'root', shape: { type: 'rect', w: 2, h: 8 }, material: 'm', orient: 'world', held: true };
+    expect(() => renderFrame(ctx(spec([circle(), thick])))).not.toThrow();
+  });
 });

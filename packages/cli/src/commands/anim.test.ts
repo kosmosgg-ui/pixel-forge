@@ -30,13 +30,15 @@ describe('forge render --anim', () => {
 describe('build-all sample (3종 × 4애니)', () => {
   const r = buildAllCommand('sample', work);
 
-  it('필수 검사 전부 통과, 깜빡임 0, 발밑 고정', () => {
+  it('필수 검사 전부 통과, 깜빡임 0, 발밑 고정, 무기 보임', () => {
     expect(r).toMatchObject({ ok: true, count: 3, pass: true });
     for (const id of ['warrior', 'rogue', 'mage']) {
       const report = JSON.parse(readFileSync(join(work, 'out', id, 'qa.json'), 'utf8')) as Report;
       const get = (cid: string) => report.checks.find((c) => c.id === cid);
       expect(get('anim.flicker')).toMatchObject({ pass: true, value: 0 });
       expect(get('baseline.stable')).toMatchObject({ pass: true, value: 0 });
+      // 손에 든 무기·소품은 모든 프레임에서 보이고 손에 붙어 있다
+      expect(get('form.held-visible')).toMatchObject({ pass: true });
       expect(existsSync(join(work, 'out', id, 'frames', 'death_l_3.png'))).toBe(true);
       expect(JSON.parse(readFileSync(join(work, 'out', id, 'motion.json'), 'utf8'))).toMatchObject({ bob: { px: 1 } });
     }

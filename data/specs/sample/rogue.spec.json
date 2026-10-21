@@ -206,20 +206,20 @@
     {
       "bone": "weapon",
       "shape": {
-        "type": "line",
-        "from": [
-          1,
-          0
-        ],
-        "to": [
-          8,
-          -2
-        ]
+        "type": "rect",
+        "w": 8,
+        "h": 2,
+        "angleDeg": -15
       },
       "material": "metal",
       "anchor": "joint",
+      "at": [
+        3,
+        -1
+      ],
       "orient": "world",
-      "name": "dagger"
+      "name": "dagger",
+      "held": true
     }
   ],
   "eyes": {

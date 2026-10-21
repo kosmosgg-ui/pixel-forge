@@ -29,8 +29,9 @@
     "hit": {
       "id": "hit", "loop": false,
       "keys": [
-        { "name": "flinch", "ms": 80, "pose": { "root": { "dx": -2 }, "spine": { "rot": -12 }, "head": { "rot": -8 }, "upperArmF": { "rot": 20 } }, "fx": "flash" },
-        { "name": "recover", "ms": 200, "pose": {} }
+        { "name": "flash", "ms": 60, "pose": {}, "fx": "flash" },
+        { "name": "flinch", "ms": 120, "pose": { "root": { "dx": -2 }, "spine": { "rot": -12 }, "head": { "rot": -8 } } },
+        { "name": "recover", "ms": 160, "pose": {} }
       ]
     },
     "death": {

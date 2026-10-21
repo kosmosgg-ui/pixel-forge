@@ -58,6 +58,20 @@ export interface QaContext {
   rampOf: ReadonlyMap<number, RampStep>;
   /** roleColorKey 재질의 인덱스(램프 + 외곽선 톤). 없으면 검사 생략 */
   roleIndices?: ReadonlySet<number>;
+  /** 손에 든 파츠(form.held-visible). 없으면 검사 통과 */
+  held?: readonly HeldInfo[];
+  /** 외곽선 톤·전역 외곽선색 인덱스 — 이 색으로만 칠해진 픽셀은 보이는 것으로 치지 않는다 */
+  lineIndices?: ReadonlySet<number>;
+}
+
+export interface HeldInfo {
+  /** 파츠 id (spec.parts 순번 + 1) */
+  part: number;
+  name: string;
+  /** 손 파츠 id들(부착 뼈·그 부모 뼈의 held 아닌 파츠) */
+  hand: readonly number[];
+  /** rest 프레임에서 이 파츠 픽셀 수 */
+  restCount: number;
 }
 
 /** 프레임별 문제 위치 목록 → 가장 많은 프레임의 개수·위치·순번 (임계값은 프레임 1장 기준) */

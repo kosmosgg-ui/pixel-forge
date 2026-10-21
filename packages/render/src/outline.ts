@@ -3,11 +3,15 @@ import type { FrameZone } from './frame-zone.js';
 
 const N4 = [[0, -1], [-1, 0], [1, 0], [0, 1]] as const;
 
-/** rule: form.outline-thin — 두께 1px 이하 = 마스크에 꽉 찬 2×2 블록이 하나도 없는 파츠 */
-export function isThinMask(mask: Uint8Array, w: number, h: number): boolean {
-  for (let y = 0; y + 1 < h; y++) for (let x = 0; x + 1 < w; x++) {
-    const k = y * w + x;
-    if (mask[k] && mask[k + 1] && mask[k + w] && mask[k + w + 1]) return false;
+/**
+ * 두께 판정: 마스크에 꽉 찬 n×n 블록이 하나도 없으면 두께 n px 미만.
+ * rule: form.outline-thin(n = 2, 1px 획), rule: form.held-min-width(n = rules.held.minWidth)
+ */
+export function isThinMask(mask: Uint8Array, w: number, h: number, n = 2): boolean {
+  for (let y = 0; y + n <= h; y++) for (let x = 0; x + n <= w; x++) {
+    let full = true;
+    for (let dy = 0; dy < n && full; dy++) for (let dx = 0; dx < n && full; dx++) if (!mask[(y + dy) * w + x + dx]) full = false;
+    if (full) return false;
   }
   return true;
 }

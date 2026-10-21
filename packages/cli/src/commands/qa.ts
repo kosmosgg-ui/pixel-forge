@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { buildBiblePalette, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
-import { contactSheet, runChecks, type Check, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
+import { contactSheet, runChecks, type Check, type HeldInfo, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
 import { mirrorFrame, renderAnimations, renderFrame, type AnimFrame, type RenderMeta, type RenderResult } from '@pixel-forge/render';
 import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
@@ -9,7 +9,18 @@ import { encodePng } from '../io/png.js';
 import { loadProject, type Project } from '../io/project.js';
 import { validateProject } from './validate.js';
 
-export function qaContext(p: Project, palette: BiblePalette): QaContext {
+/** held 파츠별 손 파츠(부착 뼈·그 부모 뼈의 held 아닌 파츠)와 rest 픽셀 수 */
+export function heldInfo(p: Project, restPart?: Uint16Array): HeldInfo[] {
+  return p.spec.parts.flatMap((part, i) => {
+    if (!part.held) return [];
+    const parent = p.rig.bones[part.bone]?.parent;
+    const hand = p.spec.parts.flatMap((q, j) => (!q.held && (q.bone === part.bone || q.bone === parent) ? [j + 1] : []));
+    const restCount = restPart ? restPart.reduce((a, v) => a + (v === i + 1 ? 1 : 0), 0) : 0;
+    return [{ part: i + 1, name: part.name ?? part.bone, hand, restCount }];
+  });
+}
+
+export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult): QaContext {
   const rampOf = new Map<number, { ramp: string; step: number }>();
   for (const r of Object.values(palette.ramps)) r.indices.forEach((idx, step) => { if (!rampOf.has(idx)) rampOf.set(idx, { ramp: r.id, step }); });
   const roleMat = p.spec.role === undefined ? undefined : p.bible.roleColorKey[p.spec.role];
@@ -18,6 +29,8 @@ export function qaContext(p: Project, palette: BiblePalette): QaContext {
     id: p.spec.id, palette: palette.palette, budget: p.bible.colorBudget[p.spec.sizeClass] ?? Infinity,
     background: parseHex(p.bible.background), rules: p.rules.qa, rampOf,
     ...(roleRamp ? { roleIndices: new Set([...roleRamp.indices, roleRamp.outline]) } : {}),
+    held: heldInfo(p, rest?.meta.layers.part),
+    lineIndices: new Set([...Object.values(palette.ramps).map((r) => r.outline), palette.outlineIndex]),
   };
 }
 
@@ -74,7 +87,7 @@ export function writeFrames(dir: string, r: Rendered): string[] {
 export function runQa(p: Project, cwd: string, extra: readonly Check[] = []): Report {
   const r = renderProject(p);
   const rows = qaRows(r);
-  const report: Report = { ...runChecks(rows.flat(), qaContext(p, r.palette), extra), budget: r.rest.meta.budget };
+  const report: Report = { ...runChecks(rows.flat(), qaContext(p, r.palette, r.rest), extra), budget: r.rest.meta.budget };
   const dir = join(cwd, 'out', p.spec.id);
   writeFrames(dir, r);
   writeFileSync(join(dir, 'motion.json'), JSON.stringify(resolveMotion(p.bible.motion, p.spec.motion), null, 2) + '\n');

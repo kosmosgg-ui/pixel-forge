@@ -24,11 +24,11 @@
           ],
           [
             3,
-            18
+            12
           ],
           [
-            -7,
-            19
+            -5,
+            13
           ],
           [
             -6,
@@ -91,23 +91,28 @@
       "bone": "upperArmB",
       "shape": {
         "type": "ellipse",
-        "w": 7,
-        "h": 5
+        "w": 5,
+        "h": 3
       },
       "material": "metal",
       "anchor": "joint",
       "orient": "world",
-      "name": "pauldronB"
+      "name": "pauldronB",
+      "at": [
+        0,
+        2
+      ],
+      "z": 0
     },
     {
       "bone": "spine",
       "shape": {
         "type": "capsule",
         "len": 6,
-        "w": 10
+        "w": 9
       },
-      "material": "cloth_red",
-      "name": "skirt"
+      "material": "leather",
+      "name": "hips"
     },
     {
       "bone": "chest",
@@ -160,11 +165,11 @@
           ],
           [
             5,
-            -1
+            1
           ],
           [
             -5,
-            0
+            1
           ]
         ]
       },
@@ -222,14 +227,18 @@
       "bone": "upperArmF",
       "shape": {
         "type": "ellipse",
-        "w": 7,
-        "h": 4
+        "w": 5,
+        "h": 3
       },
       "material": "metal",
       "anchor": "joint",
       "orient": "world",
       "z": 0,
-      "name": "pauldronF"
+      "name": "pauldronF",
+      "at": [
+        0,
+        2
+      ]
     },
     {
       "bone": "handF",
@@ -244,20 +253,20 @@
     {
       "bone": "weapon",
       "shape": {
-        "type": "line",
-        "from": [
-          0,
-          -1
-        ],
-        "to": [
-          6,
-          -12
-        ]
+        "type": "rect",
+        "w": 15,
+        "h": 2,
+        "angleDeg": -63
       },
       "material": "metal",
       "anchor": "joint",
+      "at": [
+        2,
+        -4
+      ],
       "orient": "world",
-      "name": "sword"
+      "name": "sword",
+      "held": true
     },
     {
       "bone": "weapon",
@@ -276,17 +285,18 @@
       "anchor": "joint",
       "orient": "world",
       "z": 1,
-      "name": "guard"
+      "name": "guard",
+      "decorative": true
     }
   ],
   "eyes": {
     "bone": "head",
     "pos": [
-      -1,
+      2,
       0
     ],
-    "size": 2,
-    "color": "leather:0"
+    "size": 1,
+    "color": "metal:0"
   },
   "animations": [
     "idle",
@@ -294,5 +304,23 @@
     "hit",
     "death"
   ],
-  "seed": 1
+  "seed": 1,
+  "overrides": {
+    "attack": {
+      "strike": {
+        "pose": {
+          "weapon": {
+            "rot": 40
+          }
+        }
+      },
+      "follow": {
+        "pose": {
+          "weapon": {
+            "rot": 30
+          }
+        }
+      }
+    }
+  }
 }

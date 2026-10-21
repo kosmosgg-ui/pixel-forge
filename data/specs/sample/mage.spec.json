@@ -140,20 +140,20 @@
     {
       "bone": "weapon",
       "shape": {
-        "type": "line",
-        "from": [
-          0,
-          16
-        ],
-        "to": [
-          0,
-          -12
-        ]
+        "type": "rect",
+        "w": 28,
+        "h": 2,
+        "angleDeg": 90
       },
       "material": "wood",
       "anchor": "joint",
+      "at": [
+        0,
+        1
+      ],
       "orient": "world",
-      "name": "staff"
+      "name": "staff",
+      "held": true
     },
     {
       "bone": "weapon",

@@ -17,6 +17,10 @@ export const partSchema = z
     anchor: z.enum(['joint', 'mid', 'end']).default('mid'),
     /** anchor에서 뼈 로컬 좌표로 더 옮길 양(px) */
     at: z.tuple([z.number(), z.number()]).default([0, 0]),
+    /** 손에 든 무기·소품. 정리 단계 보호 + 두께 ≥ rules.form.heldMinWidth + QA form.held-visible 대상 */
+    held: z.boolean().default(false),
+    /** 장식용 얇은 획. 1px(form.outline-thin)은 decorative 파츠만 허용 */
+    decorative: z.boolean().default(false),
     /** 도형 축: bone = 도형 로컬 x축이 뼈 방향(팔다리·몸통), world = 화면 축 그대로(머리·모자 등) */
     orient: z.enum(['bone', 'world']).default('bone'),
   })

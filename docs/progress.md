@@ -5,6 +5,12 @@
 현재 단계: **P5**
 
 ## 로그
+- [P4 보정] 완료 | 원인: 정리 단계가 아니라 form.outline-thin이 1px 검 12px 중 11px을 외곽선 톤(L 0.28)으로 칠해 배경(L 0.27)에 묻힘
+  - 완료: Spec held·decorative, rule form.held-min-width(2px, 미달 spec.held-too-thin), held 파츠 정리·얇은 획 보호, QA form.held-visible(필수), hit 3키(flash 60·flinch 120·recover 160), 무기 2px rect(검 15px·단검·지팡이), 전사 투구 슬릿·견갑·망토 단축·치마→골반, reviewer 24점 기준
+  - 재현: 수정 전 build-all exit 2, held-visible warrior 1/12·rogue 1/8·mage 1/29
+  - 수락기준: pnpm build·test → Tests 181 passed (33 files). build-all sample → pass:true 3/3(선택 실패: warrior·rogue form.detail-min 5/2)
+  - pixel-reviewer 21.7/24(warrior 20, rogue 22, mage 23), 시트 out/sample/review.png. 남은 중간 2건 → backlog
+
 - [P4] 완료 | 완료: form.outline-thin, Animation·anims·overrides·motion 스키마, 타임라인(inbetween 앞/뒤만·ease·정수 스냅·가장자리 거부), humanoid-34-v1.anims.json 4종, 애니 렌더(rest 원점·전 프레임 공동 예산·fx·좌향 flipX), 파츠별 셰이딩·섬·고립 정리(깜빡임 0), forge render --anim·crowd, QA 최악 프레임 판정·결정 A
   - 수락기준: pnpm build·test → Tests 176 passed (32 files). build-all sample → pass:true 3/3(선택 실패: rogue form.detail-min 3/2). crowd sample --count 50 --seed 1 → 320×180
   - code-reviewer: 높음 0, 중간 2(rules anim.inbetweenMs 승인 필요 → 사용자 확인 요청, inbetween 가장자리 → 수정), 낮음 4(죽은 인자 되돌림, 1건 backlog)

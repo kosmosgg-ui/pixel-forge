@@ -112,6 +112,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - `dark`: 전역 외곽선색 단일
    - `none`: 바깥 외곽선 없음
    - 얇은 획 (rule `form.outline-thin`): 두께 1px 이하 파츠(1px `line` 등)는 바깥 외곽선을 그리지 않고, 획 자체를 그 재질의 외곽선 톤으로 칠한다. 칼날 하이라이트 1px만 허용. 1px 무기 양쪽에 평행한 외곽선이 붙어 두 줄로 보이는 문제 방지
+   - 손에 든 파츠 (rule `form.held-min-width`): `held=true` 파츠는 두께 `rules.held.minWidth`(2px) 이상이어야 한다(rest에서 판정, 미달 → `spec.held-too-thin`). 1px는 `decorative=true`만. held 파츠는 얇은 획 처리·작은 섬 병합·고립 정리에서 빠진다(눈처럼 보호). 1px 무기가 외곽선 톤으로만 칠해져 배경에 묻히던 문제(P4 보정 조사) 방지
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
@@ -219,6 +220,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `bounds.canvas` | ✔ | 모든 프레임이 캔버스 안, 여백 ≥ 1px |
 | `baseline.stable` | ✔ | root 고정 키들에서 발 최하단 y 동일 |
 | `anim.flicker` | ✔ | 변환이 같은 파츠 영역에서 프레임 간 색 변화 픽셀 0개 |
+| `form.held-visible` | ✔ | 모든 프레임에서 held 파츠의 보이는 픽셀(외곽선 톤·전역 외곽선색 제외) ≥ rest 픽셀 × `heldVisibleMin`(0.6), 손 파츠(부착 뼈·부모 뼈의 held 아닌 파츠)와 8-연결로 맞닿음 |
 | `cleanup.orphans` |  | 고립 픽셀 수 ≤ 임계 |
 | `cleanup.banding` |  | 서로 다른 램프 단계가 평행 계단을 이루는 구간 수 ≤ 임계. 띠 = 같은 램프 A\|B\|C(단계 단조)에서 1px 폭 B, 8-연결 2px 이상 이어진 것만 1구간 |
 | `form.silhouette` |  | 같은 프로젝트 다른 캐릭터와 실루엣 IoU ≤ 0.8 |

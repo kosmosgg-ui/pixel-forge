@@ -59,6 +59,11 @@
     "source": "눈이 보여야 캐릭터가 읽힌다. 3/4 시점 먼 쪽 눈은 1px, 머리 외곽선에서 1px 띄움",
     "farEyeGap": 1
   },
+  "held": {
+    "id": "form.held-min-width",
+    "source": "사용자 승인(P4 보정): 손에 든 무기·소품은 1px 획이면 외곽선 톤에 묻혀 사라진다. held 파츠 두께 최소 2px, 1px은 decorative 파츠만",
+    "minWidth": 2
+  },
   "colorBudget": {
     "id": "color.budget",
     "source": "SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개. 프레임에 실제로 쓰인 고유 색 수(외곽선 톤·fx 포함)로 센다",
@@ -87,6 +92,7 @@
     "faceCoverMax": 0.15,
     "detailMinPx": 3,
     "detailMaxCount": 2,
-    "roleColorMin": 0.2
+    "roleColorMin": 0.2,
+    "heldVisibleMin": 0.6
   }
 }

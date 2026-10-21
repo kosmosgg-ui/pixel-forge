@@ -16,9 +16,9 @@ const out = renderAnimations(ctx, anims, ['idle', 'attack', 'hit', 'death']);
 const bottom = (px: Uint8Array, w: number) => { for (let k = px.length - 1; k >= 0; k--) if (px[k]) return Math.floor(k / w); return -1; };
 
 describe('renderAnimations', () => {
-  it('프레임 수: idle 4, attack 5 + inbetween 1, hit 2, death 4', () => {
+  it('프레임 수: idle 4, attack 5 + inbetween 1, hit 3, death 4', () => {
     const n = (id: string) => out.frames.filter((f) => f.anim === id).length;
-    expect([n('idle'), n('attack'), n('hit'), n('death')]).toEqual([4, 6, 2, 4]);
+    expect([n('idle'), n('attack'), n('hit'), n('death')]).toEqual([4, 6, 3, 4]);
   });
 
   it('root 고정 프레임은 rest와 발 최하단 y가 같다', () => {
@@ -35,12 +35,12 @@ describe('renderAnimations', () => {
     expect(out.frames.every((f) => f.meta.budget === out.budget)).toBe(true);
   });
 
-  it('fx: strike 프레임에 베기 호(fx 색), flinch 프레임은 실루엣 전체가 fx 색', () => {
+  it('fx: strike 프레임에 베기 호(fx 색), flash 프레임은 실루엣 전체가 fx 색', () => {
     const white = ctx.palette.fxIndices[0];
     const strike = out.frames.find((f) => f.keyName === 'strike' && !f.inbetween)!;
     expect(strike.raster.px.filter((v) => v === white).length).toBeGreaterThan(8);
-    const flinch = out.frames.find((f) => f.keyName === 'flinch')!;
-    expect(new Set(Array.from(flinch.raster.px).filter((v) => v))).toEqual(new Set([white]));
+    const flash = out.frames.find((f) => f.keyName === 'flash')!;
+    expect(new Set(Array.from(flash.raster.px).filter((v) => v))).toEqual(new Set([white]));
   });
 
   it('좌향은 우향의 픽셀 정확한 반전', () => {

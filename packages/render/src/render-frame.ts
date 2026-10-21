@@ -110,11 +110,19 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     const r = rasters[i];
     if (!r) return;
     if (r.mask.reduce((a, v) => a + v, 0) < rules.budgetFit.smallPartArea) small.add(p.index + 1);
-    if (isThinMask(r.mask, r.w, r.h)) thin.add(p.index + 1);
+    const held = p.part.held && !p.part.decorative;
+    // rule: form.held-min-width — rest 모양으로 한 번만 판정(포즈 회전으로 얇아 보이는 프레임은 판정하지 않는다)
+    if (held && !opts.pose && isThinMask(r.mask, r.w, r.h, rules.held.minWidth)) {
+      throw new ForgeError('spec.held-too-thin', `손에 든 파츠는 두께 ${rules.held.minWidth}px 이상이어야 합니다: ${p.part.name ?? p.part.bone}`, { part: p.index });
+    }
+    if (!held && isThinMask(r.mask, r.w, r.h)) thin.add(p.index + 1);
     const local = partZone(p, r);
     shadeZoneInPlace(local, bible.light, rules.shade, stepsOf, (id) => small.has(id));
-    mergeSmallClustersInPlace(local, rules.cleanup.minCluster);
-    if (rules.cleanup.removeOrphans) removePartOrphansInPlace(local, rampsById);
+    // 손에 든 파츠는 눈처럼 정리 대상에서 뺀다(작은 날·자루가 지워지지 않게)
+    if (!held) {
+      mergeSmallClustersInPlace(local, rules.cleanup.minCluster);
+      if (rules.cleanup.removeOrphans) removePartOrphansInPlace(local, rampsById);
+    }
     clipped += writePartInPlace(zone, p, r, origin[0], origin[1], local);
   });
   return { bones, placed, rasters, origin, zone, clipped, small, thin };
