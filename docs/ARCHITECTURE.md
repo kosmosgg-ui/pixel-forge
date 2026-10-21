@@ -60,6 +60,9 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 
 ## §4 색과 램프 (packages/core/color)
 - 색 연산은 **OKLab/OKLCh**에서 수행, 결과를 sRGB로 변환 후 팔레트에 등록.
+- 색상 회전: 항상 **최단 각도 방향**으로 목표 hue를 향해 단계당 `hueShift`°씩 이동하고, 목표 hue를 넘어가지 않는다.
+- 색역 맞춤: OKLCh→sRGB 결과가 범위 밖이면 L과 h는 고정하고 C만 이분 탐색으로 줄여 범위 안에 넣는다(최대 20회).
+- 최종 hex: 채널별 반올림 후 0~255 클램프. 서로 다른 재질에서 같은 hex가 나오면 팔레트 인덱스를 공유한다.
 - 램프 생성 `makeRamp(base, rules.ramp)`:
   - 단계 수 `steps`(기본 5), 기준색은 가운데 단계
   - 밝아질수록 명도 +ΔL, 색상(hue)을 `warmHue`(기본 70°, 노랑) 방향으로 `hueShift`°씩 이동
@@ -70,12 +73,15 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 
 ## §5 도형 래스터화 (packages/core/shapes)
 모두 정수 좌표, 최종 해상도에서 직접. 결과는 `Mask`(Uint8Array 0/1) + 법선 근사.
+- **채움 도형은 바운딩 박스 기준**(짝수 크기 지원): 크기는 반지름이 아니라 박스 폭·높이(px)로 받는다.
+  - 중심 `cx = (w-1)/2`, `cy = (h-1)/2` (반픽셀 허용). 픽셀 (x, y)는 픽셀 중심 판정 `((x+0.5-cx')/(w/2))² + ((y+0.5-cy')/(h/2))² ≤ 1`로 채운다. 여기서 `cx' = cx+0.5`, `cy' = cy+0.5`(= w/2, h/2)로, 박스 안 픽셀 중심과 같은 좌표계다.
+  - 그래서 w=6 원은 정확히 6px 폭이고 좌우 대칭이다.
 | 도형 | 알고리즘 | 법선 근사 |
 | --- | --- | --- |
 | `line`(획) | Bresenham + pixel-perfect 정리(L자 모서리 제거) | 없음(획은 단일 shade) |
-| `rect` | 정수 사각형, 선택적 모서리 깎기(`chamfer`) | 평면 + 가장자리 1px 베벨 |
-| `ellipse` | 중점 타원(midpoint) 채움 | 구(sphere) 법선 |
-| `capsule` | 두 원 + 사각형의 합집합(축 방향 회전 지원) | 원기둥 법선 |
+| `rect` `{ w, h, chamfer? }` | 정수 사각형, 선택적 모서리 깎기(`chamfer`) | 평면 + 가장자리 1px 베벨 |
+| `ellipse` `{ w, h }` | 바운딩 박스 픽셀 중심 판정(위 식) | 구(sphere) 법선 |
+| `capsule` `{ len, w }` | 축 길이 `len`, 두께 `w`(짝수 허용). 두 원 + 사각형의 합집합(축 방향 회전 지원) | 원기둥 법선 |
 | `poly` | 스캔라인 채움(짝홀 규칙), 꼭짓점 ≤ 12 | 평면 + 지정 법선(`normalHint`) |
 | `mask` | ASCII 그리드 직접 지정(§7.3) | 그리드의 shade 숫자 또는 평면 |
 - 회전: 도형 파라미터를 회전시켜 **다시 래스터화**(해석적 회전). `mask` 파츠만 RotSprite 근사(8배 최근접 확대 → 회전 → 최빈값 축소)를 쓴다.
@@ -127,9 +133,9 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "rig": "humanoid-side-v1",
   "proportions": { "headRatio": 0.28, "bulk": 0.9, "height": 30 },   // 캔버스 안 키(px)
   "parts": [
-    { "bone": "head",  "shape": { "type": "ellipse", "rx": 5, "ry": 5 }, "material": "skin" },
+    { "bone": "head",  "shape": { "type": "ellipse", "w": 10, "h": 10 }, "material": "skin" },
     { "bone": "head",  "shape": { "type": "poly", "pts": [[-6,-2],[5,-6],[6,1],[-5,2]] }, "material": "cloth_green", "z": 1, "name": "hood" },
-    { "bone": "chest", "shape": { "type": "capsule", "len": 9, "r": 4 }, "material": "leather" },
+    { "bone": "chest", "shape": { "type": "capsule", "len": 9, "w": 8 }, "material": "leather" },
     { "bone": "handF", "shape": { "type": "line", "to": [7, 0] }, "material": "metal", "name": "dagger" }
   ],
   "animations": ["idle", "attack", "hit", "death"],

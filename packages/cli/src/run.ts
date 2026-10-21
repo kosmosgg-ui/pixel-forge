@@ -1,6 +1,4 @@
-import { ForgeError } from '@pixel-forge/core';
-
-export const VERSION = '0.0.0';
+import { FORGE_VERSION, ForgeError } from '@pixel-forge/core';
 
 export interface RunInput {
   version: boolean;
@@ -11,7 +9,7 @@ export type RunResult = { ok: true; cmd: string } & Record<string, unknown>;
 
 export function run(input: RunInput): RunResult {
   if (input.version || input.positionals[0] === 'version') {
-    return { ok: true, cmd: 'version', version: VERSION };
+    return { ok: true, cmd: 'version', version: FORGE_VERSION };
   }
   const cmd = input.positionals[0];
   if (cmd === undefined) throw new ForgeError('cli.no-command', '명령이 없습니다. 예: forge --version');
