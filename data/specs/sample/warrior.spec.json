@@ -222,7 +222,7 @@
       "bone": "upperArmF",
       "shape": {
         "type": "ellipse",
-        "w": 6,
+        "w": 7,
         "h": 4
       },
       "material": "metal",
@@ -235,8 +235,8 @@
       "bone": "handF",
       "shape": {
         "type": "ellipse",
-        "w": 3,
-        "h": 3
+        "w": 4,
+        "h": 4
       },
       "material": "skin",
       "orient": "world"

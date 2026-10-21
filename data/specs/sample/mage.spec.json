@@ -69,7 +69,7 @@
       "shape": {
         "type": "capsule",
         "len": 8,
-        "w": 10
+        "w": 11
       },
       "material": "cloth_blue"
     },
@@ -174,18 +174,18 @@
     {
       "bone": "upperArmF",
       "shape": {
-        "type": "capsule",
-        "len": 6,
-        "w": 4
+        "type": "rect",
+        "w": 6,
+        "h": 4
       },
       "material": "cloth_blue"
     },
     {
       "bone": "lowerArmF",
       "shape": {
-        "type": "capsule",
-        "len": 5,
-        "w": 4
+        "type": "rect",
+        "w": 5,
+        "h": 4
       },
       "material": "cloth_blue"
     },

@@ -2,9 +2,14 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P3**
+현재 단계: **P4**
 
 ## 로그
+- [P3] 완료 | 완료: qa 패키지(필수 6 + 선택 6 + 교차 2 검사, render 미참조), 렌더 meta 레이어·얼굴 통계, 컨택트 시트(체커+배경 2벌, 실패 위치 빨간 테두리, 시트 전용 팔레트), 캐시(파일 바이트+엔진 버전), forge qa·build·build-all(불합격 exit 2)
+  - 수락기준: 테스트 145개 통과, build-all sample 3/3 합격(점수 1.0/1.0/1.0), 2회째 cached
+  - 시트 루프 2회: banding(얇은 원기둥 팔다리 3단 띠)·detail-min → 팔다리 capsule→rect·두께 조정, 전사 견갑·손 확대. QA 정의 보정: detail-min 8-연결(대각선 획), banding은 2px 이상 이어진 띠만
+  - code-reviewer: 높음 0, 중간 3(픽셀 루프 객체 생성) 수정, 낮음 3 수정 + 1 backlog
+  - pixel-reviewer 14.7/18(warrior 15, rogue 13, mage 16). 남은 제안(P4 전 Spec 후보): 도적 단검 poly 2px 칼날·눈 pos [1,-1]·허벅지 h3, 전사 견갑 w5 h3, 마법사 팔 capsule w3. [엔진 의심] 1px line 무기에 외곽선이 양쪽으로 붙어 두 줄처럼 보임
 - [P2 보정] 완료 | humanoid-34-v1(3/4, restPose = 전투 대기 자세, 바이블 defaultRig), 눈(form.face, 3/4는 2개), minCluster 3, 색 예산 자동 맞춤(color.budget-fit) + 소품 3단계, 전사 망토·튜닉으로 역할색, 샘플 3종 전환
   - 수락기준: 테스트 121개 통과(샘플 골든 갱신), rest 색 15/15/15(병합 4·1·3회), 다리 틈 줄 수 warrior 2·rogue 4, 눈 보임, 역할색 비율 43.9%/43.7%/62.0%
   - pixel-reviewer 점수 12/18(warrior 12, rogue 11, mage 13) → 제안 Spec 수정 5건 반영(도적 단검 7px·골반 초록, 전사 앞 견갑 축소·눈 2px, 마법사 모자 높이) — 반영 후 재검수는 하지 않음

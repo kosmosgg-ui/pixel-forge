@@ -3,7 +3,7 @@ import { solveRig, type Pose } from '@pixel-forge/rig';
 import type { Bible, Rig, Rules, Spec } from '@pixel-forge/spec';
 import { assertFrame } from './assert.js';
 import { fitBudgetInPlace, type BudgetFitResult } from './budget-fit.js';
-import { drawEyesInPlace } from './eyes.js';
+import { drawEyesInPlace, faceStats } from './eyes.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
 import { innerLinesInPlace, outerOutlineInPlace } from './outline.js';
 import { placeParts } from './place.js';
@@ -35,6 +35,10 @@ export interface RenderMeta {
   eyes: number[];
   /** 면적이 작아 3단계로 줄인 파츠의 spec.parts 순번 */
   smallParts: number[];
+  /** form.face-clear 재료(eyes 없으면 null) */
+  face: { area: number; covered: number } | null;
+  /** QA용 픽셀 레이어(최종 캔버스 기준): 재질 id, 파츠 id(spec.parts 순번+1), 외곽선·내부선·눈 표시 */
+  layers: { material: Uint8Array; part: Uint16Array; mark: Uint8Array };
 }
 
 export interface RenderResult {
@@ -53,6 +57,12 @@ export function assertImplemented(spec: Spec, bible: Bible): void {
 }
 
 const BOTTOM_GAP = 2;
+
+function flipLayer<T extends Uint8Array | Uint16Array>(a: T, w: number): T {
+  const out = a.slice() as T;
+  for (let i = 0; i < a.length; i++) out[i] = a[i - (i % w) + (w - 1 - (i % w))] ?? 0;
+  return out;
+}
 
 function canvasOf(spec: Spec, bible: Bible): [number, number] {
   const size = bible.sizeClasses[spec.sizeClass];
@@ -98,9 +108,15 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   // 6.5 색 예산 맞춤: 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
   const exclude = new Set([...rampsById.map((r) => r.outline), palette.outlineIndex, ...palette.fxIndices, ...(eyes ? [eyes.colorIndex] : [])]);
   const budget = fitBudgetInPlace(raster, rampsById, palette.palette, bible.colorBudget[spec.sizeClass] ?? Infinity, exclude);
-  const final = bible.facing === rig.facing ? raster : flipX(raster);
+  const flip = bible.facing !== rig.facing;
+  const final = flip ? flipX(raster) : raster;
   // 9. 검증 훅
   if (opts.assert !== false) assertFrame(final, palette.palette);
-  const meta: RenderMeta = { budget, eyes: eyes?.pixels ?? [], smallParts: [...small].map((id) => id - 1).sort((a, b) => a - b) };
+  const face = faceStats(zone, spec, rasters, placed.map((p) => p.index), origin);
+  const layer = <T extends Uint8Array | Uint16Array>(a: T): T => (flip ? flipLayer(a, W) : a);
+  const meta: RenderMeta = {
+    budget, eyes: eyes?.pixels ?? [], smallParts: [...small].map((id) => id - 1).sort((a, b) => a - b), face,
+    layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) },
+  };
   return { raster: final, origin, clipped, meta, ...(opts.debug ? { debug: { zone, resolved } } : {}) };
 }

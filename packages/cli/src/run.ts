@@ -1,5 +1,7 @@
 import { FORGE_VERSION, ForgeError } from '@pixel-forge/core';
+import { buildAllCommand, buildCommand } from './commands/build.js';
 import { paletteCommand } from './commands/palette.js';
+import { qaCommand } from './commands/qa.js';
 import { renderCommand } from './commands/render.js';
 import { validateCommand } from './commands/validate.js';
 
@@ -24,5 +26,8 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'palette') return paletteCommand(need('<bible id 또는 경로>'), input.cwd);
   if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'render') return renderCommand(need('<spec 경로>'), input.cwd);
+  if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
+  if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
+  if (cmd === 'build-all') return buildAllCommand(need('<프로젝트 이름>'), input.cwd);
   throw new ForgeError('cli.unknown-command', `알 수 없는 명령: ${cmd}`);
 }

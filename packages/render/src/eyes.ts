@@ -47,3 +47,27 @@ export function drawEyesInPlace(
   }
   return { pixels, colorIndex };
 }
+
+/**
+ * form.face-clear 재료: eyes.bone(머리)에 붙은 파츠들이 가려지기 전 차지하는 캔버스 면적과,
+ * 그중 최종적으로 다른 뼈 파츠가 덮은 픽셀 수. 머리 뼈는 spec.eyes.bone으로만 안다(뼈 이름 미참조).
+ */
+export function faceStats(
+  z: FrameZone, spec: Spec, rasters: readonly { x0: number; y0: number; w: number; h: number; mask: Uint8Array }[],
+  partIndexOf: readonly number[], origin: readonly [number, number],
+): { area: number; covered: number } | null {
+  const bone = spec.eyes?.bone;
+  if (bone === undefined) return null;
+  const head = new Set(spec.parts.flatMap((p, i) => (p.bone === bone ? [i + 1] : [])));
+  const area = new Uint8Array(z.w * z.h);
+  rasters.forEach((r, i) => {
+    if (!head.has((partIndexOf[i] ?? -1) + 1)) return;
+    for (let j = 0; j < r.h; j++) for (let k = 0; k < r.w; k++) {
+      const X = r.x0 + k + origin[0], Y = r.y0 + j + origin[1];
+      if (r.mask[j * r.w + k] && X >= 0 && Y >= 0 && X < z.w && Y < z.h) area[Y * z.w + X] = 1;
+    }
+  });
+  let n = 0, covered = 0;
+  for (let k = 0; k < area.length; k++) if (area[k]) { n++; if (!head.has(z.part[k] ?? 0)) covered++; }
+  return { area: n, covered };
+}

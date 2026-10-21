@@ -82,6 +82,10 @@
     "silhouetteIoUMax": 0.8,
     "contrastMinL": 0.18,
     "scaleTolerance": 0.15,
-    "flickerMax": 0
+    "flickerMax": 0,
+    "faceCoverMax": 0.15,
+    "detailMinPx": 3,
+    "detailMaxCount": 2,
+    "roleColorMin": 0.2
   }
 }

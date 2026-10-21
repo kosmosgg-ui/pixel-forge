@@ -12,27 +12,27 @@
     {
       "bone": "thighB",
       "shape": {
-        "type": "capsule",
-        "len": 7,
-        "w": 3
+        "type": "rect",
+        "w": 7,
+        "h": 4
       },
       "material": "leather"
     },
     {
       "bone": "shinB",
       "shape": {
-        "type": "capsule",
-        "len": 7,
-        "w": 3
+        "type": "rect",
+        "w": 7,
+        "h": 2
       },
       "material": "leather"
     },
     {
       "bone": "footB",
       "shape": {
-        "type": "capsule",
-        "len": 5,
-        "w": 3
+        "type": "rect",
+        "w": 5,
+        "h": 2
       },
       "material": "leather"
     },
@@ -151,36 +151,36 @@
     {
       "bone": "thighF",
       "shape": {
-        "type": "capsule",
-        "len": 7,
-        "w": 3
+        "type": "rect",
+        "w": 7,
+        "h": 4
       },
       "material": "leather"
     },
     {
       "bone": "shinF",
       "shape": {
-        "type": "capsule",
-        "len": 7,
-        "w": 3
+        "type": "rect",
+        "w": 7,
+        "h": 2
       },
       "material": "leather"
     },
     {
       "bone": "footF",
       "shape": {
-        "type": "capsule",
-        "len": 5,
-        "w": 3
+        "type": "rect",
+        "w": 5,
+        "h": 2
       },
       "material": "leather"
     },
     {
       "bone": "upperArmF",
       "shape": {
-        "type": "capsule",
-        "len": 6,
-        "w": 3
+        "type": "rect",
+        "w": 6,
+        "h": 3
       },
       "material": "cloth_green"
     },

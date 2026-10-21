@@ -10,6 +10,23 @@ export const shadeRulesSchema = z
   })
   .passthrough();
 
+export const qaRulesSchema = z
+  .object({
+    id: z.string().min(1),
+    sheetScale: z.number().int().min(1),
+    orphanMax: z.number().int().min(0),
+    bandingMax: z.number().int().min(0),
+    silhouetteIoUMax: z.number().min(0).max(1),
+    contrastMinL: z.number().min(0).max(1),
+    scaleTolerance: z.number().min(0),
+    flickerMax: z.number().int().min(0),
+    faceCoverMax: z.number().min(0).max(1),
+    detailMinPx: z.number().int().min(1),
+    detailMaxCount: z.number().int().min(0),
+    roleColorMin: z.number().min(0).max(1),
+  })
+  .passthrough();
+
 export const rulesSchema = z
   .object({
     version: z.number().int(),
@@ -20,8 +37,10 @@ export const rulesSchema = z
     outline: z.object({ id: z.string(), mode: outlineModeSchema, seloutLitThreshold: z.number().min(0).max(1), innerLines: z.boolean() }).passthrough(),
     budgetFit: z.object({ id: z.string(), smallPartArea: z.number().int().min(0) }).passthrough(),
     face: z.object({ id: z.string(), farEyeGap: z.number().int().min(0) }).passthrough(),
+    qa: qaRulesSchema,
   })
   .passthrough();
 
 export type Rules = z.infer<typeof rulesSchema>;
 export type ShadeRules = z.infer<typeof shadeRulesSchema>;
+export type QaRules = z.infer<typeof qaRulesSchema>;

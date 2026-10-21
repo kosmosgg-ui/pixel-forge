@@ -26,6 +26,9 @@ importers:
       '@pixel-forge/export':
         specifier: workspace:*
         version: link:../export
+      '@pixel-forge/qa':
+        specifier: workspace:*
+        version: link:../qa
       '@pixel-forge/render':
         specifier: workspace:*
         version: link:../render
@@ -60,9 +63,12 @@ importers:
 
   packages/qa:
     dependencies:
-      '@pixel-forge/render':
+      '@pixel-forge/core':
         specifier: workspace:*
-        version: link:../render
+        version: link:../core
+      '@pixel-forge/spec':
+        specifier: workspace:*
+        version: link:../spec
 
   packages/render:
     dependencies:

@@ -18,7 +18,8 @@
     "pngjs": "7.0.0",
     "zod": "3.25.76",
     "@pixel-forge/render": "workspace:*",
-    "@pixel-forge/rig": "workspace:*"
+    "@pixel-forge/rig": "workspace:*",
+    "@pixel-forge/qa": "workspace:*"
   },
   "bin": {
     "forge": "./dist/main.js"

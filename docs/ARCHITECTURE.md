@@ -216,10 +216,14 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `baseline.stable` | ✔ | root 고정 키들에서 발 최하단 y 동일 |
 | `anim.flicker` | ✔ | 변환이 같은 파츠 영역에서 프레임 간 색 변화 픽셀 0개 |
 | `cleanup.orphans` |  | 고립 픽셀 수 ≤ 임계 |
-| `cleanup.banding` |  | 서로 다른 램프 단계가 평행 계단을 이루는 구간 수 ≤ 임계 |
+| `cleanup.banding` |  | 서로 다른 램프 단계가 평행 계단을 이루는 구간 수 ≤ 임계. 띠 = 같은 램프 A\|B\|C(단계 단조)에서 1px 폭 B, 8-연결 2px 이상 이어진 것만 1구간 |
 | `form.silhouette` |  | 같은 프로젝트 다른 캐릭터와 실루엣 IoU ≤ 0.8 |
 | `read.contrast` |  | 바이블 배경색 대비 실루엣 평균 명도차 ≥ 임계 |
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
+| `form.face-clear` |  | 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 파츠에 가려진 비율 ≤ `faceCoverMax` |
+| `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
+| `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
+- `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
 - **컨택트 시트**: 애니메이션별 1행, 프레임을 `rules.qa.sheetScale`(기본 4)배 최근접 확대, 체커 배경 + 바이블 배경 2벌, 실패 검사 위치는 빨간 테두리. 1장 PNG + 1줄 범례 텍스트는 리포트 JSON에.
 
 ## §10 Export (packages/export)
