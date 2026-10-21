@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -45,5 +45,10 @@ describe('forge ref', () => {
     const rows = (JSON.parse(readFileSync(join(work, r.out), 'utf8')) as { rows: { metric: string; ref: unknown; diff: number | null }[] }).rows;
     expect(rows.find((x) => x.metric === 'outline.type')?.ref).toBe('dark');
     expect(rows.find((x) => x.metric === 'silhouette.heightPx')?.diff).toBeGreaterThan(0);
+  });
+
+  it('compare: 측정값이 빠진 ref는 스키마 위반(spec.invalid, exit 1)', () => {
+    writeFileSync(join(work, 'bad.ref.json'), JSON.stringify({ id: 'bad', source: 'x', license: 'CC0', measuredWith: '0', measure: { silhouette: {} } }));
+    expect(() => refCompareCommand('data/specs/sample/mage.spec.json', 'bad.ref.json', work)).toThrow(expect.objectContaining({ code: 'spec.invalid' }));
   });
 });

@@ -2,18 +2,19 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P6**
+현재 단계: **P7**
 
 ## 로그
-- [P6] 진행 중(수락 미달: 8종 중 6종 검수 합격) | 사용자 승인 반영: 바이블 bone·metal_rust·large(64, 20색), 크기 등급 자동 맞춤(렌더로 판정, sizeClassLock), scale.consistency는 used 등급끼리, apply 검수 게이트(review.json·review-score, 입력 해시), form.head-clearance(선택), fx 호 반지름 리그 축척, test-knight 픽스처 이동
-  | 캐릭터 | 반복(build) | QA | reviewer | 시간 |
-  | cleric | 3 + 검수 후 4 | pass | 17 → 21 | 3분 + 2분 |
-  | archer | 3 + 4번째 시도 8 | pass | 17 → 19 | 2분 + 1.6분 |
-  | orc(large) | 1 + 검수 후 1 | pass | 18 → 19 | 1분 + 1분 |
-  | goblin(smallMonster) | 4 + 검수 후 2 | pass | 14 → 15 ✗ | 2분 + 1.5분 |
-  | skeleton(smallMonster) | 3 + 검수 후 1 | pass | 14 → 13 ✗ | 0.5분 + 1분 |
-  - 기존 3종: mage 23, rogue 22, warrior 22. 8종 build-all pass:true. 적용 6종(out/apply-test), goblin·skeleton은 게이트가 막음(exit 2)
-  - 소형 몬스터 실패 가설: ① 7색 예산에 재질별 외곽선 톤이 들어가 재질 2개가 한계 → 명암·소품 대비가 1단계로 뭉침 ② 32px·키 20에서 눈·소품이 1~2px, 무기 길이를 늘리면 캔버스를 넘어 상향(의도와 다름) ③ 공용 애니가 48px 기준이라 attack 4~5에서 무기가 몸에 묻힘
+- [P6] 완료 | /forge 스킬, forge ref analyze·compare, 크기 등급 자동 맞춤(렌더 판정, sizeClassLock), 등급별 외곽선·기본 리그(smallMonster = dark·humanoid-small-v1, 예산 9), signature·form.signature, apply 검수 게이트(review-score, 입력+시트 해시, QA 통과 필수), form.head-clearance, fx 축척. 사용자 승인: 바이블 bone·metal_rust·large·smallMonster 설정, rules signatureMin
+  | 캐릭터 | build 횟수 | reviewer 최종 | 비고 |
+  | cleric | 3+4 | 21 | 방패 등 뒤로, death lie 오버라이드 |
+  | archer | 3+8+1 | 19 | 화살통 등 대각선, 깃 어두운 톤 |
+  | orc | 1+1 | 19 | 자동 large(64), 키 38 |
+  | goblin | 4+2 → 재설계 6 | 22 | 소형 리그, mask 얼굴, signature ears 26.8% |
+  | skeleton | 3+1 → 재설계 2 | 19 | 소형 리그, mask 해골, signature skull 28.9% |
+  - 수락: pnpm build && pnpm test → 통과(test-runner), ref analyze CC0 exit 0 / 라이선스 누락 exit 1, build-all sample 8/8, reviewer 8종 ≥ 18(19~23), apply 8종 게이트 통과
+  - code-reviewer: 높음 1(검수 크롭 PNG 2장이 저장소 루트에 커밋) 삭제, 중간 5 중 4 수정(제안서 승인 표기, 검수 키에 시트 해시·QA 통과 필수, ref 측정 스키마, fit 주석·리그 결정 문서) + 1 문서화, 낮음 backlog
+  - 참고: 리뷰어 점수는 키 형식 변경 뒤 같은 값으로 재기록(렌더 바이트 동일)
 
 - [P5 보정] 완료 | 사용자 승인 2건: rule form.held-thin-shade(두께 ≤3px held 몸체는 밝은 2단계, 손잡이·날끝 1px만 0단계), 출력 허용 목록 .forge/targets.local.json + --out @이름(gitignore, 사람이 작성)
   - 수락: Tests 202 passed (39 files). 도적 단검 날 배경 대비 최악 프레임 ≥ contrastMinL 0.18(실측 0.48). build-all sample 3/3

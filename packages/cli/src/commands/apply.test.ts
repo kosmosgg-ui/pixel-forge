@@ -129,4 +129,13 @@ describe('forge apply --target dir', () => {
     expect(existsSync(join(work, 'gate2'))).toBe(false);
     expect(applyCommand(mage, work, { out: 'gate2', skipReview: true })).toMatchObject({ pass: true, applied: true });
   });
+
+  it('review-score는 QA 통과한 build 결과가 있어야 기록(review.no-build)', () => {
+    const p = join(work, 'data/specs/sample/nobuild.spec.json');
+    const spec = JSON.parse(readFileSync(join(work, 'data/specs/sample/rogue.spec.json'), 'utf8'));
+    writeFileSync(p, JSON.stringify({ ...spec, id: 'nobuild' }));
+    try {
+      expect(() => reviewScoreCommand('data/specs/sample/nobuild.spec.json', work, 20)).toThrow(expect.objectContaining({ code: 'review.no-build' }));
+    } finally { rmSync(p); }
+  });
 });

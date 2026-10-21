@@ -14,7 +14,7 @@ export interface FitFrame {
   clipped: number;
 }
 
-/** bounds.canvas와 같은 기준: 가장자리 1px에 불투명 픽셀이 있거나 잘린 픽셀이 있으면 넘침 */
+/** bounds.canvas 기준(가장자리 1px 불투명) + 잘린 파츠 픽셀 — 잘림까지 넘침으로 봐 bounds.canvas보다 약간 보수적 */
 export function overflows(frames: readonly FitFrame[]): boolean {
   return frames.some(({ raster: r, clipped }) => {
     if (clipped > 0) return true;
@@ -26,8 +26,8 @@ export function overflows(frames: readonly FitFrame[]): boolean {
 
 /**
  * 크기 등급 맞춤: Spec sizeClass로 전 프레임을 렌더해 보고 넘치면, 바이블 sizeClasses 중 요청보다 작지 않은 등급을
- * 면적 순으로 다시 렌더해 처음 들어가는 등급을 쓴다. 판정을 최종 픽셀로 하므로 QA bounds.canvas와 어긋나지 않는다
- * (기하 범위만 보면 정리 단계에서 지워지는 1px 때문에 과하게 올린다). 들어가는 등급이 없으면 요청 등급 결과를 그대로 돌려준다.
+ * 면적 순으로 다시 렌더해 처음 들어가는 등급을 쓴다. 판정을 최종 픽셀로 해 정리 단계에서 지워지는 1px 때문에 과하게 올리지 않는다
+ * (기하 범위만 보면 그렇게 된다). 리그는 로드 때 요청 등급으로 정한 것을 그대로 쓴다. 들어가는 등급이 없으면 요청 등급 결과를 그대로 돌려준다.
  */
 export function renderFitted<T>(ctx: RenderContext, render: (c: RenderContext) => T, framesOf: (t: T) => readonly FitFrame[]): { result: T; fit: SizeFit } {
   const requested = ctx.spec.sizeClass;

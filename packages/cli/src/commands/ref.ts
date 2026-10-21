@@ -11,9 +11,19 @@ import { renderProject } from './qa.js';
 
 export interface RefArgs { source?: string; license?: string; id?: string }
 
+const n = z.number();
+const measureSchema: z.ZodType<RefMeasure> = z.object({
+  canvas: z.tuple([n, n]),
+  silhouette: z.object({ bbox: z.tuple([n, n, n, n]), heightPx: n, widthPx: n, opaque: n }),
+  uniqueColors: n,
+  ramps: z.array(z.object({ colors: z.array(z.string()), hueShiftDeg: n, lRange: z.tuple([n, n]) })),
+  outline: z.object({ type: z.enum(['dark', 'selout', 'none']), darkFraction: n, seloutFraction: n }),
+  headRatio: n,
+});
+
+/** 손으로 고친 ref도 경계에서 한 번 검사(필드 누락 → 검증 오류 exit 1, 내부 오류가 아니라) */
 const refSchema = z.object({
-  id: z.string(), source: z.string(), license: z.string(), measuredWith: z.string(),
-  measure: z.custom<RefMeasure>((v) => typeof v === 'object' && v !== null && 'silhouette' in v),
+  id: z.string(), source: z.string(), license: z.string(), measuredWith: z.string(), measure: measureSchema,
 }).passthrough();
 
 /** RGBA → 인덱스 래스터(처음 나온 순서로 팔레트). 알파 128 미만은 투명, 반투명 픽셀 수는 따로 센다 */
