@@ -1,10 +1,8 @@
 {
-  "$comment": "「내려가자 던전」 아트 바이블 v0. TODO(P0) 표시 항목은 웹 데모 조사 후 확정.",
-  "id": "dungeon-v0",
+  "$comment": "예시 아트 바이블(판타지 횡스크롤). 바이블은 게임마다 하나씩 만들고, 툴 코드는 어떤 바이블에도 의존하지 않는다.",
+  "id": "sample-v0",
   "internalResolution": [320, 180],
-  "internalResolutionStatus": "TODO(P0)",
   "canvas": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
-  "canvasStatus": "TODO(P0): 현재 데모 스프라이트 크기와 맞출지 결정",
   "pivot": "bottom-center",
   "facing": "right",
   "background": "#2a2238",
@@ -26,12 +24,11 @@
     "goblin_skin": { "base": "#7f9a3c", "steps": 4, "kind": "skin" }
   },
   "fxColors": ["#ffffff", "#ffe08a", "#ff6a3c"],
-  "classColorKey": {
+  "roleColorKey": {
     "warrior": "cloth_red",
     "guardian": "metal",
     "mage": "cloth_blue",
     "priest": "cloth_white",
     "rogue": "cloth_green"
-  },
-  "classColorKeyStatus": "TODO(P0): 데모의 직업 6종 목록과 대조"
+  }
 }

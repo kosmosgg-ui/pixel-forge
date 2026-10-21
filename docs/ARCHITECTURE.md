@@ -3,6 +3,7 @@
 > 각 Phase 문서가 "§번호"로 필요한 절만 지정한다. 지정되지 않은 절은 읽지 않는다.
 
 ## §1 목표와 설계 원칙
+- **범용 툴**: 특정 게임에 묶이지 않는다. 게임마다 다른 것(해상도, 캔버스, 재질, 색 예산, 역할별 대표색, 산출물 위치)은 전부 Bible·Spec·어댑터 설정으로 받고, `packages/` 코드에는 게임 이름·경로·수치를 하드코딩하지 않는다.
 - 입력: 캐릭터 설계 JSON(Spec) + 아트 바이블(Bible) + 규칙(Rules) + 리그(Rig) + 파츠 라이브러리
 - 출력: 스프라이트 시트 PNG + 메타 JSON + QA 리포트 + 컨택트 시트 PNG
 - 원칙
@@ -100,8 +101,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ### §7.1 Bible (`data/bibles/*.bible.json`)
 ```jsonc
 {
-  "id": "dungeon-v0",
-  "internalResolution": [320, 180],      // P0 조사 후 확정
+  "id": "sample-v0",
+  "internalResolution": [320, 180],      // 선택: 대상 게임의 내부 해상도(QA 가독성 검사용)
   "canvas": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
   "pivot": "bottom-center",              // 발밑 중앙
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
@@ -114,14 +115,14 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
     "leather": { "base": "#6b4a32", "steps": 4 }
   },
   "fxColors": ["#ffffff", "#ffe08a"],
-  "classColorKey": { "warrior": "cloth_red", "rogue": "cloth_green" }  // 직업별 대표색 (가독성)
+  "roleColorKey": { "warrior": "cloth_red", "rogue": "cloth_green" }  // 역할(직업·진영 등)별 대표색, 이름은 게임마다 자유
 }
 ```
 ### §7.2 Spec (`data/specs/<project>/<id>.spec.json`)
 ```jsonc
 {
   "id": "rogue",
-  "bible": "dungeon-v0",
+  "bible": "sample-v0",
   "sizeClass": "character",
   "rig": "humanoid-side-v1",
   "proportions": { "headRatio": 0.28, "bulk": 0.9, "height": 30 },   // 캔버스 안 키(px)
@@ -203,7 +204,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge build-all <project>` | 프로젝트 전체 + 교차 검사(silhouette, scale) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
-| `forge apply <spec> --target <adapter>` | 게임 프로젝트로 산출물 복사·등록 (P5) |
+| `forge apply <spec> --target <adapter> [--out <dir>]` | 게임 프로젝트로 산출물 복사 (P5). 기본 어댑터 `dir`: 지정 폴더에 복사만, 엔진 무관 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
 
 ## §12 성능·품질 목표
