@@ -1,5 +1,5 @@
 import { srgbToOklab } from '@pixel-forge/core';
-import { check, type Check, type QaContext, type QaFrame } from '../types.js';
+import { check, worstFrame, type Check, type QaContext, type QaFrame } from '../types.js';
 
 
 /** read.contrast: 실루엣(불투명 픽셀) 평균 명도와 바이블 배경 명도의 차 ≥ contrastMinL (OKLab L) */
@@ -38,9 +38,9 @@ export function formFaceClear(frames: readonly QaFrame[], ctx: QaContext): Check
 /** form.detail-min: 같은 재질 8-연결 영역(1px 대각선 획도 한 조각) 중 detailMinPx 미만 조각 수 ≤ detailMaxCount (mark 위치 제외) */
 export function formDetailMin(frames: readonly QaFrame[], ctx: QaContext): Check {
   const { detailMinPx, detailMaxCount } = ctx.rules;
-  const where: [number, number][] = [];
-  for (const { raster: r, material, mark } of frames) {
-    if (!material) continue;
+  const perFrame = frames.map(({ raster: r, material, mark }) => {
+    const where: [number, number][] = [];
+    if (!material) return where;
     const seen = new Uint8Array(material.length);
     for (let k = 0; k < material.length; k++) {
       if (!material[k] || mark?.[k] || seen[k]) continue;
@@ -58,8 +58,11 @@ export function formDetailMin(frames: readonly QaFrame[], ctx: QaContext): Check
       }
       if (size < detailMinPx) where.push([k % r.w, Math.floor(k / r.w)]);
     }
-  }
-  return check('form.detail-min', false, where.length <= detailMaxCount, where.length, detailMaxCount, where.length ? { where } : {});
+    return where;
+  });
+  // 임계값은 프레임 1장 기준이라 가장 나쁜 프레임으로 판정
+  const w = worstFrame(perFrame);
+  return check('form.detail-min', false, w.value <= detailMaxCount, w.value, detailMaxCount, w.extra);
 }
 
 const round = (v: number): number => Math.round(v * 1000) / 1000;

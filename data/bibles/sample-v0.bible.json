@@ -6,6 +6,7 @@
   "directions": 1,
   "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
   "defaultRig": "humanoid-34-v1",
+  "motion": { "bob": { "px": 1, "ms": 400 }, "squash": { "x": 1.1, "y": 0.9, "ms": 80 }, "hitFlash": { "ms": 60 } },
   "pivot": "bottom-center",
   "facing": "right",
   "background": "#2a2238",

@@ -38,6 +38,16 @@ export const rulesSchema = z
     budgetFit: z.object({ id: z.string(), smallPartArea: z.number().int().min(0) }).passthrough(),
     face: z.object({ id: z.string(), farEyeGap: z.number().int().min(0) }).passthrough(),
     qa: qaRulesSchema,
+    anim: z
+      .object({
+        id: z.string().min(1),
+        defaultKeyMs: z.number().int().positive(),
+        strikeMaxMs: z.number().int().positive(),
+        maxInbetweenPerKey: z.number().int().min(0),
+        attackKeyCount: z.tuple([z.number().int().min(1), z.number().int().min(1)]),
+        inbetweenMs: z.number().int().positive(),
+      })
+      .passthrough(),
   })
   .passthrough();
 

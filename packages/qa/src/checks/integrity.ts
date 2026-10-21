@@ -1,4 +1,4 @@
-import { check, type Check, type QaContext, type QaFrame } from '../types.js';
+import { check, worstFrame, type Check, type QaContext, type QaFrame } from '../types.js';
 
 /** 팔레트 밖 인덱스 0개 */
 export function paletteConformance(frames: readonly QaFrame[], ctx: QaContext): Check {
@@ -29,11 +29,14 @@ export function colorBudget(frames: readonly QaFrame[], ctx: QaContext): Check {
 
 /** 모든 프레임이 캔버스 안, 가장자리 1px은 비어 있어야 한다 */
 export function boundsCanvas(frames: readonly QaFrame[]): Check {
-  const where: [number, number][] = [];
-  for (const { raster: r } of frames) {
+  const perFrame = frames.map(({ raster: r }) => {
+    const where: [number, number][] = [];
     for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) {
       if ((x === 0 || y === 0 || x === r.w - 1 || y === r.h - 1) && r.px[y * r.w + x]) where.push([x, y]);
     }
-  }
-  return check('bounds.canvas', true, where.length === 0, where.length, 0, where.length ? { where } : {});
+    return where;
+  });
+  const total = perFrame.reduce((a, w) => a + w.length, 0);
+  // 값은 전 프레임 합, 표시 위치는 가장 많이 걸친 프레임
+  return check('bounds.canvas', true, total === 0, total, 0, worstFrame(perFrame).extra);
 }

@@ -1,9 +1,19 @@
-import type { FrameZone } from './frame-zone.js';
+import { createFrameZone, type FrameZone } from './frame-zone.js';
 import type { PlacedPart } from './place.js';
 import type { PartRaster } from './rasterize-part.js';
 
-/** 파츠를 depth 비교로 zone에 기록한다(앞 파츠가 이긴다). 캔버스 밖으로 나간 픽셀 수를 돌려준다 */
-export function writePartInPlace(z: FrameZone, p: PlacedPart, r: PartRaster, tx: number, ty: number): number {
+/** 파츠 하나만 담은 zone(파츠 래스터 크기). 셰이딩·작은 섬 정리를 파츠 단위로 하기 위한 작업 버퍼 */
+export function partZone(p: PlacedPart, r: PartRaster): FrameZone {
+  const z = createFrameZone(r.w, r.h);
+  writePartInPlace(z, p, { ...r, x0: 0, y0: 0 }, 0, 0);
+  return z;
+}
+
+/**
+ * 파츠를 depth 비교로 zone에 기록한다(앞 파츠가 이긴다). 캔버스 밖으로 나간 픽셀 수를 돌려준다.
+ * shaded(partZone에서 셰이딩을 끝낸 버퍼)를 주면 shade·lit도 옮긴다.
+ */
+export function writePartInPlace(z: FrameZone, p: PlacedPart, r: PartRaster, tx: number, ty: number, shaded?: FrameZone): number {
   let clipped = 0;
   for (let j = 0; j < r.h; j++) for (let i = 0; i < r.w; i++) {
     const s = j * r.w + i;
@@ -21,6 +31,7 @@ export function writePartInPlace(z: FrameZone, p: PlacedPart, r: PartRaster, tx:
     z.normal[k * 3] = r.normals?.[s * 3] ?? 0;
     z.normal[k * 3 + 1] = r.normals?.[s * 3 + 1] ?? 0;
     z.normal[k * 3 + 2] = r.normals ? r.normals[s * 3 + 2] ?? 0 : 127;
+    if (shaded) { z.shade[k] = shaded.shade[s] ?? 0; z.lit[k] = shaded.lit[s] ?? 0; }
   }
   return clipped;
 }

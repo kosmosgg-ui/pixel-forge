@@ -9,7 +9,7 @@ describe('fitBudgetInPlace', () => {
 
   it('예산 이하가 될 때까지 가장 적게 쓰인 단계를 가까운 사용 중 단계로 병합', () => {
     const r = raster();
-    const res = fitBudgetInPlace(r, [m, n], c.palette.palette, 6, new Set());
+    const res = fitBudgetInPlace([r], [m, n], c.palette.palette, 6, new Set());
     expect(res.before).toBe(8);
     expect(res.after).toBe(6);
     expect(new Set(r.px).size).toBe(6);
@@ -18,8 +18,8 @@ describe('fitBudgetInPlace', () => {
 
   it('제외 색은 병합하지 않고, 결정론', () => {
     const a = raster(), b = raster();
-    const ra = fitBudgetInPlace(a, [m, n], c.palette.palette, 4, new Set([m.indices[0]!]));
-    fitBudgetInPlace(b, [m, n], c.palette.palette, 4, new Set([m.indices[0]!]));
+    const ra = fitBudgetInPlace([a], [m, n], c.palette.palette, 4, new Set([m.indices[0]!]));
+    fitBudgetInPlace([b], [m, n], c.palette.palette, 4, new Set([m.indices[0]!]));
     expect(Array.from(a.px)).toEqual(Array.from(b.px));
     expect(a.px).toContain(m.indices[0]);
     expect(ra.merges.every((x) => !(x.material === 'm' && x.from === 0))).toBe(true);
@@ -27,7 +27,7 @@ describe('fitBudgetInPlace', () => {
 
   it('병합할 수 없으면 멈추고 after에 남은 수를 적는다', () => {
     const r = { w: 2, h: 1, px: Uint8Array.from([m.indices[0]!, n.indices[0]!]) };
-    expect(fitBudgetInPlace(r, [m, n], c.palette.palette, 1, new Set()).after).toBe(2);
+    expect(fitBudgetInPlace([r], [m, n], c.palette.palette, 1, new Set()).after).toBe(2);
   });
 
   it('규칙 값', () => {

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { motionOverrideSchema, poseSchema } from './anim-schema.js';
 import { maskShapeSchema, partShapeSchema } from './shape-schema.js';
 
 export const specKindSchema = z.enum(['character', 'item', 'tile', 'fx', 'ui']);
@@ -59,6 +60,10 @@ export const specSchema = z
       })
       .optional(),
     animations: z.array(z.string().min(1)).default([]),
+    /** 공용 애니의 키 포즈 일부 덮어쓰기: 애니 id → 키 이름 → 뼈별 변화량(뼈 단위로 교체) */
+    overrides: z.record(z.string().min(1), z.record(z.string().min(1), z.object({ pose: poseSchema }))).default({}),
+    /** 절차 애니 힌트(바이블 motion 위에 키 단위 덮어쓰기) */
+    motion: motionOverrideSchema.default({}),
     seed: z.number().int().default(1),
   })
   .passthrough();

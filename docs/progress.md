@@ -5,6 +5,12 @@
 현재 단계: **P4**
 
 ## 로그
+- [P4] 중단(결정 대기) | 완료: form.outline-thin, Animation·anims·overrides·motion 스키마, 타임라인(inbetween 앞/뒤만·ease·정수 스냅), humanoid-34-v1.anims.json 4종, 애니 렌더(rest 원점·전 프레임 공동 예산·fx flash/arc·좌향 flipX), forge render --anim·crowd, QA 애니 판정(최악 프레임 기준)
+  - 현황: 테스트 162개 통과(골든 갱신). build-all: warrior anim.flicker 4px(attack 3~4프레임), 3종 모두 cleanup.orphans 4~5(임계 2), rogue form.detail-min 3. bounds.canvas는 death 포즈 dy·마법사 overrides로 해결
+  - anim.flicker 수정 3회(① 고립 정리 파츠 단위 ② 셰이딩·섬 정리를 파츠별 원본 모양에서 ③ 고립 정리를 선 긋기 전으로) → 15/8/1px → 4/0/0px
+  - 원인 가설: ① 남은 전사 깜빡임은 공격 중 팔·검이 허벅지를 일부 가려 고립 정리의 같은 파츠 이웃 집합이 달라짐 → 고립 정리도 파츠별 원본 모양 단계로 옮기면 해결 예상 ② orphans 증가는 정리 뒤에 내부선·눈을 그려 같은 색 이웃을 잃은 픽셀 ③ 정적 깔끔함(프레임별 정리)과 시간 안정성(애니 깜빡임 0)이 충돌
+  - 필요한 결정: QA cleanup.orphans를 (A) 선·눈(mark) 이웃 때문에 생긴 고립은 제외 (B) 지금처럼 최종 이미지 기준 유지 + orphanMax 상향 (C) 선 그린 뒤 2차 정리 추가(깜빡임 재발 위험)
+
 - [P3] 완료 | 완료: qa 패키지(필수 6 + 선택 6 + 교차 2 검사, render 미참조), 렌더 meta 레이어·얼굴 통계, 컨택트 시트(체커+배경 2벌, 실패 위치 빨간 테두리, 시트 전용 팔레트), 캐시(파일 바이트+엔진 버전), forge qa·build·build-all(불합격 exit 2)
   - 수락기준: 테스트 145개 통과, build-all sample 3/3 합격(점수 1.0/1.0/1.0), 2회째 cached
   - 시트 루프 2회: banding(얇은 원기둥 팔다리 3단 띠)·detail-min → 팔다리 capsule→rect·두께 조정, 전사 견갑·손 확대. QA 정의 보정: detail-min 8-연결(대각선 획), banding은 2px 이상 이어진 띠만

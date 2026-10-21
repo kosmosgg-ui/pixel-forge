@@ -24,9 +24,10 @@ function labOf(p: Palette, i: number) {
  * OKLab으로 가장 가까운 "사용 중인" 다른 단계로 병합한다. limit 이하가 되거나 병합할 수 없을 때까지.
  * exclude(외곽선 톤·눈 색·예약 색)는 병합하지 않는다. 동률이면 재질 키 순 → 단계 인덱스 낮은 쪽.
  */
-export function fitBudgetInPlace(r: IndexedRaster, ramps: readonly Ramp[], palette: Palette, limit: number, exclude: ReadonlySet<number>): BudgetFitResult {
+export function fitBudgetInPlace(rs: readonly IndexedRaster[], ramps: readonly Ramp[], palette: Palette, limit: number, exclude: ReadonlySet<number>): BudgetFitResult {
+  // 애니 전 프레임을 함께 세고 같은 병합을 모두에 적용한다 — 프레임마다 색이 달라지면 깜빡인다
   const count = new Map<number, number>();
-  for (const v of r.px) if (v) count.set(v, (count.get(v) ?? 0) + 1);
+  for (const r of rs) for (const v of r.px) if (v) count.set(v, (count.get(v) ?? 0) + 1);
   const before = count.size;
   const merges: BudgetMerge[] = [];
   while (count.size > limit) {
@@ -52,7 +53,7 @@ export function fitBudgetInPlace(r: IndexedRaster, ramps: readonly Ramp[], palet
       if (d < bestD) { bestD = d; to = s; }
     });
     const toIdx = ramp.indices[to] ?? from;
-    for (let k = 0; k < r.px.length; k++) if (r.px[k] === from) r.px[k] = toIdx;
+    for (const r of rs) for (let k = 0; k < r.px.length; k++) if (r.px[k] === from) r.px[k] = toIdx;
     count.set(toIdx, (count.get(toIdx) ?? 0) + n);
     count.delete(from);
     merges.push({ material: ramp.id, from: step, to, pixels: n });

@@ -11,7 +11,10 @@ export function baselineStable(frames: readonly QaFrame[]): Check {
   return check('baseline.stable', true, spread === 0, spread, 0);
 }
 
-/** anim.flicker: 앞 프레임과 변환이 같은 파츠(stillParts) 영역에서 색이 바뀐 픽셀 수 ≤ flickerMax */
+/**
+ * anim.flicker: 앞 프레임과 변환이 같은 파츠(stillParts) 영역에서 색이 바뀐 픽셀 수 ≤ flickerMax.
+ * 외곽선·내부선·눈·fx 같은 mark 위치는 이웃 파츠가 움직이면 정당하게 바뀌므로 어느 쪽 프레임이든 표시돼 있으면 뺀다.
+ */
 export function animFlicker(frames: readonly QaFrame[], ctx: QaContext): Check {
   const max = ctx.rules.flickerMax;
   if (frames.length < 2) return check('anim.flicker', true, true, 0, max, { note: '프레임 1장' });
@@ -23,7 +26,7 @@ export function animFlicker(frames: readonly QaFrame[], ctx: QaContext): Check {
     if (!a?.part || !b?.part || !b.stillParts) continue;
     for (let k = 0; k < b.part.length; k++) {
       const p = b.part[k] ?? 0;
-      if (!p || a.part[k] !== p || !b.stillParts.has(p) || a.raster.px[k] === b.raster.px[k]) continue;
+      if (!p || a.part[k] !== p || !b.stillParts.has(p) || a.raster.px[k] === b.raster.px[k] || a.mark?.[k] || b.mark?.[k]) continue;
       bad++;
       frame ??= i;
       where.push([k % b.raster.w, Math.floor(k / b.raster.w)]);

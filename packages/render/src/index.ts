@@ -9,3 +9,5 @@ export * from './assert.js';
 export * from './render-frame.js';
 export * from './eyes.js';
 export * from './budget-fit.js';
+export * from './fx.js';
+export * from './render-anim.js';

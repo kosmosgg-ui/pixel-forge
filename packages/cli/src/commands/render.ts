@@ -1,23 +1,23 @@
 import { join, relative } from 'node:path';
-import { buildBiblePalette, toRGBA } from '@pixel-forge/core';
-import { renderFrame } from '@pixel-forge/render';
-import { writeFileEnsured } from '../io/files.js';
-import { encodePng } from '../io/png.js';
 import { loadProject } from '../io/project.js';
-import { validateProject } from './validate.js';
+import { renderProject, writeFrames } from './qa.js';
 
-/** P2: rest pose 1프레임 → out/<id>/frames/rest.png */
-export function renderCommand(specPath: string, cwd: string) {
+/**
+ * 인자 없이: rest 1프레임 → out/<id>/frames/rest.png
+ * --anim a,b: rest + 그 애니들(색 예산은 함께 맞춤) → frames/<anim>_r_<n>.png, 좌향 _l_
+ */
+export function renderCommand(specPath: string, cwd: string, anims: readonly string[] = []) {
   const p = loadProject(specPath, cwd);
-  validateProject(p);
-  const palette = buildBiblePalette(p.bible, p.rules);
-  const { raster, clipped, meta } = renderFrame({ ...p, palette });
-  const out = join(cwd, 'out', p.spec.id, 'frames', 'rest.png');
-  writeFileEnsured(out, encodePng({ w: raster.w, h: raster.h, rgba: toRGBA(raster, palette.palette) }));
-  const used = new Set(raster.px);
+  const r = renderProject(p, anims);
+  const dir = join(cwd, 'out', p.spec.id);
+  const files = writeFrames(dir, r);
+  const all = [r.rest.raster, ...r.frames.map((f) => f.raster)];
+  const used = new Set(all.flatMap((x) => Array.from(x.px)));
   used.delete(0);
+  const { budget } = r.rest.meta;
   return {
-    ok: true as const, cmd: 'render', id: p.spec.id, frames: 1, size: [raster.w, raster.h], colors: used.size,
-    budget: `${meta.budget.before}→${meta.budget.after}/${meta.budget.limit}`, merges: meta.budget.merges.length, clipped, out: relative(cwd, out),
+    ok: true as const, cmd: 'render', id: p.spec.id, frames: all.length, size: [r.rest.raster.w, r.rest.raster.h], colors: used.size,
+    budget: `${budget.before}→${budget.after}/${budget.limit}`, merges: budget.merges.length, clipped: r.rest.clipped,
+    out: relative(cwd, join(dir, files.length === 1 ? (files[0] ?? '') : 'frames')),
   };
 }

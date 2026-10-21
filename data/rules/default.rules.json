@@ -72,7 +72,8 @@
     "defaultKeyMs": 120,
     "strikeMaxMs": 80,
     "maxInbetweenPerKey": 2,
-    "attackKeyCount": [4, 6]
+    "attackKeyCount": [4, 6],
+    "inbetweenMs": 60
   },
   "qa": {
     "id": "qa.thresholds",

@@ -60,5 +60,13 @@ export interface QaContext {
   roleIndices?: ReadonlySet<number>;
 }
 
-export const check = (id: string, required: boolean, pass: boolean, value: number | null, threshold: number | null, extra: Partial<Check> = {}): Check =>
+/** 프레임별 문제 위치 목록 → 가장 많은 프레임의 개수·위치·순번 (임계값은 프레임 1장 기준) */
+export function worstFrame(perFrame: readonly [number, number][][]): { value: number; extra: Partial<Check> } {
+  let worst = -1, value = 0;
+  perFrame.forEach((w, i) => { if (w.length > value) { value = w.length; worst = i; } });
+  const where = perFrame[worst];
+  return { value, extra: where && where.length ? { where, frame: worst } : {} };
+}
+
+export const check =(id: string, required: boolean, pass: boolean, value: number | null, threshold: number | null, extra: Partial<Check> = {}): Check =>
   ({ id, required, pass, value, threshold, ...extra });

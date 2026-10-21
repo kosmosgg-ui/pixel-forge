@@ -1,0 +1,46 @@
+{
+  "$comment": "humanoid-34-v1 공용 애니. 포즈는 restPose(전투 대기) 위 변화량(도·px). 키포즈 중심, inbetween은 지정 키 바로 앞/뒤만 (rule anim.pose-to-pose). root가 움직이지 않는 키는 발밑 고정.",
+  "rig": "humanoid-34-v1",
+  "fx": {
+    "slash": { "type": "arc", "bone": "chest", "radius": 13, "fromDeg": -75, "toDeg": 35, "color": 0 },
+    "flash": { "type": "flash", "color": 0 }
+  },
+  "anims": {
+    "idle": {
+      "id": "idle", "loop": true,
+      "keys": [
+        { "name": "in", "ms": 180, "pose": {} },
+        { "name": "low", "ms": 180, "pose": { "spine": { "dy": 1 } } },
+        { "name": "sway", "ms": 180, "pose": { "spine": { "dy": 1 }, "weapon": { "rot": 5 } } },
+        { "name": "out", "ms": 180, "pose": { "weapon": { "rot": 5 } } }
+      ]
+    },
+    "attack": {
+      "id": "attack", "loop": false,
+      "keys": [
+        { "name": "ready", "ms": 120, "pose": { "upperArmF": { "rot": -10 }, "lowerArmF": { "rot": -10 } } },
+        { "name": "windup", "ms": 140, "pose": { "spine": { "rot": -8 }, "upperArmF": { "rot": -100 }, "lowerArmF": { "rot": -30 }, "weapon": { "rot": -40 } } },
+        { "name": "strike", "ms": 60, "pose": { "root": { "dx": 2 }, "spine": { "rot": 10 }, "upperArmF": { "rot": 40 }, "lowerArmF": { "rot": 20 }, "weapon": { "rot": 60 } }, "fx": "slash" },
+        { "name": "follow", "ms": 120, "pose": { "root": { "dx": 2 }, "spine": { "rot": 6 }, "upperArmF": { "rot": 60 }, "lowerArmF": { "rot": 30 }, "weapon": { "rot": 80 } } },
+        { "name": "recover", "ms": 160, "pose": {} }
+      ],
+      "inbetween": [ { "after": "strike", "count": 1, "ease": "out" } ]
+    },
+    "hit": {
+      "id": "hit", "loop": false,
+      "keys": [
+        { "name": "flinch", "ms": 80, "pose": { "root": { "dx": -2 }, "spine": { "rot": -12 }, "head": { "rot": -8 }, "upperArmF": { "rot": 20 } }, "fx": "flash" },
+        { "name": "recover", "ms": 200, "pose": {} }
+      ]
+    },
+    "death": {
+      "id": "death", "loop": false,
+      "keys": [
+        { "name": "stagger", "ms": 120, "pose": { "root": { "dx": -1 }, "spine": { "rot": -15 }, "head": { "rot": -10 } } },
+        { "name": "kneel", "ms": 160, "pose": { "root": { "dy": 1 }, "spine": { "rot": 15 }, "thighF": { "rot": -40 }, "shinF": { "rot": 80 }, "thighB": { "rot": -20 }, "shinB": { "rot": 60 } } },
+        { "name": "fall", "ms": 160, "pose": { "root": { "dy": 0, "rot": -45 } } },
+        { "name": "lie", "ms": "hold", "pose": { "root": { "dy": 4, "rot": -90 } } }
+      ]
+    }
+  }
+}

@@ -1,11 +1,11 @@
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { crossChecks, summarize, type Report, type Silhouette } from '@pixel-forge/qa';
 import { ForgeError } from '@pixel-forge/core';
 import { cacheKey, restoreCache, storeCache } from '../cache.js';
 import { decodePng } from '../io/png.js';
 import { loadProject, type Project } from '../io/project.js';
-import { OUT_FILES, runQa, summary } from './qa.js';
+import { runQa, summary } from './qa.js';
 
 /** validate → render → qa (pack은 P5). 같은 입력이면 캐시에서 복원 */
 export function buildCommand(specPath: string, cwd: string) {
@@ -21,8 +21,10 @@ function buildProject(specPath: string, p: Project, cwd: string) {
   const out = join(cwd, 'out', p.spec.id);
   const cached = restoreCache(cwd, key, out);
   if (!cached) {
+    // 지난 빌드의 프레임이 남아 캐시에 섞이지 않게 출력 폴더를 비우고 시작
+    rmSync(out, { recursive: true, force: true });
     runQa(p, cwd);
-    storeCache(cwd, key, out, OUT_FILES);
+    storeCache(cwd, key, out);
   }
   const report = JSON.parse(readFileSync(join(out, 'qa.json'), 'utf8')) as Report;
   return { ok: true as const, cmd: 'build', id: p.spec.id, ...summary(report), cached, out: relative(cwd, out) };

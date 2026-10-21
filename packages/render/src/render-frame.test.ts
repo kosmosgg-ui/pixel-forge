@@ -89,6 +89,26 @@ describe('renderFrame', () => {
     for (const v of raster.px) if (v) expect(allowed).toContain(v);
   });
 
+  it('form.outline-thin: 1px 선 무기 주변에 평행한 외곽선 픽셀 0개, 획은 외곽선 톤 + 하이라이트 1px', () => {
+    const blade = { bone: 'root', shape: { type: 'line', from: [-5, 3], to: [5, -6] }, material: 'm', anchor: 'joint', orient: 'world' };
+    const sel = ctx(spec([blade]));
+    const withOutline = renderFrame(sel).raster;
+    const none = renderFrame(ctx(spec([blade]), bible({ outline: { mode: 'none', globalColor: '#101018' } }))).raster;
+    const ring = Array.from(withOutline.px).filter((v, i) => v && !none.px[i]);
+    expect(ring).toHaveLength(0);
+    const ramp = sel.palette.ramps.m!;
+    const stroke = Array.from(withOutline.px).filter((v) => v);
+    expect(stroke.filter((v) => v === ramp.indices[ramp.indices.length - 1])).toHaveLength(1);
+    expect(stroke.filter((v) => v !== ramp.outline)).toHaveLength(1);
+  });
+
+  it('form.outline-thin: 두께 2px 이상 파츠는 기존대로 외곽선', () => {
+    const bar = { bone: 'root', shape: { type: 'rect', w: 8, h: 2 }, material: 'm', orient: 'world' };
+    const a = renderFrame(ctx(spec([bar]))).raster;
+    const b = renderFrame(ctx(spec([bar]), bible({ outline: { mode: 'none', globalColor: '#101018' } }))).raster;
+    expect(Array.from(a.px).filter((v, i) => v && !b.px[i]).length).toBeGreaterThan(0);
+  });
+
   it('결정론: 2회 렌더 결과 동일', () => {
     const c = ctx(spec([circle(), { bone: 'root', shape: { type: 'capsule', len: 9, w: 4, angleDeg: 30 }, material: 'm' }]));
     expect(equals(renderFrame(c).raster, renderFrame(c).raster)).toBe(true);

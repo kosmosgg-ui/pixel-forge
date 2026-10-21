@@ -1,3 +1,4 @@
+import type { AnimsFile } from './anim-schema.js';
 import type { Bible } from './bible-schema.js';
 import type { Rig } from './rig-schema.js';
 import type { Spec } from './spec-schema.js';
@@ -23,6 +24,30 @@ export function checkRefs(spec: Spec, bible: Bible, rig: Rig): string[] {
     const m = bible.materials[mat ?? ''];
     if (!m) errors.push(`eyes.color: 바이블에 없는 재질 ${mat ?? ''}`);
     else if (Number(step) >= m.steps) errors.push(`eyes.color: ${mat ?? ''}의 단계는 0~${m.steps - 1}`);
+  }
+  return errors;
+}
+
+/** 애니 참조: spec.animations ∈ anims, overrides의 애니·키, 모든 포즈·fx 뼈 ∈ 리그, fx 색 ∈ bible.fxColors */
+export function checkAnimRefs(spec: Spec, anims: AnimsFile, rig: Rig, bible: Bible): string[] {
+  const errors: string[] = [];
+  if (anims.rig !== rig.id) errors.push(`anims.rig: ${anims.rig} ≠ ${rig.id}`);
+  for (const a of spec.animations) if (!(a in anims.anims)) errors.push(`animations: 공용 애니에 없는 ${a}`);
+  const bones = (pose: Record<string, unknown>, where: string) => {
+    for (const b of Object.keys(pose)) if (!(b in rig.bones)) errors.push(`${where}: 리그에 없는 뼈 ${b}`);
+  };
+  for (const [id, a] of Object.entries(anims.anims)) a.keys.forEach((k) => bones(k.pose, `anims.${id}.${k.name}`));
+  for (const [name, fx] of Object.entries(anims.fx)) {
+    if (fx.type === 'arc' && !(fx.bone in rig.bones)) errors.push(`fx.${name}: 리그에 없는 뼈 ${fx.bone}`);
+    if (fx.color >= bible.fxColors.length) errors.push(`fx.${name}: bible.fxColors에 없는 순번 ${fx.color}`);
+  }
+  for (const [id, keys] of Object.entries(spec.overrides)) {
+    const anim = anims.anims[id];
+    if (!anim) { errors.push(`overrides.${id}: 없는 애니`); continue; }
+    for (const [key, o] of Object.entries(keys)) {
+      if (!anim.keys.some((k) => k.name === key)) errors.push(`overrides.${id}.${key}: 없는 키`);
+      bones(o.pose, `overrides.${id}.${key}`);
+    }
   }
   return errors;
 }

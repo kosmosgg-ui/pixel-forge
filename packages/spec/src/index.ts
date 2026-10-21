@@ -5,3 +5,4 @@ export * from './rules-schema.js';
 export * from './rig-schema.js';
 export * from './spec-schema.js';
 export * from './refs.js';
+export * from './anim-schema.js';

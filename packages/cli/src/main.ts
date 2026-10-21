@@ -6,11 +6,19 @@ import { run } from './run.js';
 try {
   const { values, positionals } = parseArgs({
     args: process.argv.slice(2),
-    options: { version: { type: 'boolean' }, pretty: { type: 'boolean' } },
+    options: {
+      version: { type: 'boolean' }, pretty: { type: 'boolean' },
+      anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
+    },
     allowPositionals: true,
     strict: true,
   });
-  const result = run({ version: values.version === true, positionals, cwd: process.cwd() });
+  const result = run({
+    version: values.version === true, positionals, cwd: process.cwd(),
+    ...(values.anim !== undefined ? { anim: values.anim } : {}),
+    ...(values.count !== undefined ? { count: values.count } : {}),
+    ...(values.seed !== undefined ? { seed: values.seed } : {}),
+  });
   process.stdout.write(JSON.stringify(result, null, values.pretty === true ? 2 : undefined) + '\n');
   // QA 불합격은 명령 자체는 성공(ok)이지만 종료 코드 2
   process.exitCode = result.pass === false ? EXIT_QA_FAILED : EXIT_OK;

@@ -21,7 +21,9 @@ export interface PlacedPart {
 /**
  * 렌더러는 뼈 이름을 해석하지 않는다: 순서는 (depthLayer, rig.drawOrder 위치, 파츠 z, 파츠 순번)으로만 정한다.
  */
-export function placeParts(spec: Spec, rig: Rig, bones: Readonly<Record<string, BoneWorld>>): PlacedPart[] {
+export function placeParts(
+  spec: Spec, rig: Rig, bones: Readonly<Record<string, BoneWorld>>, restBones: Readonly<Record<string, BoneWorld>> = bones,
+): PlacedPart[] {
   const placed = spec.parts.map((part, index) => {
     const b = bones[part.bone];
     const bone = rig.bones[part.bone];
@@ -33,7 +35,8 @@ export function placeParts(spec: Spec, rig: Rig, bones: Readonly<Record<string, 
       index, part, layer: bone.depthLayer,
       x: Math.round(b.x + lx * c - ly * s),
       y: Math.round(b.y + lx * s + ly * c),
-      angle: part.orient === 'bone' ? b.angle : 0,
+      // world: rest에서는 화면 축, 포즈가 뼈를 돌린 만큼은 따라 돈다(쓰러질 때 망토·로브가 세로로 남지 않게)
+      angle: part.orient === 'bone' ? b.angle : b.angle - (restBones[part.bone]?.angle ?? b.angle),
       order: rig.drawOrder.indexOf(part.bone),
       depth: 0,
     };

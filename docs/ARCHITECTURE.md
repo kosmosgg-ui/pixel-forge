@@ -104,6 +104,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 4. **셰이딩**: 픽셀별 `lambert = max(0, n·L)` + `ambient` → `rules.shade.thresholds`로 단계 양자화 → shade 기록
    - 뒤쪽 보정: `depthLayer = "back"`인 뼈에 붙은 파츠는 `shade -= rules.shade.backLimbDarken`(기본 1) — 깊이감 (rule `form.depth-cue`)
 5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 3px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
+   - 4~5는 **파츠마다 가려지기 전 전체 모양에서** 따로 한 뒤 합성한다. 다른 파츠가 움직이거나 가려도 이 파츠 음영이 바뀌지 않게(anim.flicker)
    - 면적 < `rules.budgetFit.smallPartArea`(12px)인 파츠는 램프를 3단계(어둠·기본·하이라이트)로 축소 (rule `color.budget-fit`)
 6. **해석(resolve)**: material+shade → 팔레트 인덱스 → IndexedRaster
 7. **외곽선**: `rules.outline.mode`
@@ -114,7 +115,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
-8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개이고 외곽선·눈 아님), 1px 획의 L자 모서리 제거
+8. **정리**: 고립 픽셀 제거(같은 파츠 8-이웃 중 같은 색 0개), 1px 획의 L자 모서리 제거. 실행은 6 직후(선·눈·fx를 그리기 전) — 움직이는 이웃 때문에 바뀌는 선이 정리 판정에 번지지 않게
 6.5 **색 예산 맞춤** (rule `color.budget-fit`, 실행은 8 다음): 고유 색 수 > `bible.colorBudget[sizeClass]`이면 같은 재질에서 사용 픽셀이 가장 적은 단계를 OKLab으로 가장 가까운 사용 중 단계로 병합, 예산 이하까지 반복. 외곽선 톤·눈 색·예약 색은 제외. 동률이면 재질 키 순 → 단계 인덱스 낮은 쪽. 병합 내역은 렌더 결과 `meta.budget`에 기록(QA 리포트에 표시). 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
 9. **검증 훅**: 팔레트 밖 인덱스, 반투명 알파가 없음을 assert (개발 모드)
 
@@ -164,7 +165,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ```
 - 좌표는 뼈 로컬 좌표(px). 클로드는 이 파일만 작성·수정한다.
 - 파츠 위치: `anchor`(`joint` | `mid` 기본 | `end`) 지점에서 `at`[x, y]만큼 뼈 로컬 좌표로 옮긴 픽셀이 도형 앵커(§5)가 된다.
-- 도형 축: `orient: "bone"`(기본)은 도형 로컬 x축이 뼈 방향이라 위로 선 뼈(몸통)에서는 `len`/`w`가 세로다. 머리·모자·벨트처럼 화면 축 그대로 그릴 파츠는 `orient: "world"`.
+- 도형 축: `orient: "bone"`(기본)은 도형 로컬 x축이 뼈 방향이라 위로 선 뼈(몸통)에서는 `len`/`w`가 세로다. 머리·모자·벨트처럼 화면 축 그대로 그릴 파츠는 `orient: "world"`. world 파츠도 포즈가 뼈를 rest보다 더 돌린 만큼은 따라 돈다(쓰러질 때 망토·로브가 세로로 남지 않게).
 - 뼈 로컬 +y: 위로 선 뼈에서는 화면 앞(+x), 아래로 향한 뼈에서는 화면 뒤(−x).
 - `proportions.height`: 리그 전체(관절 위치·뼈 길이)를 `rig.baseHeight` 대비 이 비율로 축척한다. 파츠 크기는 축척하지 않는다. `headRatio`·`bulk`는 지금은 기록용(P6 레퍼런스 비교).
 - `role`(선택): `bible.roleColorKey`의 키.
@@ -202,6 +203,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   ],
   "inbetween": [ { "after": "strike", "count": 1, "ease": "out" } ] }
 ```
+- 애니 렌더: 모든 프레임은 rest 프레임 원점을 쓰고(발밑 고정), 색 예산은 rest + 전 프레임을 모아 한 번에 맞춘다(프레임마다 색이 바뀌지 않게). fx는 anims 파일 `fx`에 데이터로 정의(`flash`, `arc`), 좌향은 우향의 flipX.
 - **보간 정책(rule `anim.pose-to-pose`)**: 키포즈가 기본. 사이 프레임은 `inbetween`에 명시된 키의 **바로 앞 또는 뒤에만** 생성(키 사이 균등 보간 금지). 근거: Dead Cells.
 - 타격감은 프레임 수 대신 `strike`의 짧은 ms + `fx` 레이어 + `hold`(정지)로 표현.
 - 기본 애니메이션 라이브러리는 `data/rigs/humanoid-side-v1.anims.json`에 두고 모든 인간형 캐릭터가 공유. Spec은 이름만 참조, 필요 시 `overrides`로 키 일부 덮어쓰기.
@@ -226,6 +228,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
+- 프레임 1장 기준 임계값(`cleanup.orphans`·`cleanup.banding`·`form.detail-min`)은 애니 전 프레임 중 가장 나쁜 프레임으로 판정한다. `anim.flicker`는 외곽선·내부선·눈·fx 표시 위치를 뺀다.
 - **컨택트 시트**: 애니메이션별 1행, 프레임을 `rules.qa.sheetScale`(기본 4)배 최근접 확대, 체커 배경 + 바이블 배경 2벌, 실패 검사 위치는 빨간 테두리. 1장 PNG + 1줄 범례 텍스트는 리포트 JSON에.
 
 ## §10 Export (packages/export)

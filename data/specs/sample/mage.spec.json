@@ -215,5 +215,30 @@
     "hit",
     "death"
   ],
-  "seed": 1
+  "seed": 1,
+  "overrides": {
+    "attack": {
+      "windup": {
+        "pose": {
+          "weapon": {
+            "rot": -15
+          }
+        }
+      },
+      "strike": {
+        "pose": {
+          "weapon": {
+            "rot": 0
+          }
+        }
+      },
+      "follow": {
+        "pose": {
+          "weapon": {
+            "rot": 20
+          }
+        }
+      }
+    }
+  }
 }

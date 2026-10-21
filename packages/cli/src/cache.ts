@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { FORGE_VERSION } from '@pixel-forge/core';
 
@@ -32,8 +32,15 @@ export function restoreCache(cwd: string, key: string, outDir: string): boolean 
   return true;
 }
 
-/** outDir 안 files(상대 경로)를 캐시에 저장 */
-export function storeCache(cwd: string, key: string, outDir: string, files: readonly string[]): void {
+/** 폴더 안 모든 파일의 상대 경로(정렬, '/' 구분) */
+export function listFiles(dir: string, prefix = ''): string[] {
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((e) => (e.isDirectory() ? listFiles(join(dir, e.name), `${prefix}${e.name}/`) : [`${prefix}${e.name}`]))
+    .sort();
+}
+
+/** outDir 안 files(상대 경로, 생략하면 폴더 전체)를 캐시에 저장 */
+export function storeCache(cwd: string, key: string, outDir: string, files: readonly string[] = listFiles(outDir)): void {
   const dir = cacheDir(cwd, key);
   rmSync(dir, { recursive: true, force: true });
   for (const rel of files) {

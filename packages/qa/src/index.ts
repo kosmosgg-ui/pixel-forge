@@ -6,3 +6,4 @@ export * from './checks/anim.js';
 export * from './checks/cross.js';
 export * from './run.js';
 export * from './sheet.js';
+export * from './crowd.js';
