@@ -62,6 +62,8 @@ export interface QaContext {
   roleIndices?: ReadonlySet<number>;
   /** 손에 든 파츠(form.held-visible). 없으면 검사 통과 */
   held?: readonly HeldInfo[];
+  /** Spec signature 이름과 그 파츠 id들(form.signature). 없으면 검사 통과 */
+  signature?: { name: string; parts: ReadonlySet<number> };
   /** 외곽선 톤·전역 외곽선색 인덱스 — 이 색으로만 칠해진 픽셀은 보이는 것으로 치지 않는다 */
   lineIndices?: ReadonlySet<number>;
 }

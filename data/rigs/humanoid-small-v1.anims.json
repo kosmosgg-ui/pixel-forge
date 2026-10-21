@@ -1,0 +1,45 @@
+{
+  "$comment": "humanoid-small-v1 공용 애니(소형 몬스터). humanoid-34-v1보다 동작 폭·무기 휘두름 각도를 줄였다(32px 캔버스에서 무기가 몸에 묻히거나 밖으로 나가지 않게). attack은 4키(ready·windup·strike·recover)로 단순화. 포즈는 restPose 위 변화량(도·px).",
+  "rig": "humanoid-small-v1",
+  "fx": {
+    "slash": { "type": "arc", "bone": "chest", "radius": 8, "fromDeg": -70, "toDeg": 25, "color": 0 },
+    "flash": { "type": "flash", "color": 0 }
+  },
+  "anims": {
+    "idle": {
+      "id": "idle", "loop": true,
+      "keys": [
+        { "name": "in", "ms": 160, "pose": {} },
+        { "name": "low", "ms": 160, "pose": { "spine": { "dy": 1 } } },
+        { "name": "sway", "ms": 160, "pose": { "spine": { "dy": 1 }, "weapon": { "rot": 5 } } },
+        { "name": "out", "ms": 160, "pose": { "weapon": { "rot": 5 } } }
+      ]
+    },
+    "attack": {
+      "id": "attack", "loop": false,
+      "keys": [
+        { "name": "ready", "ms": 100, "pose": { "upperArmF": { "rot": -10 } } },
+        { "name": "windup", "ms": 120, "pose": { "spine": { "rot": -10 }, "upperArmF": { "rot": -60 }, "lowerArmF": { "rot": 20 }, "weapon": { "rot": -10 } } },
+        { "name": "strike", "ms": 80, "pose": { "root": { "dx": 1 }, "spine": { "rot": 8 }, "upperArmF": { "rot": 25 }, "lowerArmF": { "rot": 10 }, "weapon": { "rot": 30 } }, "fx": "slash" },
+        { "name": "recover", "ms": 140, "pose": {} }
+      ]
+    },
+    "hit": {
+      "id": "hit", "loop": false,
+      "keys": [
+        { "name": "flash", "ms": 60, "pose": {}, "fx": "flash" },
+        { "name": "flinch", "ms": 120, "pose": { "root": { "dx": -1 }, "spine": { "rot": -10 }, "head": { "rot": -6 } } },
+        { "name": "recover", "ms": 140, "pose": {} }
+      ]
+    },
+    "death": {
+      "id": "death", "loop": false,
+      "keys": [
+        { "name": "stagger", "ms": 120, "pose": { "root": { "dx": -1 }, "spine": { "rot": -12 }, "head": { "rot": -8 } } },
+        { "name": "kneel", "ms": 140, "pose": { "spine": { "rot": 6 }, "thighF": { "rot": -20 }, "shinF": { "rot": 35 } } },
+        { "name": "fall", "ms": 140, "pose": { "root": { "dy": 0, "rot": -45 } } },
+        { "name": "lie", "ms": "hold", "pose": { "root": { "dy": 1, "rot": -90 } } }
+      ]
+    }
+  }
+}

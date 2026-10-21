@@ -7,7 +7,7 @@ import type { Spec } from './spec-schema.js';
 export function checkRefs(spec: Spec, bible: Bible, rig: Rig): string[] {
   const errors: string[] = [];
   if (spec.bible !== bible.id) errors.push(`bible: ${spec.bible} ≠ 불러온 바이블 ${bible.id}`);
-  const rigId = spec.rig ?? bible.defaultRig;
+  const rigId = spec.rig ?? bible.sizeClassOptions[spec.sizeClass]?.rig ?? bible.defaultRig;
   if (rigId === undefined) errors.push('rig: Spec에도 바이블 defaultRig에도 리그가 없습니다');
   else if (rigId !== rig.id) errors.push(`rig: ${rigId} ≠ 불러온 리그 ${rig.id}`);
   if (!(spec.sizeClass in bible.sizeClasses)) errors.push(`sizeClass: ${spec.sizeClass}이(가) 바이블 sizeClasses에 없습니다`);

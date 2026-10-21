@@ -4,7 +4,13 @@
   "internalResolution": [320, 180],
   "view": "side",
   "directions": 1,
-  "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "large": [64, 64], "boss": [96, 96] },
+  "sizeClasses": {
+    "character": [48, 48],
+    "smallMonster": { "size": [32, 32], "outline": "dark", "rig": "humanoid-small-v1" },
+    "large": [64, 64],
+    "boss": [96, 96]
+  },
+  "sizeClassesSource": "smallMonster: 작은 캔버스는 selout보다 전역 단색 외곽선(dark)이 윤곽을 지킨다, 짤막한 소형 리그 기본(사용자 승인 P6)",
   "defaultRig": "humanoid-34-v1",
   "motion": { "bob": { "px": 1, "ms": 400 }, "squash": { "x": 1.1, "y": 0.9, "ms": 80 }, "hitFlash": { "ms": 60 } },
   "pivot": "bottom-center",
@@ -12,7 +18,7 @@
   "background": "#2a2238",
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
   "outline": { "mode": "selout", "globalColor": "#1a1020" },
-  "colorBudget": { "character": 15, "smallMonster": 7, "large": 20, "boss": 30 },
+  "colorBudget": { "character": 15, "smallMonster": 9, "large": 20, "boss": 30 },
   "colorBudgetSource": "SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개. 프레임에 실제로 쓰인 고유 색 수(외곽선 톤·fx 포함)로 센다",
   "materials": {
     "skin": { "base": "#d9a07a", "steps": 4, "kind": "skin" },

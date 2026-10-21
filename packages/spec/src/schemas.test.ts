@@ -25,6 +25,14 @@ describe('bibleSchema', () => {
     expect(bibleSchema.safeParse({ ...bibleJson, colorBudget: { character: 15 } }).success).toBe(false);
   });
 
+  it('sizeClasses 항목은 [w, h] 또는 { size, outline, rig } — 파싱 후 크기는 sizeClasses, 설정은 sizeClassOptions', () => {
+    const b = bibleSchema.parse(bibleJson);
+    expect(b.sizeClasses['smallMonster']).toEqual([32, 32]);
+    expect(b.sizeClassOptions['smallMonster']).toEqual({ outline: 'dark', rig: 'humanoid-small-v1' });
+    expect(b.sizeClassOptions['character']).toBeUndefined();
+    expect(bibleSchema.safeParse({ ...bibleJson, sizeClasses: { ...bibleJson.sizeClasses, smallMonster: { size: [32, 32], outline: 'neon' } } }).success).toBe(false);
+  });
+
   it('roleColorKey는 있는 재질만', () => {
     expect(bibleSchema.safeParse({ ...bibleJson, roleColorKey: { bard: 'velvet' } }).success).toBe(false);
   });

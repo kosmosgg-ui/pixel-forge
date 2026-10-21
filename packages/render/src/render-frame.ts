@@ -66,6 +66,11 @@ export function assertImplemented(spec: Spec, bible: Bible): void {
   if (bible.view !== 'side') throw new ForgeError('bible.view-not-implemented', `아직 구현되지 않은 view: ${bible.view}`);
 }
 
+/** 외곽선 모드: 크기 등급 설정 → 바이블 기본(게임별 화풍이므로 규칙 기본값보다 우선) */
+export function outlineModeOf(bible: Bible, sizeClass: string): Bible['outline']['mode'] {
+  return bible.sizeClassOptions[sizeClass]?.outline ?? bible.outline.mode;
+}
+
 /** 가장 아래 파츠 픽셀 아래 빈 줄 수: 외곽선 1px + 여백 1px */
 export const BOTTOM_GAP = 2;
 
@@ -148,10 +153,12 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   const resolved = resolveZone(zone, rampsById);
   const raster: IndexedRaster = { w: resolved.w, h: resolved.h, px: resolved.px.slice() };
   const protect = new Uint8Array(W * H);
-  if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, thin);
-  // 외곽선 모드는 게임별 화풍이므로 바이블이 규칙 기본값보다 우선
-  outerOutlineInPlace(raster, zone, rampsById, { mode: bible.outline.mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, thin);
-  thinStrokesInPlace(raster, zone, rampsById, thin, protect);
+  const mode = outlineModeOf(bible, spec.sizeClass);
+  // dark(단색 외곽선, 작은 캔버스용)에서는 1px 획도 재질색 그대로 두고 양옆에 외곽선 — 뼈 팔다리처럼 읽힌다(rule form.outline-thin은 selout 전용)
+  const strokes = mode === 'selout' ? thin : new Set<number>();
+  if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, strokes);
+  outerOutlineInPlace(raster, zone, rampsById, { mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, strokes);
+  thinStrokesInPlace(raster, zone, rampsById, strokes, protect);
   const eyes = drawEyesInPlace(raster, zone, spec, rig, L.bones, palette.ramps, origin, rules.face.farEyeGap, protect);
   const rigScale = (spec.proportions.height ?? rig.baseHeight) / rig.baseHeight;
   if (opts.fx) applyFxInPlace(raster, scaleFx(opts.fx, rigScale), L.bones, origin, palette.fxIndices, protect);

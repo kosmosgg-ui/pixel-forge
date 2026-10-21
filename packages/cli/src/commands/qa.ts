@@ -33,6 +33,7 @@ export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult
     background: parseHex(p.bible.background), rules: p.rules.qa, rampOf,
     ...(roleRamp ? { roleIndices: new Set([...roleRamp.indices, roleRamp.outline]) } : {}),
     held: heldInfo(p, rest?.meta.layers.part),
+    ...(p.spec.signature ? { signature: { name: p.spec.signature, parts: new Set(p.spec.parts.flatMap((q, i) => (q.signature ? [i + 1] : []))) } } : {}),
     lineIndices: new Set([...Object.values(palette.ramps).map((r) => r.outline), palette.outlineIndex]),
   };
 }

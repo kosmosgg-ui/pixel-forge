@@ -60,6 +60,18 @@ export function formHeadClearance(frames: readonly QaFrame[]): Check {
   return check('form.head-clearance', false, worst === 0, worst, 0, frame >= 0 ? { frame, note: `${frames[frame]?.name ?? ''} 머리 2px 안 소품 ${worst}px` } : {});
 }
 
+/** form.signature(선택): rest 프레임에서 signature 파츠 픽셀 ÷ 불투명 픽셀 ≥ signatureMin — 소형 몬스터는 특징 하나를 과장 */
+export function formSignature(frames: readonly QaFrame[], ctx: QaContext): Check {
+  const min = ctx.rules.signatureMin;
+  const sig = ctx.signature;
+  const rest = frames[0];
+  if (!sig || !rest?.part) return check('form.signature', false, true, null, min, { note: 'signature 없음' });
+  let opaque = 0, feat = 0;
+  rest.raster.px.forEach((v, k) => { if (!v) return; opaque++; if (sig.parts.has(rest.part?.[k] ?? 0)) feat++; });
+  const ratio = opaque ? feat / opaque : 0;
+  return check('form.signature', false, ratio >= min, round(ratio), min, { note: `${sig.name} ${feat}/${opaque}px` });
+}
+
 /** form.detail-min: 같은 재질 8-연결 영역(1px 대각선 획도 한 조각) 중 detailMinPx 미만 조각 수 ≤ detailMaxCount (mark 위치 제외) */
 export function formDetailMin(frames: readonly QaFrame[], ctx: QaContext): Check {
   const { detailMinPx, detailMaxCount } = ctx.rules;

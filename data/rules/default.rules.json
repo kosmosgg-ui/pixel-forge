@@ -96,6 +96,8 @@
     "scaleTolerance": 0.15,
     "flickerMax": 0,
     "faceCoverMax": 0.15,
+    "signatureMin": 0.25,
+    "signatureSource": "사용자 승인(P6 소형 몬스터): 소형 몬스터는 특징 하나를 과장해 실루엣의 25% 이상으로 — 32px 군중에서 종류가 읽히게",
     "detailMinPx": 3,
     "detailMaxCount": 2,
     "roleColorMin": 0.2,

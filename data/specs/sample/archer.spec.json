@@ -29,15 +29,26 @@
     {
       "bone": "chest",
       "shape": {
-        "type": "rect",
-        "w": 3,
-        "h": 2,
-        "angleDeg": -25
+        "type": "mask",
+        "origin": [
+          1,
+          1
+        ],
+        "rows": [
+          "f.f",
+          "fff"
+        ],
+        "legend": {
+          "f": {
+            "material": "leather",
+            "shade": 0
+          }
+        }
       },
       "material": "cloth_white",
       "orient": "world",
       "at": [
-        3,
+        2,
         -8
       ],
       "z": -2,
@@ -191,7 +202,7 @@
           ]
         ]
       },
-      "material": "cloth_white",
+      "material": "cloth_purple",
       "orient": "world",
       "z": 2,
       "name": "feather",

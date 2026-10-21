@@ -21,6 +21,7 @@ export const qaRulesSchema = z
     scaleTolerance: z.number().min(0),
     flickerMax: z.number().int().min(0),
     faceCoverMax: z.number().min(0).max(1),
+    signatureMin: z.number().min(0).max(1),
     detailMinPx: z.number().int().min(1),
     detailMaxCount: z.number().int().min(0),
     roleColorMin: z.number().min(0).max(1),

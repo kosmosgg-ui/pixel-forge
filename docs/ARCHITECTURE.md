@@ -115,7 +115,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - 얇은 획 (rule `form.outline-thin`): 두께 1px 이하 파츠(1px `line` 등)는 바깥 외곽선을 그리지 않고, 획 자체를 그 재질의 외곽선 톤으로 칠한다. 칼날 하이라이트 1px만 허용. 1px 무기 양쪽에 평행한 외곽선이 붙어 두 줄로 보이는 문제 방지
    - 얇은 held 파츠 색 (rule `form.held-thin-shade`): 두께 `rules.heldThinShade.maxThickness`(3px) 이하 held 파츠는 몸체를 램프의 가장 밝은 `brightSteps`(2)단계만, 부착 관절에 가장 가까운 1px(손잡이)·가장 먼 1px(날끝)만 0단계. 파츠별 셰이딩 직후(모든 프레임 동일 규칙)
    - 손에 든 파츠 (rule `form.held-min-width`): `held=true` 파츠는 두께 `rules.held.minWidth`(2px) 이상이어야 한다(rest에서 판정, 미달 → `spec.held-too-thin`). 1px는 `decorative=true`만. held 파츠는 얇은 획 처리·작은 섬 병합·고립 정리에서 빠진다(눈처럼 보호). 1px 무기가 외곽선 톤으로만 칠해져 배경에 묻히던 문제(P4 보정 조사) 방지
-   - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
+   - 모드 우선순위: `bible.sizeClasses[등급].outline` → `bible.outline.mode` → `rules.outline.mode`(게임별 화풍, 작은 캔버스는 dark 단색 외곽선). dark에서는 1px 획도 재질색 그대로 두고 외곽선을 붙인다(form.outline-thin은 selout 전용) — mask 안 1px 빈칸(눈구멍·이빨·갈비 틈)은 외곽선색으로 채워진다
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
 8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개), 1px 획의 L자 모서리 제거. 고립 정리는 4~5와 함께 **파츠마다 가려지기 전 전체 모양에서** 한다 — 다른 파츠의 움직임·가림·내부선이 정리 결과로 번지지 않게(anim.flicker)
@@ -130,7 +130,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "internalResolution": [320, 180],      // 선택: 대상 게임의 내부 해상도(QA 가독성 검사용)
   "view": "side",                        // "side" | "topdown" | "iso" — 지금은 side만 구현
   "directions": 1,                       // 1 | 4 | 8. side = 1 + 좌우 반전
-  "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },  // 이름 자유, [w, h] px
+  "sizeClasses": { "character": [48, 48], "smallMonster": { "size": [32, 32], "outline": "dark", "rig": "humanoid-small-v1" }, "boss": [96, 96] },  // 이름 자유, [w, h] px 또는 { size, outline?(등급별 외곽선 모드), rig?(그 등급 Spec의 기본 리그) }
   "defaultRig": "humanoid-34-v1",        // Spec이 rig를 생략하면 이 리그
   "pivot": "bottom-center",              // 발밑 중앙
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
@@ -172,6 +172,9 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - 뼈 로컬 +y: 위로 선 뼈에서는 화면 앞(+x), 아래로 향한 뼈에서는 화면 뒤(−x).
 - `proportions.height`: 리그 전체(관절 위치·뼈 길이)를 `rig.baseHeight` 대비 이 비율로 축척한다. 파츠 크기는 축척하지 않는다. `headRatio`·`bulk`는 지금은 기록용(P6 레퍼런스 비교).
 - `role`(선택): `bible.roleColorKey`의 키.
+- `signature`(선택, 소형 몬스터 권장): 과장할 특징 1개 이름(예: `"ears"`, `"skull"`). 그 파츠에 `"signature": true`. QA `form.signature`(선택): rest 프레임에서 signature 파츠 ÷ 불투명 픽셀 ≥ `rules.qa.signatureMin`(0.25).
+- `sizeClassLock`(선택): true면 크기 등급 자동 상향 금지.
+- 리그 결정: Spec `rig` → `bible.sizeClasses[sizeClass].rig` → `bible.defaultRig`. 소형 리그 `humanoid-small-v1`: 키 20(머리 45%, 짧은 팔다리), 공용 애니는 휘두름 폭을 줄이고 attack 4키(ready·windup·strike·recover).
 - `eyes`(선택, rule `form.face`): `{ bone, pos: [x, y], size: 1|2, color: "<재질>:<단계>" }`. 위치는 뼈 중간점에서 화면 축으로 `pos`. `size`는 세로 픽셀 수. 3/4 리그는 먼 쪽 눈이 자동으로 붙는다.
 - 역할색 지침: `roleColorKey` 재질이 실루엣의 20% 이상(QA `read.role-color`). 부족하면 망토·휘장 같은 큰 파츠를 그 재질로.
 - `kind`가 아직 구현되지 않은 종류면 `ForgeError("spec.kind-not-implemented")`. `sizeClass`는 바이블 `sizeClasses`의 키여야 한다.
@@ -230,6 +233,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
 | `form.face-clear` |  | 프레임마다(공격 프레임 포함) 가장 나쁜 프레임으로: 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ `faceCoverMax`, 머리 위 held 파츠 픽셀 0, 눈 둘레 창(눈 픽셀 박스, 최소 3×2)이 전부 얼굴 재질(머리 뼈 첫 파츠 재질) — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림 |
 | `form.head-clearance` |  | 머리 밖 2px 안에 다른 뼈의 held·decorative 파츠 픽셀 0(무기 끝·화살 깃이 머리 윤곽에 붙어 실루엣이 뭉치지 않게). 가장 나쁜 프레임 |
+| `form.signature` |  | rest 프레임에서 Spec signature 파츠 픽셀 ÷ 불투명 픽셀 ≥ `signatureMin`(0.25). signature 없으면 통과 |
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.

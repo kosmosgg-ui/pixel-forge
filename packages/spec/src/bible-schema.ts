@@ -5,13 +5,36 @@ import { hexColorSchema, materialSchema } from './color-schemas.js';
 const sizePx = z.tuple([z.number().int().min(1), z.number().int().min(1)]);
 export const outlineModeSchema = z.enum(['selout', 'dark', 'none']);
 
-export const bibleSchema = z
+/** 크기 등급별 설정: 외곽선 모드(작은 캔버스는 dark 단색 외곽선이 읽기 쉽다), 그 등급 Spec의 기본 리그 */
+export const sizeClassOptionSchema = z.object({ outline: outlineModeSchema.optional(), rig: z.string().min(1).optional() });
+
+/**
+ * sizeClasses 항목은 [w, h] 또는 { size: [w, h], outline?, rig? }. 파싱 후에는 sizeClasses = [w, h]만,
+ * 설정은 sizeClassOptions로 옮겨 기존 코드가 크기만 읽게 한다.
+ */
+function splitSizeClasses(raw: unknown): unknown {
+  if (typeof raw !== 'object' || raw === null || !('sizeClasses' in raw)) return raw;
+  const sc = raw.sizeClasses;
+  if (typeof sc !== 'object' || sc === null) return raw;
+  const sizes: Record<string, unknown> = {}, options: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(sc)) {
+    if (typeof v === 'object' && v !== null && !Array.isArray(v) && 'size' in v) {
+      const { size, ...rest } = v;
+      sizes[k] = size;
+      options[k] = rest;
+    } else sizes[k] = v;
+  }
+  return { ...raw, sizeClasses: sizes, sizeClassOptions: options };
+}
+
+export const bibleSchema = z.preprocess(splitSizeClasses, z
   .object({
     id: z.string().min(1),
     internalResolution: sizePx.optional(),
     view: z.enum(['side', 'topdown', 'iso']),
     directions: z.union([z.literal(1), z.literal(4), z.literal(8)]),
     sizeClasses: z.record(z.string().min(1), sizePx),
+    sizeClassOptions: z.record(z.string().min(1), sizeClassOptionSchema).default({}),
     pivot: z.enum(['bottom-center', 'center']),
     facing: z.enum(['right', 'left']),
     background: hexColorSchema,
@@ -40,6 +63,6 @@ export const bibleSchema = z
         issue(['materials', id, 'shareWith'], `없는 재질이거나 자기 자신입니다: ${m.shareWith}`);
       }
     }
-  });
+  }));
 
 export type Bible = z.infer<typeof bibleSchema>;

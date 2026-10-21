@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { alphaBinary, boundsCanvas, colorBudget, paletteConformance } from './checks/integrity.js';
 import { cleanupBanding, cleanupOrphans } from './checks/cleanup.js';
-import { formDetailMin, formFaceClear, formHeadClearance, readContrast, readRoleColor } from './checks/readability.js';
+import { formDetailMin, formFaceClear, formHeadClearance, formSignature, readContrast, readRoleColor } from './checks/readability.js';
 import { animFlicker, baselineStable } from './checks/anim.js';
 import { crossChecks, silhouetteIoU, type Silhouette } from './checks/cross.js';
 import { runChecks } from './run.js';
@@ -80,6 +80,14 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     const ok = frame(CLEAN, { face: { area: 40, covered: 0, nearHead: 0 } }), bad = frame(CLEAN, { name: 'idle_r_1', face: { area: 40, covered: 0, nearHead: 3 } });
     expect(formHeadClearance([ok, bad])).toMatchObject({ required: false, pass: false, value: 3, frame: 1 });
     expect(formHeadClearance([ok]).pass).toBe(true);
+  });
+
+  it('form.signature: rest에서 signature 파츠가 불투명 픽셀의 25% 이상이면 통과, signature 없으면 통과', () => {
+    // CLEAN 6×6 안쪽 4×4 = 16px, 파츠 2가 위 1줄(4px) = 25%
+    const part = Uint16Array.from(CLEAN.join('').split('').map((ch, k) => (ch === '.' ? 0 : k < 12 ? 2 : 1)));
+    expect(formSignature([frame(CLEAN, { part })], ctx({ signature: { name: 'ears', parts: new Set([2]) } }))).toMatchObject({ pass: true, value: 0.25 });
+    expect(formSignature([frame(CLEAN, { part })], ctx({ signature: { name: 'ears', parts: new Set([3]) } })).pass).toBe(false);
+    expect(formSignature([frame(CLEAN, { part })], ctx()).pass).toBe(true);
   });
 
   it('1px 대각선 획은 8-연결로 한 조각', () => {

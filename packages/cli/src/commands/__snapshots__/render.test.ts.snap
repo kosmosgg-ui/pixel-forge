@@ -2,9 +2,9 @@
 
 exports[`forge render (golden) > 단색 원 외곽선 dark 1`] = `"212a2a2903166caf862b22f4ef982db66892eddb343e68716a7d6f1cb256f44f"`;
 
-exports[`forge render (golden) > 단색 원 외곽선 none 1`] = `"872da3c3b4b3148f793c308b5840c54aa44659fde70c5aa39ce92d4c052d1120"`;
+exports[`forge render (golden) > 단색 원 외곽선 none 1`] = `"212a2a2903166caf862b22f4ef982db66892eddb343e68716a7d6f1cb256f44f"`;
 
-exports[`forge render (golden) > 단색 원 외곽선 selout 1`] = `"9b230833532acc0086ca67f638734ab4e471278e14706f47cc86f38ddb684781"`;
+exports[`forge render (golden) > 단색 원 외곽선 selout 1`] = `"212a2a2903166caf862b22f4ef982db66892eddb343e68716a7d6f1cb256f44f"`;
 
 exports[`forge render (golden) > 샘플 mage rest 프레임 1`] = `"6b6e6667e84fadcb4167338af2c48ea884fe5ddea938332c1c5ba63f28592535"`;
 

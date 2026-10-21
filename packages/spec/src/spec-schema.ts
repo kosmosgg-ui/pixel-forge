@@ -21,6 +21,8 @@ export const partSchema = z
     held: z.boolean().default(false),
     /** 장식용 얇은 획. 1px(form.outline-thin)은 decorative 파츠만 허용 */
     decorative: z.boolean().default(false),
+    /** Spec signature(과장할 특징 1개)에 속하는 파츠 */
+    signature: z.boolean().default(false),
     /** 도형 축: bone = 도형 로컬 x축이 뼈 방향(팔다리·몸통), world = 화면 축 그대로(머리·모자 등) */
     orient: z.enum(['bone', 'world']).default('bone'),
   })
@@ -41,6 +43,8 @@ export const specSchema = z
     sizeClass: z.string().min(1),
     /** true면 범위가 넘쳐도 크기 등급을 자동으로 올리지 않는다(bounds.canvas로 실패) */
     sizeClassLock: z.boolean().default(false),
+    /** 과장할 특징 1개(예: "ears", "skull") — signature: true 파츠가 rest 실루엣의 signatureMin 이상(form.signature) */
+    signature: z.string().min(1).optional(),
     /** 생략하면 bible.defaultRig */
     rig: z.string().min(1).optional(),
     /** bible.roleColorKey의 키 (선택) */

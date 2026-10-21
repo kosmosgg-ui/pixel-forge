@@ -102,6 +102,18 @@ describe('renderFrame', () => {
     expect(stroke.filter((v) => v !== ramp.outline)).toHaveLength(1);
   });
 
+  it('크기 등급 외곽선 dark: 전역 외곽선색 1개, 1px 획은 재질색 그대로 양옆에 외곽선(outline-thin은 selout 전용)', () => {
+    const blade = { bone: 'root', shape: { type: 'line', from: [-5, 3], to: [5, -6] }, material: 'm', anchor: 'joint', orient: 'world' };
+    const b = bible({ sizeClasses: { s: { size: [24, 24], outline: 'dark' } } });
+    const c = ctx(spec([circle('root', 7), blade]), b);
+    const r = renderFrame(c).raster;
+    const ramp = c.palette.ramps.m!;
+    expect(r.px).toContain(c.palette.outlineIndex);
+    expect(Array.from(r.px)).not.toContain(ramp.outline);
+    // 획 픽셀이 외곽선 톤으로 칠해지지 않고 재질 램프 색
+    expect(Array.from(r.px).filter((v) => ramp.indices.includes(v)).length).toBeGreaterThan(30);
+  });
+
   it('form.outline-thin: 두께 2px 이상 파츠는 기존대로 외곽선', () => {
     const bar = { bone: 'root', shape: { type: 'rect', w: 8, h: 2 }, material: 'm', orient: 'world' };
     const a = renderFrame(ctx(spec([bar]))).raster;

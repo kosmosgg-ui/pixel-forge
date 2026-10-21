@@ -18,7 +18,8 @@ export function loadProject(specPath: string, cwd: string): Project {
   const spec = readJson(resolve(cwd, specPath), specSchema);
   const data = join(cwd, 'data');
   const bible = readJson(join(data, 'bibles', `${spec.bible}.bible.json`), bibleSchema);
-  const rigId = spec.rig ?? bible.defaultRig;
+  // Spec rig → 크기 등급 기본 리그 → 바이블 기본 리그
+  const rigId = spec.rig ?? bible.sizeClassOptions[spec.sizeClass]?.rig ?? bible.defaultRig;
   if (rigId === undefined) throw new ForgeError('spec.refs', 'rig가 없습니다: Spec rig 또는 바이블 defaultRig를 지정하세요');
   const animsPath = join(data, 'rigs', `${rigId}.anims.json`);
   return {
