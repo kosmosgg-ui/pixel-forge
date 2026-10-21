@@ -18,7 +18,7 @@ afterAll(() => rmSync(work, { recursive: true, force: true }));
 describe('forge palette', () => {
   it('out/palette/<id>.png를 쓰고 한 줄 요약을 돌려준다', () => {
     const r = paletteCommand('sample-v0', work);
-    expect(r).toMatchObject({ ok: true, cmd: 'palette', bible: 'sample-v0', materials: 12, out: join('out', 'palette', 'sample-v0.png') });
+    expect(r).toMatchObject({ ok: true, cmd: 'palette', bible: 'sample-v0', materials: 14, out: join('out', 'palette', 'sample-v0.png') });
     const img = decodePng(readFileSync(join(work, r.out)));
     for (let i = 3; i < img.rgba.length; i += 4) expect([0, 255]).toContain(img.rgba[i]);
   });

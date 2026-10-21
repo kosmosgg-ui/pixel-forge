@@ -7,6 +7,7 @@ import { paletteCommand } from './commands/palette.js';
 import { qaCommand } from './commands/qa.js';
 import { refAnalyzeCommand, refCompareCommand } from './commands/ref.js';
 import { renderCommand } from './commands/render.js';
+import { reviewScoreCommand } from './commands/review-gate.js';
 import { reviewCommand } from './commands/review.js';
 import { validateCommand } from './commands/validate.js';
 import { watchCommand } from './commands/watch.js';
@@ -31,6 +32,11 @@ export interface RunInput {
   source?: string;
   license?: string;
   id?: string;
+  /** review-score: --score n --note text */
+  score?: string;
+  note?: string;
+  /** apply·watch: 검수 확인 생략 */
+  skipReview?: boolean;
 }
 
 function intOption(name: string, raw: string | undefined, fallback: number): number {
@@ -57,14 +63,15 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : []);
   if (cmd === 'crowd') return crowdCommand(need('<프로젝트 이름> [--count 50] [--seed 1]'), input.cwd, intOption('count', input.count, 50), intOption('seed', input.seed, 1));
   if (cmd === 'review') return reviewCommand(need('<프로젝트 이름>'), input.cwd);
+  if (cmd === 'review-score') return reviewScoreCommand(need('<spec 경로> --score <0~24> [--note 문장]'), input.cwd, Number(input.score), input.note);
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
-  if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
+  if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) });
   if (cmd === 'watch') {
     // 감시는 계속 돈다: 시작 요약을 반환하고, 이후 빌드 결과는 한 줄 JSON씩 stdout에
     const log = (line: Record<string, unknown>) => process.stdout.write(JSON.stringify(line) + '\n');
-    return watchCommand(need('<프로젝트 이름> [--target dir --out <dir>]'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) }, log).result;
+    return watchCommand(need('<프로젝트 이름> [--target dir --out <dir>]'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) }, log).result;
   }
   if (cmd === 'ref') {
     const [, sub, a1, a2] = input.positionals;

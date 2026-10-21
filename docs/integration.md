@@ -13,7 +13,7 @@ pnpm forge watch <project> --target dir --out <게임 폴더>    # Spec·바이�
 - `--out`은 작업 폴더(forge를 실행한 폴더) 기준 상대 경로이고, 그 밖으로는 쓰지 않는다(`io.path-escape`). 바이블에 `"apply": { "out": "..." }`를 두면 `--out`을 생략할 수 있다.
 - 게임 저장소가 작업 폴더 밖에 있으면 허용 목록 `.forge/targets.local.json`(gitignore, **사람이 직접 작성**)에 `{ "targets": { "game": "/절대/경로/assets/sprites" } }`처럼 이름을 등록하고 `--out @game`으로 이름만 참조한다. 목록에 없는 이름·바깥 경로는 `io.path-escape`. 대상 안의 `<id>/`·파일이 심볼릭 링크면 따라가지 않고 거부한다.
 - `<out>/<id>/` 아래 파일만 쓴다. forge가 쓴 파일은 `.forge-files.json`에 해시로 기록되고, 기록에 없거나 사람이 고친 같은 이름 파일이 있으면 아무것도 덮어쓰지 않고 exit 1(`apply.foreign-file`)로 멈춘다.
-- QA 불합격이면 복사하지 않는다(exit 2).
+- QA 불합격이면 복사하지 않는다(exit 2). 시각 검수 기록 `out/<id>/review.json`(pixel-reviewer가 `forge review-score`로 남김, 18/24 이상, 지금 입력으로 채점)이 없거나 미달이어도 복사하지 않는다(exit 2). 개발 중 watch 루프처럼 검수 없이 넣어 보려면 `--skip-review`를 명시한다.
 
 ## 파일
 

@@ -45,12 +45,16 @@ describe('forge qa / build-all', () => {
     expect(report.budget).toMatchObject({ limit: 15 });
   });
 
-  it('필수 검사 실패면 pass:false (CLI 종료 코드 2)', () => {
+  it('사람 크기 Spec을 smallMonster로 요청 → 자동으로 들어가는 등급(character)으로 올림, sizeClassLock이면 bounds.canvas 실패(pass:false, 종료 코드 2)', () => {
     const p = join(work, 'data/specs/sample/tiny.spec.json');
     const spec = JSON.parse(bytes('data/specs/sample/rogue.spec.json').toString('utf8'));
-    writeFileSync(p, JSON.stringify({ ...spec, id: 'tiny', sizeClass: 'smallMonster' }));
     try {
-      expect(buildCommand('data/specs/sample/tiny.spec.json', work)).toMatchObject({ pass: false, failed: expect.arrayContaining(['bounds.canvas']) });
+      writeFileSync(p, JSON.stringify({ ...spec, id: 'tiny', sizeClass: 'smallMonster' }));
+      expect(buildCommand('data/specs/sample/tiny.spec.json', work)).toMatchObject({ pass: true, sizeClass: { requested: 'smallMonster', used: 'character', reason: 'bounds' } });
+      writeFileSync(p, JSON.stringify({ ...spec, id: 'tiny', sizeClass: 'smallMonster', sizeClassLock: true }));
+      expect(buildCommand('data/specs/sample/tiny.spec.json', work)).toMatchObject({
+        pass: false, failed: expect.arrayContaining(['bounds.canvas']), sizeClass: { used: 'smallMonster', reason: 'locked' },
+      });
     } finally {
       rmSync(p);
     }
@@ -58,7 +62,7 @@ describe('forge qa / build-all', () => {
 
   it('build-all: 교차 검사가 각 qa.json에 들어간다', () => {
     const r = buildAllCommand('sample', work);
-    expect(r).toMatchObject({ ok: true, cmd: 'build-all', count: 5 });
+    expect(r).toMatchObject({ ok: true, cmd: 'build-all', count: 8 });
     const report = JSON.parse(bytes('out/mage/qa.json').toString('utf8'));
     const ids = report.checks.map((c: { id: string }) => c.id);
     expect(ids).toContain('form.silhouette');

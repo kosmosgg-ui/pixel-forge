@@ -6,8 +6,8 @@ exports[`forge render (golden) > 단색 원 외곽선 none 1`] = `"872da3c3b4b31
 
 exports[`forge render (golden) > 단색 원 외곽선 selout 1`] = `"9b230833532acc0086ca67f638734ab4e471278e14706f47cc86f38ddb684781"`;
 
-exports[`forge render (golden) > 샘플 mage rest 프레임 1`] = `"60b232dc95de921da72dbd25bb774f942a1df27167492951c46f6854eea991b7"`;
+exports[`forge render (golden) > 샘플 mage rest 프레임 1`] = `"6b6e6667e84fadcb4167338af2c48ea884fe5ddea938332c1c5ba63f28592535"`;
 
-exports[`forge render (golden) > 샘플 rogue rest 프레임 1`] = `"cc275bdf5ba17c9cf1ae253cbe27525ab1b68ade7d97ba1a59ffd4087458efa2"`;
+exports[`forge render (golden) > 샘플 rogue rest 프레임 1`] = `"8bbe492fe9576ae04b9ee3b656105126ff996217872fcf4fda10b938ccbe146e"`;
 
-exports[`forge render (golden) > 샘플 warrior rest 프레임 1`] = `"52f8f72fc312b6b57c964edea7d96f7824ece5854805400a4f9562a819779ac9"`;
+exports[`forge render (golden) > 샘플 warrior rest 프레임 1`] = `"86e28df165c985301c703553c8b16cdb1c36389dfb1a7824a94ffe5a54bb7513"`;

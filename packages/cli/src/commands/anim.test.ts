@@ -28,11 +28,11 @@ describe('forge render --anim', () => {
   });
 });
 
-describe('build-all sample (5종 × 4애니, P4 기준 3종은 얼굴 가림까지)', () => {
+describe('build-all sample (8종 × 4애니, P4 기준 3종은 얼굴 가림까지)', () => {
   const r = buildAllCommand('sample', work);
 
   it('필수 검사 전부 통과, 깜빡임 0, 발밑 고정, 무기 보임, 얼굴 가림 없음', () => {
-    expect(r).toMatchObject({ ok: true, count: 5, pass: true });
+    expect(r).toMatchObject({ ok: true, count: 8, pass: true });
     for (const id of ['warrior', 'rogue', 'mage']) {
       const report = JSON.parse(readFileSync(join(work, 'out', id, 'qa.json'), 'utf8')) as Report;
       const get = (cid: string) => report.checks.find((c) => c.id === cid);
@@ -71,7 +71,7 @@ describe('forge crowd', () => {
 describe('forge review', () => {
   it('캐릭터 × (rest + 애니 전 프레임), 4배, 같은 입력 → 같은 바이트', () => {
     const r = reviewCommand('sample', work);
-    expect(r).toMatchObject({ ok: true, kinds: 5, frames: [18, 18, 18, 18, 18], scale: 4, out: 'out/sample/review.png' });
+    expect(r).toMatchObject({ ok: true, kinds: 8, frames: [18, 18, 18, 18, 18, 18, 18, 18], scale: 4, out: 'out/sample/review.png' });
     const first = sha(r.out);
     reviewCommand('sample', work);
     expect(sha(r.out)).toBe(first);

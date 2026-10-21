@@ -1,0 +1,238 @@
+{
+  "id": "goblin",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "smallMonster",
+  "rig": "humanoid-34-v1",
+  "proportions": {
+    "height": 20
+  },
+  "parts": [
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 3
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "shinB",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "footB",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 4,
+        "w": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "lowerArmB",
+      "shape": {
+        "type": "capsule",
+        "len": 4,
+        "w": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "capsule",
+        "len": 4,
+        "w": 7
+      },
+      "material": "metal_rust",
+      "name": "loincloth"
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "capsule",
+        "len": 6,
+        "w": 7
+      },
+      "material": "goblin_skin",
+      "name": "torso"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "ellipse",
+        "w": 8,
+        "h": 7
+      },
+      "material": "goblin_skin",
+      "orient": "world"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "poly",
+        "pts": [
+          [
+            -3,
+            -1
+          ],
+          [
+            -6,
+            -3
+          ],
+          [
+            -3,
+            1
+          ]
+        ]
+      },
+      "material": "goblin_skin",
+      "orient": "world",
+      "name": "earB"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "poly",
+        "pts": [
+          [
+            2,
+            -1
+          ],
+          [
+            7,
+            -3
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      },
+      "material": "goblin_skin",
+      "orient": "world",
+      "z": 1,
+      "name": "earF"
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 3
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "shinF",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "footF",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 4,
+        "w": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "lowerArmF",
+      "shape": {
+        "type": "capsule",
+        "len": 4,
+        "w": 2
+      },
+      "material": "goblin_skin"
+    },
+    {
+      "bone": "handF",
+      "shape": {
+        "type": "ellipse",
+        "w": 3,
+        "h": 3
+      },
+      "material": "goblin_skin",
+      "orient": "world"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "metal_rust",
+      "anchor": "joint",
+      "at": [
+        0,
+        0
+      ],
+      "orient": "world",
+      "name": "grip"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "metal_rust",
+      "anchor": "joint",
+      "at": [
+        3,
+        1
+      ],
+      "orient": "world",
+      "name": "dagger",
+      "held": true
+    }
+  ],
+  "eyes": {
+    "bone": "head",
+    "pos": [
+      1,
+      0
+    ],
+    "size": 1,
+    "color": "metal_rust:0"
+  },
+  "animations": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "seed": 1
+}

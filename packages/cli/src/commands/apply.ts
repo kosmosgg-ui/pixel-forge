@@ -5,13 +5,16 @@ import { resolveOut } from '../io/targets.js';
 import { loadProject } from '../io/project.js';
 import { buildCommand } from './build.js';
 import { packFiles } from './pack-files.js';
+import { reviewProblem } from './review-gate.js';
 
 export interface ApplyArgs {
   target?: string;
   out?: string;
+  /** 검수 확인 생략(--skip-review). 기본은 out/<id>/review.json이 지금 입력 기준 합격이어야 복사 */
+  skipReview?: boolean;
 }
 
-/** build(캐시·QA) → 통과하면 어댑터로 게임 폴더에 복사. QA 불합격이면 복사하지 않고 pass:false(exit 2) */
+/** build(캐시·QA) → 검수(review.json ≥ 합격선) → 어댑터로 게임 폴더에 복사. QA 불합격·검수 미달이면 복사하지 않고 pass:false(exit 2) */
 export function applyCommand(specPath: string, cwd: string, args: ApplyArgs = {}) {
   const p = loadProject(specPath, cwd);
   const target = args.target ?? p.bible.apply?.target ?? 'dir';
@@ -21,6 +24,8 @@ export function applyCommand(specPath: string, cwd: string, args: ApplyArgs = {}
   const out = resolveOut(cwd, outArg);
   const built = buildCommand(specPath, cwd);
   if (!built.pass) return { ok: true as const, cmd: 'apply', id: p.spec.id, target, pass: false, failed: built.failed, applied: false };
+  const review = args.skipReview ? null : reviewProblem(specPath, p, cwd);
+  if (review) return { ok: true as const, cmd: 'apply', id: p.spec.id, target, pass: false, review, applied: false };
   const files = packFiles(p.spec.id).map((f) => join(cwd, built.out, f));
   const r = adapter.apply({ id: p.spec.id, files }, { out });
   return {

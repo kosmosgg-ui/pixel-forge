@@ -48,6 +48,18 @@ export function formFaceClear(frames: readonly QaFrame[], ctx: QaContext): Check
   return check('form.face-clear', false, fail < 0, round(worst), max, fail >= 0 ? { frame: fail, note } : {});
 }
 
+/** form.head-clearance(선택): 머리 밖 2px 안에 다른 뼈의 held·장식 파츠 픽셀 0 — 무기 끝·화살 깃이 머리 윤곽에 붙어 실루엣이 뭉치지 않게. 가장 나쁜 프레임 */
+export function formHeadClearance(frames: readonly QaFrame[]): Check {
+  let worst = 0, frame = -1, any = false;
+  frames.forEach((f, i) => {
+    if (f.face?.nearHead === undefined) return;
+    any = true;
+    if (f.face.nearHead > worst) { worst = f.face.nearHead; frame = i; }
+  });
+  if (!any) return check('form.head-clearance', false, true, null, 0, { note: 'eyes(머리 뼈) 없음' });
+  return check('form.head-clearance', false, worst === 0, worst, 0, frame >= 0 ? { frame, note: `${frames[frame]?.name ?? ''} 머리 2px 안 소품 ${worst}px` } : {});
+}
+
 /** form.detail-min: 같은 재질 8-연결 영역(1px 대각선 획도 한 조각) 중 detailMinPx 미만 조각 수 ≤ detailMaxCount (mark 위치 제외) */
 export function formDetailMin(frames: readonly QaFrame[], ctx: QaContext): Check {
   const { detailMinPx, detailMaxCount } = ctx.rules;

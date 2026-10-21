@@ -106,6 +106,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 3px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
    - 4~5는 **파츠마다 가려지기 전 전체 모양에서** 따로 한 뒤 합성한다. 다른 파츠가 움직이거나 가려도 이 파츠 음영이 바뀌지 않게(anim.flicker)
    - 면적 < `rules.budgetFit.smallPartArea`(12px)인 파츠는 램프를 3단계(어둠·기본·하이라이트)로 축소 (rule `color.budget-fit`)
+0. **크기 등급 맞춤** (렌더 전, 사용자 승인 P6): Spec sizeClass로 rest + Spec 애니 전 프레임을 렌더해 가장자리 1px에 불투명 픽셀이 있거나 잘린 픽셀이 있으면(bounds.canvas와 같은 기준), 바이블 sizeClasses 중 요청보다 작지 않은 등급을 면적 순으로 다시 렌더해 처음 들어가는 등급을 쓴다. 결과는 build JSON·qa.json `sizeClass: { requested, used, reason }`(fits | bounds | locked | too-large). Spec `sizeClassLock: true`면 올리지 않는다. 색 예산·manifest·교차 검사(scale.consistency는 같은 used 등급끼리)는 used 등급 기준. fx 호 반지름은 리그 축척(proportions.height ÷ baseHeight)을 따른다
 6. **해석(resolve)**: material+shade → 팔레트 인덱스 → IndexedRaster
 7. **외곽선**: `rules.outline.mode`
    - `selout`(기본): 실루엣 바깥 1px. 어두운 면은 인접 재질의 **외곽선 톤**(`ramp.outline`), 광원을 향한 면(법선·L > `seloutLitThreshold`)은 `ramp[0]`. 그림자 색과 외곽선이 같은 색이 되지 않게 한다
@@ -228,6 +229,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `read.contrast` |  | 바이블 배경색 대비 실루엣 평균 명도차 ≥ 임계 |
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
 | `form.face-clear` |  | 프레임마다(공격 프레임 포함) 가장 나쁜 프레임으로: 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ `faceCoverMax`, 머리 위 held 파츠 픽셀 0, 눈 둘레 창(눈 픽셀 박스, 최소 3×2)이 전부 얼굴 재질(머리 뼈 첫 파츠 재질) — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림 |
+| `form.head-clearance` |  | 머리 밖 2px 안에 다른 뼈의 held·decorative 파츠 픽셀 0(무기 끝·화살 깃이 머리 윤곽에 붙어 실루엣이 뭉치지 않게). 가장 나쁜 프레임 |
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
@@ -260,7 +262,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id> [--id <id>]` | 레퍼런스 측정값만 `data/refs/<id>.ref.json`(캔버스·실루엣 키, 고유 색, hue 군집 램프·hue 이동, 외곽선 유형 dark/selout/none, 머리 비율). 원본 이미지는 복사하지 않음. 라이선스·출처 누락 exit 1 (P6) |
 | `forge ref compare <spec> <ref.json>` | Spec rest 프레임을 같은 측정기로 재서 차이 표 → `out/<id>/ref-<refid>.json` (규칙·Spec 조정 근거) |
-| `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 시 어댑터로 복사. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
+| `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 + 검수 통과(`out/<id>/review.json`, 지금 입력 해시로 채점한 점수 ≥ 18/24, `--skip-review`로만 생략) 시 어댑터로 복사. 미달·기록 없음은 복사하지 않고 exit 2. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
+| `forge review-score <spec> --score <0~24> [--note 문장]` | pixel-reviewer가 채점 결과를 `out/<id>/review.json`에 기록(입력 해시 포함). build가 출력 폴더를 비워도 이 파일은 남는다 |
 | `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
 - **경로 안전**: 경로를 받는 명령(palette, apply, ref, palette import)은 `resolveInside(base, path)`로 정규화하고 기준 폴더 밖(`../`, 절대 경로)이면 `ForgeError("io.path-escape")`.

@@ -20,7 +20,7 @@
       "orient": "world",
       "at": [
         -4,
-        -1
+        3
       ],
       "name": "shield"
     },
@@ -34,8 +34,8 @@
       "material": "gold",
       "orient": "world",
       "at": [
-        -5,
-        -1
+        -4,
+        4
       ],
       "z": 1,
       "name": "shieldBoss"
@@ -299,6 +299,16 @@
         "pose": {
           "weapon": {
             "rot": 30
+          }
+        }
+      }
+    },
+    "death": {
+      "lie": {
+        "pose": {
+          "root": {
+            "dy": -2,
+            "rot": -90
           }
         }
       }

@@ -15,6 +15,8 @@ export interface AnimFrame {
   inbetween: boolean;
   /** root가 움직이지 않는 프레임(발밑 기준선 검사 대상) */
   rootFixed: boolean;
+  /** 캔버스 밖으로 잘린 파츠 픽셀 수(크기 등급 맞춤 판정) */
+  clipped: number;
   meta: RenderMeta;
 }
 
@@ -39,7 +41,7 @@ export function renderAnimations(ctx: RenderContext, anims: AnimsFile, ids: read
     return buildTimeline(anim, ctx.rules.anim, ctx.spec.overrides[id], isStrike).map((f, index): AnimFrame => {
       const fx = f.fx === undefined ? undefined : anims.fx[f.fx];
       const r = renderFrame(ctx, { pose: f.pose, origin: rest.origin, skipBudget: true, ...(fx ? { fx } : {}) });
-      return { anim: id, index, raster: r.raster, ms: f.ms, hold: f.hold, keyName: f.keyName, inbetween: f.inbetween, rootFixed: isRootFixed(f.pose, root), meta: r.meta };
+      return { anim: id, index, raster: r.raster, ms: f.ms, hold: f.hold, keyName: f.keyName, inbetween: f.inbetween, rootFixed: isRootFixed(f.pose, root), clipped: r.clipped, meta: r.meta };
     });
   });
   const exclude = new Set([rest, ...frames].flatMap((f) => f.meta.budgetExclude));

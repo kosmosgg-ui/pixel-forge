@@ -5,7 +5,7 @@
   "sizeClass": "character",
   "rig": "humanoid-34-v1",
   "proportions": {
-    "height": 30
+    "height": 38
   },
   "parts": [
     {
@@ -148,7 +148,7 @@
       "bone": "head",
       "shape": {
         "type": "rect",
-        "w": 1,
+        "w": 2,
         "h": 2
       },
       "material": "cloth_white",
@@ -293,7 +293,7 @@
       2,
       0
     ],
-    "size": 1,
+    "size": 2,
     "color": "leather:0"
   },
   "animations": [

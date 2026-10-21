@@ -58,6 +58,8 @@ export interface FaceStats {
   /** 눈 둘레 창(눈 픽셀 박스, 최소 3×2) 크기와 그중 얼굴 재질이 아닌 픽셀 수 */
   eyeWindow: number;
   eyeWindowBad: number;
+  /** 머리 밖 2px 안에 있는 다른 뼈의 held·decorative 파츠 픽셀 수(무기 끝·화살 깃이 머리 윤곽에 붙어 보이는 것) */
+  nearHead: number;
 }
 
 /**
@@ -73,6 +75,7 @@ export function faceStats(
   if (bone === undefined) return null;
   const head = new Set(spec.parts.flatMap((p, i) => (p.bone === bone ? [i + 1] : [])));
   const held = new Set(spec.parts.flatMap((p, i) => (p.held ? [i + 1] : [])));
+  const props = new Set(spec.parts.flatMap((p, i) => ((p.held || p.decorative) && p.bone !== bone ? [i + 1] : [])));
   const area = new Uint8Array(z.w * z.h);
   rasters.forEach((r, i) => {
     if (!head.has((partIndexOf[i] ?? -1) + 1)) return;
@@ -92,7 +95,7 @@ export function faceStats(
   const win = eyeWindow(eyePixels, z.w);
   let eyeWindowBad = 0;
   for (const k of win) if (z.material[k] !== faceMat || !head.has(z.part[k] ?? 0)) eyeWindowBad++;
-  return { area: n, covered, heldOver, eyeWindow: win.length, eyeWindowBad };
+  return { area: n, covered, heldOver, eyeWindow: win.length, eyeWindowBad, nearHead: nearHeadCount(z, area, props, HEAD_CLEARANCE) };
 }
 
 /** 눈 픽셀 박스를 가로 3·세로 2 이상으로 넓힌 창(가로는 양옆, 세로는 아래로 — 눈 아래 볼이 얼굴로 읽히게) */
@@ -105,4 +108,22 @@ function eyeWindow(eyes: readonly number[], w: number): number[] {
   const out: number[] = [];
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (x >= 0 && x < w && y >= 0) out.push(y * w + x);
   return out;
+}
+
+/** form.head-clearance 거리(px) */
+const HEAD_CLEARANCE = 2;
+
+function nearHeadCount(z: FrameZone, area: Uint8Array, props: ReadonlySet<number>, d: number): number {
+  let n = 0;
+  for (let k = 0; k < area.length; k++) {
+    if (area[k] || !props.has(z.part[k] ?? 0)) continue;
+    const x = k % z.w, y = (k - x) / z.w;
+    let near = false;
+    for (let dy = -d; dy <= d && !near; dy++) for (let dx = -d; dx <= d && !near; dx++) {
+      const X = x + dx, Y = y + dy;
+      if (X >= 0 && Y >= 0 && X < z.w && Y < z.h && area[Y * z.w + X]) near = true;
+    }
+    if (near) n++;
+  }
+  return n;
 }

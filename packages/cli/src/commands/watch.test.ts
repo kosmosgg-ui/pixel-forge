@@ -23,7 +23,7 @@ describe('forge watch', () => {
 
   it('Spec을 저장하면 해당 캐릭터만 build → apply (한 줄 JSON)', async () => {
     const lines: Record<string, unknown>[] = [];
-    const w = watchCommand('sample', work, { target: 'dir', out: 'game' }, (l) => lines.push(l));
+    const w = watchCommand('sample', work, { target: 'dir', out: 'game', skipReview: true }, (l) => lines.push(l));
     expect(w.result).toMatchObject({ ok: true, cmd: 'watch', specs: expect.arrayContaining(['data/specs/sample/rogue.spec.json']) });
     try {
       // chokidar가 감시를 시작할 시간을 준다

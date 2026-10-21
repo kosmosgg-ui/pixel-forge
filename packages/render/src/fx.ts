@@ -35,3 +35,8 @@ export function applyFxInPlace(
     protect[y * r.w + x] = 1;
   }
 }
+
+/** 리그 축척(proportions.height ÷ baseHeight)에 맞춘 fx — 작은 몬스터에 사람 크기 베기 호가 그려지지 않게 */
+export function scaleFx(fx: FxDef, scale: number): FxDef {
+  return fx.type === 'arc' ? { ...fx, radius: Math.max(1, Math.round(fx.radius * scale)) } : fx;
+}

@@ -5,6 +5,8 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 
 한 캐릭터를 0에서 apply까지 만든다. 클로드는 **Spec JSON만** 쓴다. 픽셀·렌더러·규칙은 손대지 않는다.
 
+**순서 고정**: build → (QA 필수 통과) → pixel-reviewer 18/24 이상(`out/<id>/review.json`) → apply. 순서를 바꾸지 않는다. `forge apply`는 검수 기록을 확인하고, 없거나 미달이면 exit 2로 복사하지 않는다(`--skip-review`는 사용자가 지시했을 때만).
+
 ## 0. 준비 (캐릭터마다 1회)
 - 시작 시각: `date +%s`를 적어 둔다(보고의 소요 시간).
 - 요청이나 기획서에서 **그 캐릭터 부분만** 읽는다: 역할(아군·적), 무기·소품, 성격·인상, 크기, 필요한 애니.
@@ -13,6 +15,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 
 ## 1. 크기·재질 결정 (멈춤 지점 2곳)
 - sizeClass: 아군·인간형 = `character`(48×48, 15색). 작은 적 = `smallMonster`(32×32, 7색). 지시에 크기가 있으면 그것.
+  - 큰 무기·큰 몸집이 캔버스를 넘으면 엔진이 자동으로 다음 등급(예: `large` 64×64, 20색)으로 올린다(build JSON `sizeClass.used`). 등급을 고정해야 하면 Spec에 `"sizeClassLock": true`.
 - 재질은 **바이블에 있는 것만**. 표현에 꼭 필요한 재질(예: 뼈, 녹슨 금속)이 없으면:
   1. `docs/proposals/bible-<내용>.md`에 제안서(재질 이름·base 색·steps·쓰는 캐릭터·이유)를 쓰고
   2. **그 캐릭터는 멈추고** 사용자 승인을 요청한다(사람 승인 지점). 바이블을 직접 고치지 않는다.
@@ -53,8 +56,8 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 
 ## 4. 교차 검사·적용
 1. `pnpm -s forge build-all <project>` → 이 캐릭터가 `failed`에 필수 항목으로 없는지(교차 검사: 실루엣·스케일).
-2. 시각 검수: `pnpm -s forge review <project>` 후 `pixel-reviewer` 서브에이전트에 `out/<project>/review.png` 검수 요청(점수 /24, 합격 18). 미달이면 상위 제안 반영 후 3단계로(반복 횟수에 포함).
-3. 적용: `pnpm -s forge apply <spec> --target dir --out <dir|@이름>`.
+2. 시각 검수: `pnpm -s forge review <project>` 후 `pixel-reviewer` 서브에이전트에 `out/<project>/review.png` 검수 요청(점수 /24, 합격 18). 리뷰어가 `forge review-score`로 `out/<id>/review.json`을 남긴다. 미달이면 상위 제안 반영 후 3단계로(반복 횟수에 포함). 시트가 높이 2000px를 넘으면 리뷰어에게 해당 캐릭터 블록만 잘라 보라고 지시한다.
+3. 적용(검수 합격 뒤에만): `pnpm -s forge apply <spec> --target dir --out <dir|@이름>`.
    - `--out`은 작업 폴더 안 상대 경로, 또는 `.forge/targets.local.json` 허용 목록의 `@이름`. 이 파일은 사람이 쓴다(클로드가 만들지 않는다).
    - 지시에 대상이 없으면 `out/apply-test`.
 

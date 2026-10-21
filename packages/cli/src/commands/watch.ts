@@ -4,7 +4,8 @@ import { watch } from 'chokidar';
 import { ForgeError } from '@pixel-forge/core';
 import { loadProject } from '../io/project.js';
 import { applyCommand, type ApplyArgs } from './apply.js';
-import { buildCommand, projectDeps } from './build.js';
+import { buildCommand } from './build.js';
+import { projectDeps } from './deps.js';
 
 export interface WatchEntry {
   spec: string;

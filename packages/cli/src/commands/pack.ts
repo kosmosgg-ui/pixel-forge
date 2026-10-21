@@ -6,7 +6,7 @@ import { buildManifest, packCharacter } from '@pixel-forge/export';
 import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
-import { loadProject, type Project } from '../io/project.js';
+import { loadProject } from '../io/project.js';
 import { packFiles } from './pack-files.js';
 import { renderProject, type Rendered } from './qa.js';
 
@@ -15,7 +15,9 @@ export const PACK_FORMATS = ['aseprite-json'] as const;
 export { packFiles } from './pack-files.js';
 
 /** 렌더 결과 → out/<id>/{<id>.png, <id>.json(Aseprite 호환), manifest.json} (§10) */
-export function writePack(p: Project, r: Rendered, cwd: string): string[] {
+export function writePack(r: Rendered, cwd: string): string[] {
+  // 크기 등급을 맞춘 Spec(manifest sizeClass = 실제 등급)
+  const p = r.project;
   const dir = join(cwd, 'out', p.spec.id);
   const W = r.rest.raster.w;
   // 바이블 facing이 리그와 다르면 렌더가 좌우 반전했으므로 루트 x도 반전
@@ -42,7 +44,7 @@ export function packCommand(specPath: string, cwd: string, format = 'aseprite-js
   }
   const p = loadProject(specPath, cwd);
   const r = renderProject(p);
-  const files = writePack(p, r, cwd);
+  const files = writePack(r, cwd);
   // 시트 프레임 = rest 1 + 애니 프레임
   const frames = 1 + r.frames.length;
   return { ok: true as const, cmd: 'pack', id: p.spec.id, format, frames, out: files[0], files };

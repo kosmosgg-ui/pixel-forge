@@ -39,6 +39,8 @@ export const specSchema = z
     kind: specKindSchema,
     bible: z.string().min(1),
     sizeClass: z.string().min(1),
+    /** true면 범위가 넘쳐도 크기 등급을 자동으로 올리지 않는다(bounds.canvas로 실패) */
+    sizeClassLock: z.boolean().default(false),
     /** 생략하면 bible.defaultRig */
     rig: z.string().min(1).optional(),
     /** bible.roleColorKey의 키 (선택) */

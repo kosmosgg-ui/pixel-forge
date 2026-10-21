@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { alphaBinary, boundsCanvas, colorBudget, paletteConformance } from './checks/integrity.js';
 import { cleanupBanding, cleanupOrphans } from './checks/cleanup.js';
-import { formDetailMin, formFaceClear, readContrast, readRoleColor } from './checks/readability.js';
+import { formDetailMin, formFaceClear, formHeadClearance, readContrast, readRoleColor } from './checks/readability.js';
 import { animFlicker, baselineStable } from './checks/anim.js';
 import { crossChecks, silhouetteIoU, type Silhouette } from './checks/cross.js';
 import { runChecks } from './run.js';
@@ -74,6 +74,12 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 2, heldOver: 2 } })], ctx())).toMatchObject({ pass: false });
     expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 0, eyeWindow: 6, eyeWindowBad: 3 } })], ctx()).note).toContain('눈 둘레');
     expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 0, heldOver: 0, eyeWindow: 6, eyeWindowBad: 0 } })], ctx()).pass).toBe(true);
+  });
+
+  it('form.head-clearance: 머리 2px 안 소품 픽셀이 있는 가장 나쁜 프레임으로 실패(선택 검사)', () => {
+    const ok = frame(CLEAN, { face: { area: 40, covered: 0, nearHead: 0 } }), bad = frame(CLEAN, { name: 'idle_r_1', face: { area: 40, covered: 0, nearHead: 3 } });
+    expect(formHeadClearance([ok, bad])).toMatchObject({ required: false, pass: false, value: 3, frame: 1 });
+    expect(formHeadClearance([ok]).pass).toBe(true);
   });
 
   it('1px 대각선 획은 8-연결로 한 조각', () => {

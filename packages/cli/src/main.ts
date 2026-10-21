@@ -11,6 +11,7 @@ try {
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
       format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
       source: { type: 'string' }, license: { type: 'string' }, id: { type: 'string' },
+      score: { type: 'string' }, note: { type: 'string' }, 'skip-review': { type: 'boolean' },
     },
     allowPositionals: true,
     strict: true,
@@ -26,6 +27,9 @@ try {
     ...(values.source !== undefined ? { source: values.source } : {}),
     ...(values.license !== undefined ? { license: values.license } : {}),
     ...(values.id !== undefined ? { id: values.id } : {}),
+    ...(values.score !== undefined ? { score: values.score } : {}),
+    ...(values.note !== undefined ? { note: values.note } : {}),
+    ...(values['skip-review'] === true ? { skipReview: true } : {}),
   });
   process.stdout.write(JSON.stringify(result, null, values.pretty === true ? 2 : undefined) + '\n');
   // QA 불합격은 명령 자체는 성공(ok)이지만 종료 코드 2

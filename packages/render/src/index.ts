@@ -11,3 +11,4 @@ export * from './eyes.js';
 export * from './budget-fit.js';
 export * from './fx.js';
 export * from './render-anim.js';
+export * from './fit-size.js';

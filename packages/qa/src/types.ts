@@ -21,6 +21,8 @@ export interface Report {
   checks: Check[];
   /** 렌더 meta.budget 그대로(색 예산 병합 내역) */
   budget?: unknown;
+  /** 크기 등급 맞춤 결과 { requested, used, reason } */
+  sizeClass?: { requested: string; used: string; reason: string };
   sheet: { path?: string; legend: string };
 }
 
@@ -35,7 +37,7 @@ export interface QaFrame {
   /** 외곽선·내부선·눈 등 정리 대상에서 빠지는 위치 */
   mark?: Uint8Array;
   /** 머리 뼈 파츠 면적·다른 파츠에 가려진 픽셀 수, 머리 위 held 픽셀 수, 눈 둘레 창 크기·얼굴 재질 아닌 픽셀 수 */
-  face?: { area: number; covered: number; heldOver?: number; eyeWindow?: number; eyeWindowBad?: number } | null;
+  face?: { area: number; covered: number; heldOver?: number; eyeWindow?: number; eyeWindowBad?: number; nearHead?: number } | null;
   /** root가 고정된 키 프레임(발밑 기준선 검사 대상) */
   rootFixed?: boolean;
   /** 앞 프레임과 변환이 같은 파츠 id (깜빡임 검사 대상) */

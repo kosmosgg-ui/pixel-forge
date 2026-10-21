@@ -1,0 +1,260 @@
+{
+  "id": "skeleton",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "smallMonster",
+  "rig": "humanoid-34-v1",
+  "proportions": {
+    "height": 20
+  },
+  "parts": [
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "shinB",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "footB",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "lowerArmB",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone",
+      "name": "vertebrae"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "rect",
+        "w": 7,
+        "h": 3
+      },
+      "material": "leather",
+      "anchor": "joint",
+      "orient": "world",
+      "at": [
+        0,
+        0
+      ],
+      "name": "rag"
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "capsule",
+        "len": 5,
+        "w": 7
+      },
+      "material": "bone",
+      "name": "ribcage"
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 1
+      },
+      "material": "leather",
+      "orient": "world",
+      "at": [
+        0,
+        0
+      ],
+      "z": 1,
+      "name": "ribGap",
+      "decorative": true
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "ellipse",
+        "w": 8,
+        "h": 7
+      },
+      "material": "bone",
+      "orient": "world",
+      "name": "skull"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "bone",
+      "orient": "world",
+      "at": [
+        1,
+        -3
+      ],
+      "name": "jaw"
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "shinF",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "footF",
+      "shape": {
+        "type": "rect",
+        "w": 3,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "lowerArmF",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone"
+    },
+    {
+      "bone": "handF",
+      "shape": {
+        "type": "ellipse",
+        "w": 3,
+        "h": 3
+      },
+      "material": "bone",
+      "orient": "world"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 6,
+        "h": 2,
+        "angleDeg": -63
+      },
+      "material": "leather",
+      "anchor": "joint",
+      "at": [
+        1,
+        -2
+      ],
+      "orient": "world",
+      "name": "clubShaft"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 5,
+        "h": 4,
+        "angleDeg": -63
+      },
+      "material": "bone",
+      "anchor": "joint",
+      "at": [
+        3,
+        -6
+      ],
+      "orient": "world",
+      "name": "clubHead",
+      "held": true
+    }
+  ],
+  "eyes": {
+    "bone": "head",
+    "pos": [
+      1,
+      0
+    ],
+    "size": 2,
+    "color": "leather:0"
+  },
+  "animations": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "seed": 1,
+  "overrides": {
+    "attack": {
+      "strike": {
+        "pose": {
+          "weapon": {
+            "rot": 30
+          }
+        }
+      },
+      "follow": {
+        "pose": {
+          "weapon": {
+            "rot": 20
+          }
+        }
+      }
+    }
+  }
+}

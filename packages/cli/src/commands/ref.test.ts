@@ -38,4 +38,12 @@ describe('forge ref', () => {
     expect(rows.find((x) => x.metric === 'silhouette.heightPx')?.diff).toBe(0);
     expect(rows.find((x) => x.metric === 'uniqueColors')?.diff).toBe(0);
   });
+
+  it('compare: 외부 레퍼런스(자작 CC0 테스트 스프라이트 측정값 픽스처)와 차이 표 — 외곽선 유형까지 비교', () => {
+    cpSync(fileURLToPath(new URL('../__fixtures__/test-knight.ref.json', import.meta.url)), join(work, 'knight.ref.json'));
+    const r = refCompareCommand('data/specs/sample/warrior.spec.json', 'knight.ref.json', work);
+    const rows = (JSON.parse(readFileSync(join(work, r.out), 'utf8')) as { rows: { metric: string; ref: unknown; diff: number | null }[] }).rows;
+    expect(rows.find((x) => x.metric === 'outline.type')?.ref).toBe('dark');
+    expect(rows.find((x) => x.metric === 'silhouette.heightPx')?.diff).toBeGreaterThan(0);
+  });
 });

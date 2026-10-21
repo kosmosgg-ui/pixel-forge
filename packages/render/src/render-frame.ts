@@ -5,7 +5,7 @@ import { assertFrame } from './assert.js';
 import { fitBudgetInPlace, type BudgetFitResult } from './budget-fit.js';
 import { drawEyesInPlace, faceStats, type FaceStats } from './eyes.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
-import { applyFxInPlace } from './fx.js';
+import { applyFxInPlace, scaleFx } from './fx.js';
 import { heldThinShadeInPlace } from './held-shade.js';
 import { innerLinesInPlace, isThinMask, outerOutlineInPlace, thinStrokesInPlace } from './outline.js';
 import { placeParts, type PlacedPart } from './place.js';
@@ -66,7 +66,8 @@ export function assertImplemented(spec: Spec, bible: Bible): void {
   if (bible.view !== 'side') throw new ForgeError('bible.view-not-implemented', `아직 구현되지 않은 view: ${bible.view}`);
 }
 
-const BOTTOM_GAP = 2;
+/** 가장 아래 파츠 픽셀 아래 빈 줄 수: 외곽선 1px + 여백 1px */
+export const BOTTOM_GAP = 2;
 
 function flipLayer<T extends Uint8Array | Uint16Array>(a: T, w: number): T {
   const out = a.slice() as T;
@@ -152,7 +153,8 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   outerOutlineInPlace(raster, zone, rampsById, { mode: bible.outline.mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, thin);
   thinStrokesInPlace(raster, zone, rampsById, thin, protect);
   const eyes = drawEyesInPlace(raster, zone, spec, rig, L.bones, palette.ramps, origin, rules.face.farEyeGap, protect);
-  if (opts.fx) applyFxInPlace(raster, opts.fx, L.bones, origin, palette.fxIndices, protect);
+  const rigScale = (spec.proportions.height ?? rig.baseHeight) / rig.baseHeight;
+  if (opts.fx) applyFxInPlace(raster, scaleFx(opts.fx, rigScale), L.bones, origin, palette.fxIndices, protect);
   // 6.5 색 예산 맞춤: 외곽선 톤도 예산에 들어가므로 외곽선·눈을 그린 뒤 센다
   const exclude = [...new Set([...rampsById.map((r) => r.outline), palette.outlineIndex, ...palette.fxIndices, ...(eyes ? [eyes.colorIndex] : [])])];
   const limit = bible.colorBudget[spec.sizeClass] ?? Infinity;

@@ -8,6 +8,7 @@ import { ForgeError } from '@pixel-forge/core';
 import { LEDGER } from '../adapters/dir.js';
 import { applyCommand } from './apply.js';
 import { buildCommand } from './build.js';
+import { reviewScoreCommand } from './review-gate.js';
 
 const repo = fileURLToPath(new URL('../../../../', import.meta.url));
 const work = mkdtempSync(join(tmpdir(), 'forge-apply-'));
@@ -32,7 +33,11 @@ function snapshot(skip: string): Map<string, string> {
 
 describe('forge apply --target dir', () => {
   const game = join(work, 'game');
-  beforeAll(() => { buildCommand(spec, work); });
+  beforeAll(() => {
+    buildCommand(spec, work);
+    // 검수 통과 기록(합격선 18/24) — 검수 게이트 자체는 아래 별도 테스트
+    reviewScoreCommand(spec, work, 20);
+  });
 
   it('<out>/<id>/에 시트 PNG·JSON·manifest 복사, 대상 폴더 밖 파일 변경 0', () => {
     const before = snapshot(game);
@@ -105,5 +110,23 @@ describe('forge apply --target dir', () => {
       rmSync(ext, { recursive: true, force: true });
       rmSync(join(work, '.forge'), { recursive: true, force: true });
     }
+  });
+
+  it('검수 게이트(기본): 기록 없음·합격선 미만·검수 후 입력 변경 → 복사하지 않고 pass:false(exit 2), --skip-review면 복사', () => {
+    const mage = 'data/specs/sample/mage.spec.json';
+    buildCommand(mage, work);
+    rmSync(join(work, 'out', 'mage', 'review.json'), { force: true });
+    expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: false, applied: false, review: expect.stringContaining('검수 기록이 없습니다') });
+    reviewScoreCommand(mage, work, 17);
+    expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: false, review: expect.stringContaining('17/24') });
+    reviewScoreCommand(mage, work, 21);
+    // build가 출력 폴더를 비워도 검수 기록은 남는다
+    buildCommand(mage, work);
+    expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: true, applied: true });
+    const path = join(work, mage);
+    writeFileSync(path, readFileSync(path, 'utf8') + '\n');
+    expect(applyCommand(mage, work, { out: 'gate2' })).toMatchObject({ pass: false, review: expect.stringContaining('바뀌었습니다') });
+    expect(existsSync(join(work, 'gate2'))).toBe(false);
+    expect(applyCommand(mage, work, { out: 'gate2', skipReview: true })).toMatchObject({ pass: true, applied: true });
   });
 });
