@@ -51,7 +51,8 @@ pnpm forge <cmd>    # CLI (packages/cli)
 
 ## 5. 문서 지도 (필요할 때만 읽기)
 - `docs/ARCHITECTURE.md` — 패키지 구조, 데이터 모델, DSL 스키마, 알고리즘 (절 번호로 참조)
-- `docs/phases/P0~P6.md` — 단계별 작업서
+- `docs/phases/P0~P10.md` — 단계별 작업서
+- `docs/references.md` — 기준작(브로테이토·뱀파이어 서바이버즈) 측정 목표
 - `data/rules/default.rules.json` — 도트 규칙 수치 (연구 근거 포함)
 - `data/bibles/*.bible.json` — 프로젝트별 아트 바이블
 - `docs/progress.md` — 진행 로그 (단계당 10줄 이내 유지)

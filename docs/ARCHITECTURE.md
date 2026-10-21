@@ -13,6 +13,7 @@
   3. **뼈대 재사용**: 애니메이션은 리그 포즈로 정의하고 캐릭터 간 공유한다. (근거: Dead Cells)
   4. **색 예산 강제**: 스프라이트당 사용 색 수를 규칙으로 제한한다. (근거: Shovel Knight, Mina the Hollower)
   5. **검수가 품질을 만든다**: 모든 빌드는 자동 QA를 통과해야 산출물로 승격된다.
+  6. 품질 기준은 성공한 인디(브로테이토·뱀파이어 서바이버즈 체급): 군중 속 가독성, 전 에셋 일관성, 손맛 연출, 대량 생산. 프레임 수보다 실루엣·색 구분을 우선한다.
 
 ## §2 저장소 구조
 ```
@@ -109,6 +110,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
    - `selout`(기본): 실루엣 바깥 1px. 어두운 면은 인접 재질의 **외곽선 톤**(`ramp.outline`), 광원을 향한 면(법선·L > `seloutLitThreshold`)은 `ramp[0]`. 그림자 색과 외곽선이 같은 색이 되지 않게 한다
    - `dark`: 전역 외곽선색 단일
    - `none`: 바깥 외곽선 없음
+   - 얇은 획 (rule `form.outline-thin`): 두께 1px 이하 파츠(1px `line` 등)는 바깥 외곽선을 그리지 않고, 획 자체를 그 재질의 외곽선 톤으로 칠한다. 칼날 하이라이트 1px만 허용. 1px 무기 양쪽에 평행한 외곽선이 붙어 두 줄로 보이는 문제 방지
    - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 7.5 **눈** (rule `form.face`): `spec.eyes` 위치에 눈을 찍고 정리 단계에서 보호. 리그 `eyes.count = 2`(3/4)면 먼 쪽 눈 1px을 화면 앞쪽 `spacing`만큼, 머리 파츠 끝에서 `rules.face.farEyeGap` 이상 안쪽에
@@ -231,7 +233,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - 포맷
 - 프레임 이름 규칙: `<anim>_<dir>_<n>` (side 시점은 `dir = "r"`, n은 0부터). frameTags 이름은 `<anim>_<dir>`.
   - `aseprite-json`(기본): `frames`(hash) + `meta.frameTags`(name, from, to, direction) + `meta.size` + 프레임별 `duration`
-  - `manifest`: `{ id, bible, sizeClass, pivot, anims: {name: {frames, ms[], loop}}, palette, hash }`
+  - `manifest`: `{ id, bible, sizeClass, pivot, anims: {name: {frames, ms[], loop}}, motion, palette, hash }`
+    - `motion`: 엔진이 실행할 절차 애니 힌트 `{ bob: {px, ms}, squash: {x, y, ms}, hitFlash: {ms} }`. 기본값은 `bible.motion`, Spec `motion`이 키 단위로 덮어쓴다. 툴은 값만 기록하고 프레임을 만들지 않는다
 - Godot `.tres`는 사용자 지시 전까지 구현하지 않는다.
 
 ## §11 CLI (packages/cli)
@@ -244,6 +247,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge pack <spec> [--format aseprite-json]` | `out/<id>/<id>.png`, `.json`, `manifest.json` |
 | `forge build <spec>` | validate → render → qa → pack, 캐시 사용, QA 불합격이면 pack 생략(exit 2) |
 | `forge build-all <project>` | 프로젝트 전체 + 교차 검사(silhouette, scale) |
+| `forge crowd <project> [--count 50] [--seed 1]` | 바이블 배경 위 실제 크기(1배) 무작위 군중 시트 + 2배 확대본 → `out/<project>/crowd.png`, `crowd@2x.png` (QA `crowd.readability`) |
+| `forge variants <spec> --rarity --palette-swap --part-swap` | 아이템 변형 생성(P7) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |
 | `forge apply <spec> --target <adapter> [--out <dir>]` | 게임 프로젝트로 산출물 복사 (P5). 기본 어댑터 `dir`: 지정 폴더에 복사만, 엔진 무관 |
