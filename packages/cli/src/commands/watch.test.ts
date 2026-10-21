@@ -15,7 +15,9 @@ describe('forge watch', () => {
     const index = watchIndex('sample', work);
     const all = index.length;
     expect(affectedSpecs(join(work, 'data/specs/sample/rogue.spec.json'), index)).toEqual(['data/specs/sample/rogue.spec.json']);
-    expect(affectedSpecs(join(work, 'data/rigs/humanoid-34-v1.anims.json'), index)).toHaveLength(all);
+    // 사람 크기 6종은 humanoid-34-v1, 소형 몬스터 2종은 크기 등급 기본 리그 humanoid-small-v1
+    expect(affectedSpecs(join(work, 'data/rigs/humanoid-34-v1.anims.json'), index)).toHaveLength(all - 2);
+    expect(affectedSpecs(join(work, 'data/rigs/humanoid-small-v1.anims.json'), index).sort()).toEqual(['data/specs/sample/goblin.spec.json', 'data/specs/sample/skeleton.spec.json']);
     expect(affectedSpecs(join(work, 'data/bibles/sample-v0.bible.json'), index)).toHaveLength(all);
     expect(affectedSpecs(join(work, 'data/rules/default.rules.json'), index)).toHaveLength(all);
     expect(affectedSpecs(join(work, 'README.md'), index)).toEqual([]);
