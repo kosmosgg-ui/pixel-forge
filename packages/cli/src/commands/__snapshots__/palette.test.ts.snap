@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`forge palette > golden: 같은 바이블 → 같은 PNG 바이트 1`] = `"c693b7b61ba5a01bd2312d4451192ed21c5ffa4f60850a62ea6ee7c54c70086a"`;

@@ -10,7 +10,7 @@ try {
     allowPositionals: true,
     strict: true,
   });
-  const result = run({ version: values.version === true, positionals });
+  const result = run({ version: values.version === true, positionals, cwd: process.cwd() });
   process.stdout.write(JSON.stringify(result, null, values.pretty === true ? 2 : undefined) + '\n');
   process.exitCode = EXIT_OK;
 } catch (err) {

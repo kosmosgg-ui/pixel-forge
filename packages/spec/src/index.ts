@@ -1,1 +1,1 @@
-export {};
+export * from './color-schemas.js';
