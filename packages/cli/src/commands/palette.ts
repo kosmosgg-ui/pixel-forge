@@ -15,7 +15,7 @@ export function paletteCommand(ref: string, cwd: string) {
   const bible = readJson(resolveBiblePath(ref, cwd), bibleColorsSchema);
   const rules = readJson(join(cwd, 'data', 'rules', 'default.rules.json'), rulesColorSchema);
   const bp = buildBiblePalette(bible, rules);
-  const sheet = scaleNearest(paletteSheet(bp, { swatch: 3, gap: 1 }), SHEET_SCALE);
+  const sheet = scaleNearest(paletteSheet(bp, { swatch: 4, gap: 1 }), SHEET_SCALE);
   const out = join(cwd, 'out', 'palette', `${bible.id}.png`);
   writeFileEnsured(out, encodePng({ w: sheet.w, h: sheet.h, rgba: toRGBA(sheet, bp.palette) }));
   return {

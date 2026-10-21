@@ -51,7 +51,7 @@ export interface Palette { colors: Uint32Array /* 0xRRGGBBAA */; names: string[]
 export interface IndexedRaster { w: number; h: number; px: Uint8Array /* palette index, 0 = transparent */ }
 
 // 램프: 한 재질의 명암 단계. index[0]=가장 어두움
-export interface Ramp { id: string; indices: number[] /* palette indices, dark→light */ }
+export interface Ramp { id: string; indices: number[] /* palette indices, dark→light */; outline: number /* 재질 전용 외곽선 톤 (램프 밖) */ }
 
 // 보조 버퍼 (렌더 중간 단계)
 export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade: Uint8Array; depth: Uint8Array; part: Uint16Array }
@@ -62,15 +62,22 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ## §4 색과 램프 (packages/core/color)
 - 색 연산은 **OKLab/OKLCh**에서 수행, 결과를 sRGB로 변환 후 팔레트에 등록.
 - 색상 회전: 항상 **최단 각도 방향**으로 목표 hue를 향해 단계당 `hueShift`°씩 이동하고, 목표 hue를 넘어가지 않는다.
+  - 단, 기준 hue에서 목표 hue까지의 최단 경로가 `rules.ramp.avoidHueBand`(기본 OKLCh h 115°~165°, 초록 대역)를 지나고 기준색이 그 대역 밖이면 **반대 방향**으로 돈다(목표는 넘지 않음). 밝은 쪽·어두운 쪽 각각 독립 판정. 예: gold(h≈88°) 그림자는 260°로 가는 최단 경로가 초록을 지나므로 빨강 쪽으로 돈다.
+- 명도 범위: 램프 단계의 L은 `rules.ramp.minL`~`maxL`(기본 0.18~0.93)로 클램프한다.
 - 색역 맞춤: OKLCh→sRGB 결과가 범위 밖이면 L과 h는 고정하고 C만 이분 탐색으로 줄여 범위 안에 넣는다(최대 20회).
-- 최종 hex: 채널별 반올림 후 0~255 클램프. 서로 다른 재질에서 같은 hex가 나오면 팔레트 인덱스를 공유한다.
+- 최종 hex: 채널별 반올림 후 0~255 클램프.
+- 예약 색 = `bible.fxColors` + `outline.globalColor`. 모든 재질 색(외곽선 톤 포함)은 예약 색과 OKLab 거리 ≥ 0.03, 다른 재질 색·같은 램프의 다른 단계와도 ≥ 0.03.
+  - 충돌하면 밝은 쪽(기준색 포함)은 L을 0.02씩 낮추고 어두운 쪽·외곽선 톤은 올린다(최대 5회). 그래도 충돌이면 `ForgeError("palette.collision")`(재질·단계 포함).
+  - 배치 순서(결정론): 재질 키 정렬 → 각 재질에서 기준색 → 밝은 쪽 바깥부터 안쪽 → 어두운 쪽 바깥부터 안쪽 → 외곽선 톤. 바깥 단계가 먼저 자리를 잡으므로 밀려나는 쪽은 안쪽 단계이고 명도 순서가 유지된다.
+  - 의도적 공유는 재질 정의에 `"shareWith": "<재질>"`이 있을 때만: 두 재질 사이는 거리 검사를 하지 않고, 같은 hex는 인덱스를 공유한다.
+- 재질별 외곽선 톤: 램프 밖 전용 1색. `L = ramp[0].L − 0.08`, `C = ramp[0].C × 0.6`, hue는 그림자 방향으로 한 단계 더.
 - 램프 생성 `makeRamp(base, rules.ramp)`:
   - 단계 수 `steps`(기본 5), 기준색은 가운데 단계
   - 밝아질수록 명도 +ΔL, 색상(hue)을 `warmHue`(기본 70°, 노랑) 방향으로 `hueShift`°씩 이동
   - 어두워질수록 명도 −ΔL, 색상을 `coolHue`(기본 260°, 파랑) 방향으로 이동, 채도는 가운데 단계에서 최대 → 양끝으로 `chromaFalloff`만큼 감소
   - 근거: Slynyrd Pixelblog 1(HSB 팔레트), rule `color.ramp.hue-shift`
 - 전역 팔레트 = 바이블의 모든 재질 램프 + 외곽선색 + 이펙트색. **바이블에 없는 색은 렌더러가 만들 수 없다.**
-- 색 예산 검사: 프레임 묶음 전체에서 사용된 고유 인덱스 수 ≤ `bible.colorBudget[sizeClass]`.
+- 색 예산 검사: 프레임 묶음 전체에서 **실제로 쓰인** 고유 색 수(외곽선 톤·fx 포함) ≤ `bible.colorBudget[sizeClass]`. 근거: SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개.
 
 ## §5 도형 래스터화 (packages/core/shapes)
 모두 정수 좌표, 최종 해상도에서 직접. 결과는 `Mask`(Uint8Array 0/1) + 법선 근사.
@@ -98,7 +105,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 2px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
 6. **해석(resolve)**: material+shade → 팔레트 인덱스 → IndexedRaster
 7. **외곽선**: `rules.outline.mode`
-   - `selout`(기본): 실루엣 바깥 1px. 색 = 인접 재질 램프의 0단계, 광원을 향한 면(법선·L > `seloutLitThreshold`)은 1단계
+   - `selout`(기본): 실루엣 바깥 1px. 어두운 면은 인접 재질의 **외곽선 톤**(`ramp.outline`), 광원을 향한 면(법선·L > `seloutLitThreshold`)은 `ramp[0]`. 그림자 색과 외곽선이 같은 색이 되지 않게 한다
    - `dark`: 전역 외곽선색 단일
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개이고 외곽선 아님), 1px 획의 L자 모서리 제거
@@ -116,11 +123,12 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
   "pivot": "bottom-center",              // 발밑 중앙
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
   "outline": { "mode": "selout", "globalColor": "#1a1020" },
-  "colorBudget": { "character": 12, "smallMonster": 6, "boss": 20 },  // sizeClasses와 같은 키
+  "colorBudget": { "character": 15, "smallMonster": 7, "boss": 30 },  // sizeClasses와 같은 키. SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개
   "materials": {                          // 재질 → 램프 기준색
     "skin": { "base": "#d9a07a", "steps": 4 },
     "cloth_red": { "base": "#a83c3c", "steps": 4 },
     "metal": { "base": "#8c95a6", "steps": 5, "contrast": 1.4 },  // 금속은 명암폭 큼 (rule color.material-contrast)
+    "metal_trim": { "base": "#8c95a6", "steps": 3, "shareWith": "metal" },  // 의도적 색 공유는 shareWith로만
     "leather": { "base": "#6b4a32", "steps": 4 }
   },
   "fxColors": ["#ffffff", "#ffe08a"],
@@ -148,6 +156,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ```
 - 좌표는 뼈 로컬 좌표(px). 클로드는 이 파일만 작성·수정한다.
 - `kind`가 아직 구현되지 않은 종류면 `ForgeError("spec.kind-not-implemented")`. `sizeClass`는 바이블 `sizeClasses`의 키여야 한다.
+- 작성 지침: 캐릭터당 재질 3~4개 권장. 색 예산 초과 시 재질의 `steps`를 줄이거나 재질을 합친다.
 ### §7.3 Mask 파츠 (형태가 독특한 파츠용)
 ```jsonc
 { "bone": "head", "shape": { "type": "mask", "origin": [3, 6],

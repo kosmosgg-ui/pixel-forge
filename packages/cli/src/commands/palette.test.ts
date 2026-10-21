@@ -4,7 +4,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
-import { ForgeError } from '@pixel-forge/core';
+import { buildBiblePalette, ForgeError } from '@pixel-forge/core';
+import { bibleColorsSchema, rulesColorSchema } from '@pixel-forge/spec';
+import { readJson } from '../io/files.js';
 import { decodePng } from '../io/png.js';
 import { paletteCommand } from './palette.js';
 
@@ -25,6 +27,16 @@ describe('forge palette', () => {
     const r = paletteCommand('sample-v0', work);
     const hash = createHash('sha256').update(readFileSync(join(work, r.out))).digest('hex');
     expect(hash).toMatchSnapshot();
+  });
+
+  it('sample-v0: #ffffff는 fx에만 있다', () => {
+    const bp = buildBiblePalette(
+      readJson(join(work, 'data', 'bibles', 'sample-v0.bible.json'), bibleColorsSchema),
+      readJson(join(work, 'data', 'rules', 'default.rules.json'), rulesColorSchema),
+    );
+    const white = Array.from(bp.palette.colors).indexOf(0xffffffff);
+    expect(bp.fxIndices).toContain(white);
+    for (const r of Object.values(bp.ramps)) expect([...r.indices, r.outline]).not.toContain(white);
   });
 
   it('없는 바이블은 ForgeError', () => {

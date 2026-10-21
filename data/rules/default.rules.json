@@ -9,7 +9,16 @@
     "hueShift": 8,
     "warmHue": 70,
     "coolHue": 260,
-    "chromaFalloff": 0.25
+    "chromaFalloff": 0.25,
+    "minL": 0.18,
+    "maxL": 0.93,
+    "avoidHueBand": [115, 165],
+    "avoidHueBandNote": "그림자·하이라이트가 초록으로 지나가면 탁해 보인다. 경로가 이 대역(OKLCh h)을 지나면 반대 방향으로 돈다",
+    "reservedMinDistance": 0.03,
+    "collisionNudgeL": 0.02,
+    "collisionMaxNudges": 5,
+    "outlineToneDeltaL": 0.08,
+    "outlineToneChroma": 0.6
   },
   "materialContrast": {
     "id": "color.material-contrast",
@@ -42,10 +51,10 @@
   },
   "colorBudget": {
     "id": "color.budget",
-    "source": "Shovel Knight 4-5 colors per sprite, Mina 4 colors per tile, scaled for mid-res",
-    "character": 12,
-    "smallMonster": 6,
-    "boss": 20
+    "source": "SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개. 프레임에 실제로 쓰인 고유 색 수(외곽선 톤·fx 포함)로 센다",
+    "character": 15,
+    "smallMonster": 7,
+    "boss": 30
   },
   "anim": {
     "id": "anim.pose-to-pose",

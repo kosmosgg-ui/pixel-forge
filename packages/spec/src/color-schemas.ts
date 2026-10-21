@@ -8,6 +8,8 @@ export const materialSchema = z.object({
   steps: z.number().int().min(2).max(8),
   kind: z.string().min(1),
   contrast: z.number().positive().optional(),
+  /** 이 재질과는 색이 가까워도 되고 같은 hex는 인덱스를 공유한다 */
+  shareWith: z.string().min(1).optional(),
 });
 
 export const bibleColorsSchema = z
@@ -17,7 +19,15 @@ export const bibleColorsSchema = z
     outline: z.object({ globalColor: hexColorSchema }).passthrough(),
     fxColors: z.array(hexColorSchema),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((b, ctx) => {
+    for (const [id, m] of Object.entries(b.materials)) {
+      if (m.shareWith === undefined) continue;
+      if (m.shareWith === id || !(m.shareWith in b.materials)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['materials', id, 'shareWith'], message: `없는 재질이거나 자기 자신입니다: ${m.shareWith}` });
+      }
+    }
+  });
 
 export const rampRulesSchema = z
   .object({
@@ -28,8 +38,17 @@ export const rampRulesSchema = z
     warmHue: z.number(),
     coolHue: z.number(),
     chromaFalloff: z.number().min(0).max(1),
+    minL: z.number().min(0).max(1),
+    maxL: z.number().min(0).max(1),
+    avoidHueBand: z.tuple([z.number(), z.number()]),
+    reservedMinDistance: z.number().min(0),
+    collisionNudgeL: z.number().positive(),
+    collisionMaxNudges: z.number().int().min(0),
+    outlineToneDeltaL: z.number().min(0),
+    outlineToneChroma: z.number().min(0).max(1),
   })
-  .passthrough();
+  .passthrough()
+  .refine((r) => r.minL < r.maxL, 'minL < maxL 이어야 합니다');
 
 // 재질 종류 이름은 게임마다 자유. 숫자 값만 대비 계수로 쓰고 id·source 같은 문자열은 버린다
 export const materialContrastSchema = z
