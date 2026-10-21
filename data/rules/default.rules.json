@@ -1,0 +1,68 @@
+{
+  "$comment": "도트 규칙 수치. 각 항목의 rule id는 코드 주석 // rule: <id> 와 렌더 로그에 사용. source는 연구 노트 근거.",
+  "version": 1,
+  "ramp": {
+    "id": "color.ramp.hue-shift",
+    "source": "Slynyrd Pixelblog 1 (HSB palettes)",
+    "steps": 5,
+    "deltaL": 0.11,
+    "hueShift": 8,
+    "warmHue": 70,
+    "coolHue": 260,
+    "chromaFalloff": 0.25
+  },
+  "materialContrast": {
+    "id": "color.material-contrast",
+    "source": "Gen Jam 2016 procedural sprites: metal ramps vary a lot, cloth little",
+    "metal": 1.4,
+    "cloth": 0.8,
+    "skin": 0.9,
+    "default": 1.0
+  },
+  "shade": {
+    "id": "form.shade-quantize",
+    "source": "directional light, avoid pillow shading",
+    "thresholds": [0.15, 0.45, 0.75],
+    "backLimbDarken": 1,
+    "backLimbRuleId": "form.depth-cue"
+  },
+  "cleanup": {
+    "id": "form.cleanup",
+    "source": "pixel art fundamentals (orphans, jaggies)",
+    "minCluster": 2,
+    "removeOrphans": true,
+    "pixelPerfectLines": true
+  },
+  "outline": {
+    "id": "form.outline",
+    "source": "Saint11 Outlines (selective outline)",
+    "mode": "selout",
+    "seloutLitThreshold": 0.35,
+    "innerLines": true
+  },
+  "colorBudget": {
+    "id": "color.budget",
+    "source": "Shovel Knight 4-5 colors per sprite, Mina 4 colors per tile, scaled for mid-res",
+    "character": 12,
+    "smallMonster": 6,
+    "boss": 20
+  },
+  "anim": {
+    "id": "anim.pose-to-pose",
+    "source": "Dead Cells: interpolation frames only before or after keys, never in-between",
+    "defaultKeyMs": 120,
+    "strikeMaxMs": 80,
+    "maxInbetweenPerKey": 2,
+    "attackKeyCount": [4, 6]
+  },
+  "qa": {
+    "id": "qa.thresholds",
+    "sheetScale": 4,
+    "orphanMax": 2,
+    "bandingMax": 3,
+    "silhouetteIoUMax": 0.8,
+    "contrastMinL": 0.18,
+    "scaleTolerance": 0.15,
+    "flickerMax": 0
+  }
+}

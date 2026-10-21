@@ -1,0 +1,21 @@
+{
+  "name": "@pixel-forge/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@pixel-forge/export": "workspace:*",
+    "@pixel-forge/core": "workspace:*"
+  },
+  "bin": {
+    "forge": "./dist/main.js"
+  }
+}

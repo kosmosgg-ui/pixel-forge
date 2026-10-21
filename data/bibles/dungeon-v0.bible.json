@@ -1,0 +1,37 @@
+{
+  "$comment": "「내려가자 던전」 아트 바이블 v0. TODO(P0) 표시 항목은 웹 데모 조사 후 확정.",
+  "id": "dungeon-v0",
+  "internalResolution": [320, 180],
+  "internalResolutionStatus": "TODO(P0)",
+  "canvas": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
+  "canvasStatus": "TODO(P0): 현재 데모 스프라이트 크기와 맞출지 결정",
+  "pivot": "bottom-center",
+  "facing": "right",
+  "background": "#2a2238",
+  "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
+  "outline": { "mode": "selout", "globalColor": "#1a1020" },
+  "colorBudget": { "character": 12, "smallMonster": 6, "boss": 20 },
+  "materials": {
+    "skin": { "base": "#d9a07a", "steps": 4, "kind": "skin" },
+    "hair_brown": { "base": "#5a3a2a", "steps": 3, "kind": "cloth" },
+    "cloth_red": { "base": "#a83c3c", "steps": 4, "kind": "cloth" },
+    "cloth_green": { "base": "#3f7a4a", "steps": 4, "kind": "cloth" },
+    "cloth_blue": { "base": "#3c5aa8", "steps": 4, "kind": "cloth" },
+    "cloth_white": { "base": "#d8d2c4", "steps": 4, "kind": "cloth" },
+    "cloth_purple": { "base": "#6a3c8c", "steps": 4, "kind": "cloth" },
+    "leather": { "base": "#6b4a32", "steps": 4, "kind": "default" },
+    "metal": { "base": "#8c95a6", "steps": 5, "kind": "metal" },
+    "gold": { "base": "#c9a23a", "steps": 4, "kind": "metal" },
+    "wood": { "base": "#7a5634", "steps": 3, "kind": "default" },
+    "goblin_skin": { "base": "#7f9a3c", "steps": 4, "kind": "skin" }
+  },
+  "fxColors": ["#ffffff", "#ffe08a", "#ff6a3c"],
+  "classColorKey": {
+    "warrior": "cloth_red",
+    "guardian": "metal",
+    "mage": "cloth_blue",
+    "priest": "cloth_white",
+    "rogue": "cloth_green"
+  },
+  "classColorKeyStatus": "TODO(P0): 데모의 직업 6종 목록과 대조"
+}
