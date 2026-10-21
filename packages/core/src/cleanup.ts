@@ -15,13 +15,13 @@ function majority(values: readonly number[]): number {
 
 /**
  * rule: form.cleanup — 8-이웃에 같은 색이 하나도 없는 픽셀을 이웃의 다수 색으로 바꾼다.
- * 칠해진 이웃이 없으면 투명. keep의 인덱스(외곽선 등)는 건드리지 않는다. 판정은 원본 기준이라 순서와 무관.
+ * 칠해진 이웃이 없으면 투명. keep의 인덱스, protect가 1인 위치(외곽선 등)는 건드리지 않는다. 판정은 원본 기준이라 순서와 무관.
  */
-export function removeOrphansInPlace(r: IndexedRaster, keep: ReadonlySet<number> = new Set()): number {
+export function removeOrphansInPlace(r: IndexedRaster, keep: ReadonlySet<number> = new Set(), protect?: Uint8Array): number {
   const changes: [number, number][] = [];
   for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) {
     const v = r.px[y * r.w + x] ?? 0;
-    if (v === 0 || keep.has(v)) continue;
+    if (v === 0 || keep.has(v) || protect?.[y * r.w + x]) continue;
     const around: number[] = [];
     for (const [dx, dy] of N8) {
       const X = x + dx, Y = y + dy;

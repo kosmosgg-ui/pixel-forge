@@ -1,5 +1,7 @@
 import { FORGE_VERSION, ForgeError } from '@pixel-forge/core';
 import { paletteCommand } from './commands/palette.js';
+import { renderCommand } from './commands/render.js';
+import { validateCommand } from './commands/validate.js';
 
 export interface RunInput {
   version: boolean;
@@ -15,9 +17,12 @@ export function run(input: RunInput): RunResult {
   }
   const [cmd, arg] = input.positionals;
   if (cmd === undefined) throw new ForgeError('cli.no-command', '명령이 없습니다. 예: forge --version');
-  if (cmd === 'palette') {
-    if (arg === undefined) throw new ForgeError('cli.args', '사용법: forge palette <bible id 또는 경로>');
-    return paletteCommand(arg, input.cwd);
-  }
+  const need = (usage: string): string => {
+    if (arg === undefined) throw new ForgeError('cli.args', `사용법: forge ${cmd} ${usage}`);
+    return arg;
+  };
+  if (cmd === 'palette') return paletteCommand(need('<bible id 또는 경로>'), input.cwd);
+  if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
+  if (cmd === 'render') return renderCommand(need('<spec 경로>'), input.cwd);
   throw new ForgeError('cli.unknown-command', `알 수 없는 명령: ${cmd}`);
 }

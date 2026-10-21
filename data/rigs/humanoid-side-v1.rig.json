@@ -1,0 +1,32 @@
+{
+  "$comment": "측면 인간형 리그. 키 30px 기준, 오른쪽을 바라봄, 화면 좌표(y 아래). pivot은 부모 뼈 로컬 좌표, restAngle은 부모 대비(도, 양수 = 시계 방향). 골반(root)이 원점.",
+  "id": "humanoid-side-v1",
+  "view": "side",
+  "facing": "right",
+  "baseHeight": 30,
+  "bones": {
+    "root":      { "parent": null,        "pivot": [0, 0],  "length": 0, "restAngle": -90, "depthLayer": "mid" },
+    "spine":     { "parent": "root",      "pivot": [0, 0],  "length": 4, "restAngle": 0,   "depthLayer": "mid" },
+    "chest":     { "parent": "spine",     "pivot": [4, 0],  "length": 5, "restAngle": 0,   "depthLayer": "mid" },
+    "neck":      { "parent": "chest",     "pivot": [5, 0],  "length": 1, "restAngle": 0,   "depthLayer": "mid" },
+    "head":      { "parent": "neck",      "pivot": [1, 0],  "length": 7, "restAngle": 0,   "depthLayer": "mid" },
+    "upperArmF": { "parent": "chest",     "pivot": [4, 0],  "length": 5, "restAngle": 175, "depthLayer": "front" },
+    "lowerArmF": { "parent": "upperArmF", "pivot": [5, 0],  "length": 4, "restAngle": -15, "depthLayer": "front" },
+    "handF":     { "parent": "lowerArmF", "pivot": [4, 0],  "length": 1, "restAngle": 0,   "depthLayer": "front" },
+    "weapon":    { "parent": "handF",     "pivot": [1, 0],  "length": 0, "restAngle": -70, "depthLayer": "front" },
+    "upperArmB": { "parent": "chest",     "pivot": [4, 0],  "length": 5, "restAngle": 190, "depthLayer": "back" },
+    "lowerArmB": { "parent": "upperArmB", "pivot": [5, 0],  "length": 4, "restAngle": 10,  "depthLayer": "back" },
+    "handB":     { "parent": "lowerArmB", "pivot": [4, 0],  "length": 1, "restAngle": 0,   "depthLayer": "back" },
+    "thighF":    { "parent": "root",      "pivot": [0, 1],  "length": 6, "restAngle": 180, "depthLayer": "front" },
+    "shinF":     { "parent": "thighF",    "pivot": [6, 0],  "length": 6, "restAngle": 0,   "depthLayer": "front" },
+    "footF":     { "parent": "shinF",     "pivot": [6, 0],  "length": 2, "restAngle": -90, "depthLayer": "front" },
+    "thighB":    { "parent": "root",      "pivot": [0, -1], "length": 6, "restAngle": 180, "depthLayer": "back" },
+    "shinB":     { "parent": "thighB",    "pivot": [6, 0],  "length": 6, "restAngle": 0,   "depthLayer": "back" },
+    "footB":     { "parent": "shinB",     "pivot": [6, 0],  "length": 2, "restAngle": -90, "depthLayer": "back" }
+  },
+  "drawOrder": [
+    "thighB", "shinB", "footB", "upperArmB", "lowerArmB", "handB",
+    "root", "spine", "chest", "neck", "head",
+    "thighF", "shinF", "footF", "upperArmF", "lowerArmF", "handF", "weapon"
+  ]
+}

@@ -19,6 +19,7 @@ try {
   const isArg = err instanceof TypeError && 'code' in err && String(err.code).startsWith('ERR_PARSE_ARGS');
   const code = isForge ? err.code : isArg ? 'cli.args' : 'internal';
   const message = err instanceof Error ? err.message : String(err);
-  process.stdout.write(JSON.stringify({ ok: false, error: { code, message } }) + '\n');
+  const detail = isForge && err.detail !== undefined ? { detail: err.detail } : {};
+  process.stdout.write(JSON.stringify({ ok: false, error: { code, message, ...detail } }) + '\n');
   process.exitCode = isForge || isArg ? EXIT_VALIDATION : EXIT_INTERNAL;
 }

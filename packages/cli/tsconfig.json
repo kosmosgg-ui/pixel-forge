@@ -22,6 +22,12 @@
     },
     {
       "path": "../spec"
+    },
+    {
+      "path": "../render"
+    },
+    {
+      "path": "../rig"
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "id": "warrior",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "character",
+  "rig": "humanoid-side-v1",
+  "role": "warrior",
+  "proportions": { "height": 30 },
+  "parts": [
+    { "bone": "thighB", "shape": { "type": "capsule", "len": 7, "w": 4 }, "material": "leather" },
+    { "bone": "shinB", "shape": { "type": "capsule", "len": 7, "w": 4 }, "material": "metal" },
+    { "bone": "footB", "shape": { "type": "capsule", "len": 5, "w": 3 }, "material": "leather" },
+    { "bone": "upperArmB", "shape": { "type": "capsule", "len": 6, "w": 4 }, "material": "cloth_red" },
+    { "bone": "lowerArmB", "shape": { "type": "capsule", "len": 5, "w": 4 }, "material": "metal" },
+    { "bone": "upperArmB", "shape": { "type": "ellipse", "w": 7, "h": 5 }, "material": "metal", "anchor": "joint", "orient": "world", "name": "pauldronB" },
+    { "bone": "spine", "shape": { "type": "capsule", "len": 6, "w": 9 }, "material": "cloth_red", "name": "skirt" },
+    { "bone": "chest", "shape": { "type": "capsule", "len": 8, "w": 12 }, "material": "metal", "name": "breastplate" },
+    { "bone": "spine", "shape": { "type": "rect", "w": 10, "h": 2 }, "material": "leather", "anchor": "end", "orient": "world", "name": "belt" },
+    { "bone": "head", "shape": { "type": "ellipse", "w": 8, "h": 8 }, "material": "skin", "orient": "world" },
+    { "bone": "head", "shape": { "type": "poly", "pts": [[-5, -5], [3, -5], [5, -1], [-5, 0]] }, "material": "metal", "orient": "world", "z": 1, "name": "helmet" },
+    { "bone": "thighF", "shape": { "type": "capsule", "len": 7, "w": 4 }, "material": "leather" },
+    { "bone": "shinF", "shape": { "type": "capsule", "len": 7, "w": 4 }, "material": "metal" },
+    { "bone": "footF", "shape": { "type": "capsule", "len": 5, "w": 3 }, "material": "leather" },
+    { "bone": "upperArmF", "shape": { "type": "capsule", "len": 6, "w": 4 }, "material": "cloth_red" },
+    { "bone": "lowerArmF", "shape": { "type": "capsule", "len": 5, "w": 4 }, "material": "metal" },
+    { "bone": "upperArmF", "shape": { "type": "ellipse", "w": 7, "h": 5 }, "material": "metal", "anchor": "joint", "orient": "world", "z": 1, "name": "pauldronF" },
+    { "bone": "handF", "shape": { "type": "ellipse", "w": 3, "h": 3 }, "material": "skin", "orient": "world" },
+    { "bone": "weapon", "shape": { "type": "line", "from": [1, -1], "to": [9, -12] }, "material": "metal", "anchor": "joint", "name": "sword" },
+    { "bone": "weapon", "shape": { "type": "line", "from": [-1, -2], "to": [3, 1] }, "material": "leather", "anchor": "joint", "z": 1, "name": "guard" }
+  ],
+  "animations": ["idle", "attack", "hit", "death"],
+  "seed": 1
+}

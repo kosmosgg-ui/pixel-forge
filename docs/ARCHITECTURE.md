@@ -99,7 +99,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 프레임 1장 렌더 순서. 각 단계는 독립 함수, 단위 테스트 필수.
 1. **포즈 해석**: Rig + Pose → 뼈별 월드 변환(정수 스냅된 위치, 각도)
 2. **파츠 배치**: Spec의 파츠를 뼈에 부착, z순서 정렬(`rig.drawOrder` + 파츠 `z` 보정). **렌더러는 뼈 이름을 절대 참조하지 않고** `depthLayer`·`drawOrder`만 쓴다
-3. **래스터화**: 파츠별 도형 → ZoneBuffer에 depth 비교로 기록 (`depthLayer` back < mid < front 순으로 `depth`가 작다)
+3. **래스터화**: 파츠별 도형 → ZoneBuffer에 depth 비교로 기록 (`depthLayer` back < mid < front 순으로 `depth`가 작다). 캔버스 배치: 루트 관절은 가로 가운데, 가장 아래 픽셀은 바닥에서 2px 위(외곽선 1px + 빈 줄 1px)
 4. **셰이딩**: 픽셀별 `lambert = max(0, n·L)` + `ambient` → `rules.shade.thresholds`로 단계 양자화 → shade 기록
    - 뒤쪽 보정: `depthLayer = "back"`인 뼈에 붙은 파츠는 `shade -= rules.shade.backLimbDarken`(기본 1) — 깊이감 (rule `form.depth-cue`)
 5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 2px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
@@ -107,6 +107,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 7. **외곽선**: `rules.outline.mode`
    - `selout`(기본): 실루엣 바깥 1px. 어두운 면은 인접 재질의 **외곽선 톤**(`ramp.outline`), 광원을 향한 면(법선·L > `seloutLitThreshold`)은 `ramp[0]`. 그림자 색과 외곽선이 같은 색이 되지 않게 한다
    - `dark`: 전역 외곽선색 단일
+   - `none`: 바깥 외곽선 없음
+   - 모드는 `bible.outline.mode`가 `rules.outline.mode`보다 우선한다(게임별 화풍)
    - 내부선: 서로 다른 파츠가 겹치고 depth 차이가 있으면 뒤 파츠 쪽 경계 1px를 해당 램프 0단계로
 8. **정리**: 고립 픽셀 제거(8-이웃 중 같은 색 0개이고 외곽선 아님), 1px 획의 L자 모서리 제거
 9. **검증 훅**: 팔레트 밖 인덱스, 반투명 알파가 없음을 assert (개발 모드)
@@ -155,6 +157,11 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 }
 ```
 - 좌표는 뼈 로컬 좌표(px). 클로드는 이 파일만 작성·수정한다.
+- 파츠 위치: `anchor`(`joint` | `mid` 기본 | `end`) 지점에서 `at`[x, y]만큼 뼈 로컬 좌표로 옮긴 픽셀이 도형 앵커(§5)가 된다.
+- 도형 축: `orient: "bone"`(기본)은 도형 로컬 x축이 뼈 방향이라 위로 선 뼈(몸통)에서는 `len`/`w`가 세로다. 머리·모자·벨트처럼 화면 축 그대로 그릴 파츠는 `orient: "world"`.
+- 뼈 로컬 +y: 위로 선 뼈에서는 화면 앞(+x), 아래로 향한 뼈에서는 화면 뒤(−x).
+- `proportions.height`: 리그 전체(관절 위치·뼈 길이)를 `rig.baseHeight` 대비 이 비율로 축척한다. 파츠 크기는 축척하지 않는다. `headRatio`·`bulk`는 지금은 기록용(P6 레퍼런스 비교).
+- `role`(선택): `bible.roleColorKey`의 키.
 - `kind`가 아직 구현되지 않은 종류면 `ForgeError("spec.kind-not-implemented")`. `sizeClass`는 바이블 `sizeClasses`의 키여야 한다.
 - 작성 지침: 캐릭터당 재질 3~4개 권장. 색 예산 초과 시 재질의 `steps`를 줄이거나 재질을 합친다.
 ### §7.3 Mask 파츠 (형태가 독특한 파츠용)

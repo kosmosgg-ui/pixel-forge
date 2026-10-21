@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`forge render (golden) > 단색 원 외곽선 dark 1`] = `"212a2a2903166caf862b22f4ef982db66892eddb343e68716a7d6f1cb256f44f"`;
+
+exports[`forge render (golden) > 단색 원 외곽선 none 1`] = `"872da3c3b4b3148f793c308b5840c54aa44659fde70c5aa39ce92d4c052d1120"`;
+
+exports[`forge render (golden) > 단색 원 외곽선 selout 1`] = `"9b230833532acc0086ca67f638734ab4e471278e14706f47cc86f38ddb684781"`;
+
+exports[`forge render (golden) > 샘플 mage rest 프레임 1`] = `"976e03351c22af0293ef8d1f97dcafa82c09ee0e03a55494e518776cbae54f5b"`;
+
+exports[`forge render (golden) > 샘플 rogue rest 프레임 1`] = `"d87f5c665679a631fa7d1c0f220c5ae65796332df86220466d6d6aa12c479a88"`;
+
+exports[`forge render (golden) > 샘플 warrior rest 프레임 1`] = `"9b0483dcf0a4c804b48fe36a4c81b88b4d4ffc38c0018e3fa6aca7fbeafce64d"`;

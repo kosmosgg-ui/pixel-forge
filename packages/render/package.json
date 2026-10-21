@@ -12,6 +12,8 @@
     }
   },
   "dependencies": {
-    "@pixel-forge/rig": "workspace:*"
+    "@pixel-forge/rig": "workspace:*",
+    "@pixel-forge/core": "workspace:*",
+    "@pixel-forge/spec": "workspace:*"
   }
 }

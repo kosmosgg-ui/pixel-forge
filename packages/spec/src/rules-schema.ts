@@ -1,0 +1,25 @@
+import { z } from 'zod';
+import { outlineModeSchema } from './bible-schema.js';
+import { materialContrastSchema, rampRulesSchema } from './color-schemas.js';
+
+export const shadeRulesSchema = z
+  .object({
+    id: z.string().min(1),
+    thresholds: z.array(z.number().min(0).max(1)).min(1).refine((t) => t.every((v, i) => i === 0 || v > (t[i - 1] ?? 0)), '오름차순이어야 합니다'),
+    backLimbDarken: z.number().int().min(0),
+  })
+  .passthrough();
+
+export const rulesSchema = z
+  .object({
+    version: z.number().int(),
+    ramp: rampRulesSchema,
+    materialContrast: materialContrastSchema,
+    shade: shadeRulesSchema,
+    cleanup: z.object({ id: z.string(), minCluster: z.number().int().min(1), removeOrphans: z.boolean(), pixelPerfectLines: z.boolean() }).passthrough(),
+    outline: z.object({ id: z.string(), mode: outlineModeSchema, seloutLitThreshold: z.number().min(0).max(1), innerLines: z.boolean() }).passthrough(),
+  })
+  .passthrough();
+
+export type Rules = z.infer<typeof rulesSchema>;
+export type ShadeRules = z.infer<typeof shadeRulesSchema>;

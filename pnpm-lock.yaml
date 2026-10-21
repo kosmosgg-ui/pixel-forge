@@ -26,6 +26,12 @@ importers:
       '@pixel-forge/export':
         specifier: workspace:*
         version: link:../export
+      '@pixel-forge/render':
+        specifier: workspace:*
+        version: link:../render
+      '@pixel-forge/rig':
+        specifier: workspace:*
+        version: link:../rig
       '@pixel-forge/spec':
         specifier: workspace:*
         version: link:../spec
@@ -60,15 +66,24 @@ importers:
 
   packages/render:
     dependencies:
+      '@pixel-forge/core':
+        specifier: workspace:*
+        version: link:../core
       '@pixel-forge/rig':
         specifier: workspace:*
         version: link:../rig
+      '@pixel-forge/spec':
+        specifier: workspace:*
+        version: link:../spec
 
   packages/rig:
     dependencies:
       '@pixel-forge/core':
         specifier: workspace:*
         version: link:../core
+      '@pixel-forge/spec':
+        specifier: workspace:*
+        version: link:../spec
 
   packages/spec:
     dependencies:
