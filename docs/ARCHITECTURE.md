@@ -4,6 +4,7 @@
 
 ## §1 목표와 설계 원칙
 - **범용 툴**: 특정 게임에 묶이지 않는다. 게임마다 다른 것(해상도, 캔버스, 재질, 색 예산, 역할별 대표색, 산출물 위치)은 전부 Bible·Spec·어댑터 설정으로 받고, `packages/` 코드에는 게임 이름·경로·수치를 하드코딩하지 않는다.
+- **지원 범위는 데이터로 확장한다**: 새 시점·에셋 종류·리그는 `data/` 파일과 플러그인 모듈 추가로 지원하며, 기존 렌더러 코드를 수정하지 않는다.
 - 입력: 캐릭터 설계 JSON(Spec) + 아트 바이블(Bible) + 규칙(Rules) + 리그(Rig) + 파츠 라이브러리
 - 출력: 스프라이트 시트 PNG + 메타 JSON + QA 리포트 + 컨택트 시트 PNG
 - 원칙
@@ -90,10 +91,10 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ## §6 렌더 파이프라인 (packages/render)
 프레임 1장 렌더 순서. 각 단계는 독립 함수, 단위 테스트 필수.
 1. **포즈 해석**: Rig + Pose → 뼈별 월드 변환(정수 스냅된 위치, 각도)
-2. **파츠 배치**: Spec의 파츠를 뼈에 부착, z순서 정렬(`rig.drawOrder` + 파츠 `z` 보정)
-3. **래스터화**: 파츠별 도형 → ZoneBuffer에 depth 비교로 기록 (뒤쪽 팔·다리는 `depth`가 작다)
+2. **파츠 배치**: Spec의 파츠를 뼈에 부착, z순서 정렬(`rig.drawOrder` + 파츠 `z` 보정). **렌더러는 뼈 이름을 절대 참조하지 않고** `depthLayer`·`drawOrder`만 쓴다
+3. **래스터화**: 파츠별 도형 → ZoneBuffer에 depth 비교로 기록 (`depthLayer` back < mid < front 순으로 `depth`가 작다)
 4. **셰이딩**: 픽셀별 `lambert = max(0, n·L)` + `ambient` → `rules.shade.thresholds`로 단계 양자화 → shade 기록
-   - 뒤쪽 사지 보정: `shade -= rules.shade.backLimbDarken`(기본 1) — 깊이감 (rule `form.depth-cue`)
+   - 뒤쪽 보정: `depthLayer = "back"`인 뼈에 붙은 파츠는 `shade -= rules.shade.backLimbDarken`(기본 1) — 깊이감 (rule `form.depth-cue`)
 5. **클러스터 정리**: 같은 재질 안에서 크기 < `rules.cleanup.minCluster`(기본 2px)인 shade 섬을 주변 최빈 shade로 병합 → 노이즈·필로우 셰이딩 방지
 6. **해석(resolve)**: material+shade → 팔레트 인덱스 → IndexedRaster
 7. **외곽선**: `rules.outline.mode`
@@ -109,11 +110,13 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 {
   "id": "sample-v0",
   "internalResolution": [320, 180],      // 선택: 대상 게임의 내부 해상도(QA 가독성 검사용)
-  "canvas": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },
+  "view": "side",                        // "side" | "topdown" | "iso" — 지금은 side만 구현
+  "directions": 1,                       // 1 | 4 | 8. side = 1 + 좌우 반전
+  "sizeClasses": { "character": [48, 48], "smallMonster": [32, 32], "boss": [96, 96] },  // 이름 자유, [w, h] px
   "pivot": "bottom-center",              // 발밑 중앙
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
   "outline": { "mode": "selout", "globalColor": "#1a1020" },
-  "colorBudget": { "character": 12, "smallMonster": 6, "boss": 20 },
+  "colorBudget": { "character": 12, "smallMonster": 6, "boss": 20 },  // sizeClasses와 같은 키
   "materials": {                          // 재질 → 램프 기준색
     "skin": { "base": "#d9a07a", "steps": 4 },
     "cloth_red": { "base": "#a83c3c", "steps": 4 },
@@ -128,6 +131,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ```jsonc
 {
   "id": "rogue",
+  "kind": "character",                   // "character" | "item" | "tile" | "fx" | "ui" — P2~P4는 character만 구현
   "bible": "sample-v0",
   "sizeClass": "character",
   "rig": "humanoid-side-v1",
@@ -143,6 +147,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 }
 ```
 - 좌표는 뼈 로컬 좌표(px). 클로드는 이 파일만 작성·수정한다.
+- `kind`가 아직 구현되지 않은 종류면 `ForgeError("spec.kind-not-implemented")`. `sizeClass`는 바이블 `sizeClasses`의 키여야 한다.
 ### §7.3 Mask 파츠 (형태가 독특한 파츠용)
 ```jsonc
 { "bone": "head", "shape": { "type": "mask", "origin": [3, 6],
@@ -155,7 +160,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ## §8 리그와 애니메이션 (packages/rig)
 ### §8.1 Rig (`humanoid-side-v1`)
 뼈: `root(골반) → spine → chest → neck → head`, `chest → upperArmF → lowerArmF → handF → weapon`, `chest → upperArmB → lowerArmB → handB`, `root → thighF → shinF → footF`, `root → thighB → shinB → footB`.
-- 각 뼈: `parent, pivot[x,y], length, restAngle`. `F`=화면 앞쪽, `B`=뒤쪽. drawOrder: B사지 → 몸통 → 머리 → F사지 → weapon.
+- 각 뼈: `parent, pivot[x,y], length, restAngle, depthLayer`. `depthLayer`는 `"back" | "mid" | "front"`(이 리그: `*B` 사지=back, 몸통·머리=mid, `*F` 사지·weapon=front). 이름의 `F`/`B`는 사람이 읽기 위한 관례일 뿐, 렌더러는 `depthLayer`·`drawOrder`만 본다.
+- drawOrder: back 사지 → 몸통 → 머리 → front 사지 → weapon.
 - 측면 시점, 오른쪽을 바라봄. 왼쪽은 렌더 후 수평 반전(픽셀 정확).
 ### §8.2 Pose / Animation
 ```jsonc
@@ -194,6 +200,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ## §10 Export (packages/export)
 - 패커: shelf 패킹(행 단위), 패딩 1px, 2의 거듭제곱 옵션. 프레임 순서 = 애니메이션 순서(결정론).
 - 포맷
+- 프레임 이름 규칙: `<anim>_<dir>_<n>` (side 시점은 `dir = "r"`, n은 0부터). frameTags 이름은 `<anim>_<dir>`.
   - `aseprite-json`(기본): `frames`(hash) + `meta.frameTags`(name, from, to, direction) + `meta.size` + 프레임별 `duration`
   - `manifest`: `{ id, bible, sizeClass, pivot, anims: {name: {frames, ms[], loop}}, palette, hash }`
 - Godot `.tres`는 사용자 지시 전까지 구현하지 않는다.
