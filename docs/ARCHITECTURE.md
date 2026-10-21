@@ -38,7 +38,7 @@ pixel-forge/
   out/                        # 빌드 산출물 (git 제외)
   .forge-cache/               # 해시 캐시 (git 제외)
   docs/ (ARCHITECTURE, phases/, progress.md, backlog.md)
-  skills/forge/SKILL.md       # P6
+  .claude/skills/forge/SKILL.md  # P6 (클로드 코드가 자동 인식하는 위치)
 ```
 의존 방향(단방향만 허용): `spec ← core ← rig ← render ← qa ← export ← cli`. `qa`는 `render`를 import하지 않고 프레임 배열만 받는다.
 
