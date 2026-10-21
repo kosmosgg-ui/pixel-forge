@@ -48,17 +48,31 @@ export function drawEyesInPlace(
   return { pixels, colorIndex };
 }
 
+export interface FaceStats {
+  /** 머리 뼈 파츠가 가려지기 전 차지하는 면적 */
+  area: number;
+  /** 그중 최종적으로 다른 뼈 파츠가 덮은 픽셀 수 */
+  covered: number;
+  /** 머리 면적 위에 손에 든 파츠(held)가 그려진 픽셀 수 */
+  heldOver: number;
+  /** 눈 둘레 창(눈 픽셀 박스, 최소 3×2) 크기와 그중 얼굴 재질이 아닌 픽셀 수 */
+  eyeWindow: number;
+  eyeWindowBad: number;
+}
+
 /**
- * form.face-clear 재료: eyes.bone(머리)에 붙은 파츠들이 가려지기 전 차지하는 캔버스 면적과,
- * 그중 최종적으로 다른 뼈 파츠가 덮은 픽셀 수. 머리 뼈는 spec.eyes.bone으로만 안다(뼈 이름 미참조).
+ * form.face-clear 재료. 머리 뼈는 spec.eyes.bone으로만 안다(뼈 이름 미참조).
+ * 얼굴 재질 = 머리 뼈 첫 파츠의 재질. 눈 둘레 창은 투구·두건 같은 같은 뼈의 다른 재질이 덮어도 실패로 친다
+ * (눈만 금속 위에 찍히면 얼굴로 읽히지 않는다).
  */
 export function faceStats(
   z: FrameZone, spec: Spec, rasters: readonly { x0: number; y0: number; w: number; h: number; mask: Uint8Array }[],
-  partIndexOf: readonly number[], origin: readonly [number, number],
-): { area: number; covered: number } | null {
+  partIndexOf: readonly number[], origin: readonly [number, number], eyePixels: readonly number[], materialId: (m: string) => number,
+): FaceStats | null {
   const bone = spec.eyes?.bone;
   if (bone === undefined) return null;
   const head = new Set(spec.parts.flatMap((p, i) => (p.bone === bone ? [i + 1] : [])));
+  const held = new Set(spec.parts.flatMap((p, i) => (p.held ? [i + 1] : [])));
   const area = new Uint8Array(z.w * z.h);
   rasters.forEach((r, i) => {
     if (!head.has((partIndexOf[i] ?? -1) + 1)) return;
@@ -67,7 +81,28 @@ export function faceStats(
       if (r.mask[j * r.w + k] && X >= 0 && Y >= 0 && X < z.w && Y < z.h) area[Y * z.w + X] = 1;
     }
   });
-  let n = 0, covered = 0;
-  for (let k = 0; k < area.length; k++) if (area[k]) { n++; if (!head.has(z.part[k] ?? 0)) covered++; }
-  return { area: n, covered };
+  let n = 0, covered = 0, heldOver = 0;
+  for (let k = 0; k < area.length; k++) {
+    if (!area[k]) continue;
+    n++;
+    if (!head.has(z.part[k] ?? 0)) covered++;
+    if (held.has(z.part[k] ?? 0)) heldOver++;
+  }
+  const faceMat = materialId(spec.parts.find((p) => p.bone === bone)?.material ?? '');
+  const win = eyeWindow(eyePixels, z.w);
+  let eyeWindowBad = 0;
+  for (const k of win) if (z.material[k] !== faceMat || !head.has(z.part[k] ?? 0)) eyeWindowBad++;
+  return { area: n, covered, heldOver, eyeWindow: win.length, eyeWindowBad };
+}
+
+/** 눈 픽셀 박스를 가로 3·세로 2 이상으로 넓힌 창(가로는 양옆, 세로는 아래로 — 눈 아래 볼이 얼굴로 읽히게) */
+function eyeWindow(eyes: readonly number[], w: number): number[] {
+  if (!eyes.length) return [];
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const k of eyes) { const x = k % w, y = (k - x) / w; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 - x0 < 2) { x0 = Math.min(x0, x1 - 1); x1 = x0 + 2; }
+  if (y1 - y0 < 1) y1 = y0 + 1;
+  const out: number[] = [];
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (x >= 0 && x < w && y >= 0) out.push(y * w + x);
+  return out;
 }

@@ -4,6 +4,7 @@ import { crowdCommand } from './commands/crowd.js';
 import { paletteCommand } from './commands/palette.js';
 import { qaCommand } from './commands/qa.js';
 import { renderCommand } from './commands/render.js';
+import { reviewCommand } from './commands/review.js';
 import { validateCommand } from './commands/validate.js';
 
 export interface RunInput {
@@ -41,6 +42,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : []);
   if (cmd === 'crowd') return crowdCommand(need('<프로젝트 이름> [--count 50] [--seed 1]'), input.cwd, intOption('count', input.count, 50), intOption('seed', input.seed, 1));
+  if (cmd === 'review') return reviewCommand(need('<프로젝트 이름>'), input.cwd);
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'build-all') return buildAllCommand(need('<프로젝트 이름>'), input.cwd);

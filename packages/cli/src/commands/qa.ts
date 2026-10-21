@@ -9,14 +9,16 @@ import { encodePng } from '../io/png.js';
 import { loadProject, type Project } from '../io/project.js';
 import { validateProject } from './validate.js';
 
-/** held 파츠별 손 파츠(부착 뼈·그 부모 뼈의 held 아닌 파츠)와 rest 픽셀 수 */
+/** held 파츠별 손 파츠(부착 뼈의 부모 뼈 파츠), 같은 뼈 파츠(날밑·손잡이), rest 픽셀 수 */
 export function heldInfo(p: Project, restPart?: Uint16Array): HeldInfo[] {
+  const ids = (f: (bone: string) => boolean) => p.spec.parts.flatMap((q, j) => (f(q.bone) ? [j + 1] : []));
   return p.spec.parts.flatMap((part, i) => {
     if (!part.held) return [];
     const parent = p.rig.bones[part.bone]?.parent;
-    const hand = p.spec.parts.flatMap((q, j) => (!q.held && (q.bone === part.bone || q.bone === parent) ? [j + 1] : []));
+    const hand = ids((b) => b === parent);
+    const group = ids((b) => b === part.bone).filter((j) => j !== i + 1);
     const restCount = restPart ? restPart.reduce((a, v) => a + (v === i + 1 ? 1 : 0), 0) : 0;
-    return [{ part: i + 1, name: part.name ?? part.bone, hand, restCount }];
+    return [{ part: i + 1, name: part.name ?? part.bone, hand, group, restCount }];
   });
 }
 

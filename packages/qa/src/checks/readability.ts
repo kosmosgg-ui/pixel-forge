@@ -25,14 +25,27 @@ export function readRoleColor(frames: readonly QaFrame[], ctx: QaContext): Check
   return check('read.role-color', false, ratio >= min, round(ratio), min);
 }
 
-/** form.face-clear: 머리 뼈 파츠 면적 중 다른 파츠에 가려진 비율 ≤ faceCoverMax */
+/**
+ * form.face-clear: 프레임마다(공격 프레임 포함) 판정해 가장 나쁜 프레임으로.
+ * - 머리 뼈 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ faceCoverMax
+ * - 머리 위에 손에 든 파츠 픽셀 0 (무기가 머리 실루엣을 끊지 않게)
+ * - 눈 둘레 창(최소 3×2)이 전부 얼굴 재질 — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림
+ */
 export function formFaceClear(frames: readonly QaFrame[], ctx: QaContext): Check {
   const max = ctx.rules.faceCoverMax;
-  let area = 0, covered = 0;
-  for (const f of frames) if (f.face) { area += f.face.area; covered += f.face.covered; }
-  if (!area) return check('form.face-clear', false, true, null, max, { note: 'eyes(머리 뼈) 없음' });
-  const ratio = covered / area;
-  return check('form.face-clear', false, ratio <= max, round(ratio), max);
+  let worst = -1, any = false, fail = -1, note = '';
+  frames.forEach((f, i) => {
+    const face = f.face;
+    if (!face?.area) return;
+    any = true;
+    const ratio = face.covered / face.area;
+    worst = Math.max(worst, ratio);
+    if (fail >= 0) return;
+    const why = ratio > max ? `가림 ${round(ratio)}` : face.heldOver ? `머리 위 무기 ${face.heldOver}px` : face.eyeWindowBad ? `눈 둘레 얼굴 아닌 픽셀 ${face.eyeWindowBad}/${face.eyeWindow ?? 0}` : '';
+    if (why) { fail = i; note = `${f.name} ${why}`; }
+  });
+  if (!any) return check('form.face-clear', false, true, null, max, { note: 'eyes(머리 뼈) 없음' });
+  return check('form.face-clear', false, fail < 0, round(worst), max, fail >= 0 ? { frame: fail, note } : {});
 }
 
 /** form.detail-min: 같은 재질 8-연결 영역(1px 대각선 획도 한 조각) 중 detailMinPx 미만 조각 수 ≤ detailMaxCount (mark 위치 제외) */

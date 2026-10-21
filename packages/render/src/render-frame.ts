@@ -3,7 +3,7 @@ import { solveRig, type BoneWorld, type Pose } from '@pixel-forge/rig';
 import type { Bible, FxDef, Rig, Rules, Spec } from '@pixel-forge/spec';
 import { assertFrame } from './assert.js';
 import { fitBudgetInPlace, type BudgetFitResult } from './budget-fit.js';
-import { drawEyesInPlace, faceStats } from './eyes.js';
+import { drawEyesInPlace, faceStats, type FaceStats } from './eyes.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
 import { applyFxInPlace } from './fx.js';
 import { innerLinesInPlace, isThinMask, outerOutlineInPlace, thinStrokesInPlace } from './outline.js';
@@ -43,7 +43,7 @@ export interface RenderMeta {
   /** 면적이 작아 3단계로 줄인 파츠의 spec.parts 순번 */
   smallParts: number[];
   /** form.face-clear 재료(eyes 없으면 null) */
-  face: { area: number; covered: number } | null;
+  face: FaceStats | null;
   /** QA용 픽셀 레이어(최종 캔버스 기준): 재질 id, 파츠 id(spec.parts 순번+1), 외곽선·내부선·눈·fx 표시 */
   layers: { material: Uint8Array; part: Uint16Array; mark: Uint8Array };
   /** spec.parts 순번별 [x, y, angle] — 프레임 간 같은 변환인 파츠 판정(anim.flicker) */
@@ -161,7 +161,7 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   for (const p of L.placed) partTransforms[p.index] = [p.x, p.y, p.angle];
   const meta: RenderMeta = {
     budget, budgetExclude: exclude, eyes: eyes?.pixels ?? [], smallParts: [...L.small].map((id) => id - 1).sort((a, b) => a - b),
-    face: faceStats(zone, spec, L.rasters, L.placed.map((p) => p.index), origin),
+    face: faceStats(zone, spec, L.rasters, L.placed.map((p) => p.index), origin, eyes?.pixels ?? [], (m) => Object.keys(bible.materials).sort().indexOf(m) + 1),
     layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) }, partTransforms,
   };
   return { raster: final, origin, clipped: L.clipped, meta, ...(opts.debug ? { debug: { zone, resolved } } : {}) };

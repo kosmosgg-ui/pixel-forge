@@ -9,6 +9,7 @@ import { decodePng } from '../io/png.js';
 import { buildAllCommand } from './build.js';
 import { crowdCommand } from './crowd.js';
 import { renderCommand } from './render.js';
+import { reviewCommand } from './review.js';
 
 const repo = fileURLToPath(new URL('../../../../', import.meta.url));
 const work = mkdtempSync(join(tmpdir(), 'forge-anim-'));
@@ -30,7 +31,7 @@ describe('forge render --anim', () => {
 describe('build-all sample (3종 × 4애니)', () => {
   const r = buildAllCommand('sample', work);
 
-  it('필수 검사 전부 통과, 깜빡임 0, 발밑 고정, 무기 보임', () => {
+  it('필수 검사 전부 통과, 깜빡임 0, 발밑 고정, 무기 보임, 얼굴 가림 없음', () => {
     expect(r).toMatchObject({ ok: true, count: 3, pass: true });
     for (const id of ['warrior', 'rogue', 'mage']) {
       const report = JSON.parse(readFileSync(join(work, 'out', id, 'qa.json'), 'utf8')) as Report;
@@ -39,6 +40,8 @@ describe('build-all sample (3종 × 4애니)', () => {
       expect(get('baseline.stable')).toMatchObject({ pass: true, value: 0 });
       // 손에 든 무기·소품은 모든 프레임에서 보이고 손에 붙어 있다
       expect(get('form.held-visible')).toMatchObject({ pass: true });
+      // 공격 준비 자세 포함 모든 프레임에서 얼굴이 가려지지 않고 무기가 머리 위에 오지 않는다
+      expect(get('form.face-clear')).toMatchObject({ pass: true });
       expect(existsSync(join(work, 'out', id, 'frames', 'death_l_3.png'))).toBe(true);
       expect(JSON.parse(readFileSync(join(work, 'out', id, 'motion.json'), 'utf8'))).toMatchObject({ bob: { px: 1 } });
     }
@@ -56,5 +59,17 @@ describe('forge crowd', () => {
     expect([big.w, big.h]).toEqual([640, 360]);
     crowdCommand('sample', work, 50, 2);
     expect(sha(a.out)).not.toBe(first);
+  });
+});
+
+describe('forge review', () => {
+  it('캐릭터 × (rest + 애니 전 프레임), 4배, 같은 입력 → 같은 바이트', () => {
+    const r = reviewCommand('sample', work);
+    expect(r).toMatchObject({ ok: true, kinds: 3, frames: [18, 18, 18], scale: 4, out: 'out/sample/review.png' });
+    const first = sha(r.out);
+    reviewCommand('sample', work);
+    expect(sha(r.out)).toBe(first);
+    const img = decodePng(readFileSync(join(work, r.out)));
+    expect([img.w, img.h]).toEqual(r.size);
   });
 });

@@ -218,13 +218,6 @@
   "seed": 1,
   "overrides": {
     "attack": {
-      "windup": {
-        "pose": {
-          "weapon": {
-            "rot": -15
-          }
-        }
-      },
       "strike": {
         "pose": {
           "weapon": {

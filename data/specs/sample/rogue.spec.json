@@ -207,19 +207,52 @@
       "bone": "weapon",
       "shape": {
         "type": "rect",
-        "w": 8,
-        "h": 2,
-        "angleDeg": -15
+        "w": 3,
+        "h": 2
+      },
+      "material": "leather",
+      "anchor": "joint",
+      "at": [
+        0,
+        0
+      ],
+      "orient": "world",
+      "name": "grip"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 7,
+        "h": 2
       },
       "material": "metal",
       "anchor": "joint",
       "at": [
-        3,
-        -1
+        6,
+        1
       ],
       "orient": "world",
       "name": "dagger",
       "held": true
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 1,
+        "h": 4
+      },
+      "material": "leather",
+      "anchor": "joint",
+      "at": [
+        2,
+        0
+      ],
+      "orient": "world",
+      "z": 1,
+      "name": "crossguard",
+      "decorative": true
     }
   ],
   "eyes": {

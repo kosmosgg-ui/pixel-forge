@@ -34,4 +34,12 @@ describe('fitBudgetInPlace', () => {
     expect(RULES.budgetFit.smallPartArea).toBe(12);
     expect(RULES.cleanup.minCluster).toBe(3);
   });
+  it('3단계 이상 쓰는 재질부터 줄여 작은 재질(2단계)이 한 색으로 뭉개지지 않게', () => {
+    // m: 2단계만(작은 단검처럼 적게 씀), n: 4단계(많이 씀)
+    const r = { w: 12, h: 1, px: Uint8Array.from([m.indices[0]!, m.indices[3]!, ...n.indices, ...n.indices, n.indices[1]!, n.indices[2]!]) };
+    const res = fitBudgetInPlace([r], [m, n], c.palette.palette, 4, new Set());
+    expect(res.after).toBe(4);
+    expect(res.merges.every((x) => x.material === 'n')).toBe(true);
+    expect(new Set(Array.from(r.px).filter((v) => m.indices.includes(v))).size).toBe(2);
+  });
 });

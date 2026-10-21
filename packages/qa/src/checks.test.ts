@@ -63,9 +63,17 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     expect(readRoleColor([frame(CLEAN)], ctx({ roleIndices: new Set([4]) })).pass).toBe(false);
   });
 
-  it('머리가 많이 가려짐 → form.face-clear', () => {
+  it('머리가 많이 가려짐 → form.face-clear (프레임 합산이 아니라 가장 나쁜 프레임)', () => {
     expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 10 } })], ctx()).pass).toBe(false);
     expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 4 } })], ctx()).pass).toBe(true);
+    const ok = frame(CLEAN, { face: { area: 400, covered: 0 } }), bad = frame(CLEAN, { name: 'attack_r_1', face: { area: 40, covered: 10 } });
+    expect(formFaceClear([ok, bad], ctx())).toMatchObject({ pass: false, frame: 1 });
+  });
+
+  it('form.face-clear: 머리 위 무기 픽셀, 눈 둘레가 다른 재질(투구)로 덮임 → 실패', () => {
+    expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 2, heldOver: 2 } })], ctx())).toMatchObject({ pass: false });
+    expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 0, eyeWindow: 6, eyeWindowBad: 3 } })], ctx()).note).toContain('눈 둘레');
+    expect(formFaceClear([frame(CLEAN, { face: { area: 40, covered: 0, heldOver: 0, eyeWindow: 6, eyeWindowBad: 0 } })], ctx()).pass).toBe(true);
   });
 
   it('1px 대각선 획은 8-연결로 한 조각', () => {

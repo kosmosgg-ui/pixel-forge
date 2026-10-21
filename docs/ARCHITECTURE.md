@@ -220,13 +220,13 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `bounds.canvas` | ✔ | 모든 프레임이 캔버스 안, 여백 ≥ 1px |
 | `baseline.stable` | ✔ | root 고정 키들에서 발 최하단 y 동일 |
 | `anim.flicker` | ✔ | 변환이 같은 파츠 영역에서 프레임 간 색 변화 픽셀 0개 |
-| `form.held-visible` | ✔ | 모든 프레임에서 held 파츠의 보이는 픽셀(외곽선 톤·전역 외곽선색 제외) ≥ rest 픽셀 × `heldVisibleMin`(0.6), 손 파츠(부착 뼈·부모 뼈의 held 아닌 파츠)와 8-연결로 맞닿음 |
+| `form.held-visible` | ✔ | 모든 프레임에서 held 파츠의 보이는 픽셀(외곽선 톤·전역 외곽선색 제외) ≥ rest 픽셀 × `heldVisibleMin`(0.6), 손 파츠(부착 뼈의 부모 뼈 파츠)에서 같은 뼈 파츠(날밑·손잡이)를 거쳐 8-연결로 이어짐 |
 | `cleanup.orphans` |  | 고립 픽셀 수 ≤ 임계 |
 | `cleanup.banding` |  | 서로 다른 램프 단계가 평행 계단을 이루는 구간 수 ≤ 임계. 띠 = 같은 램프 A\|B\|C(단계 단조)에서 1px 폭 B, 8-연결 2px 이상 이어진 것만 1구간 |
 | `form.silhouette` |  | 같은 프로젝트 다른 캐릭터와 실루엣 IoU ≤ 0.8 |
 | `read.contrast` |  | 바이블 배경색 대비 실루엣 평균 명도차 ≥ 임계 |
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
-| `form.face-clear` |  | 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 파츠에 가려진 비율 ≤ `faceCoverMax` |
+| `form.face-clear` |  | 프레임마다(공격 프레임 포함) 가장 나쁜 프레임으로: 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ `faceCoverMax`, 머리 위 held 파츠 픽셀 0, 눈 둘레 창(눈 픽셀 박스, 최소 3×2)이 전부 얼굴 재질(머리 뼈 첫 파츠 재질) — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림 |
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
@@ -253,6 +253,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge build <spec>` | validate → render → qa → pack, 캐시 사용, QA 불합격이면 pack 생략(exit 2) |
 | `forge build-all <project>` | 프로젝트 전체 + 교차 검사(silhouette, scale) |
 | `forge crowd <project> [--count 50] [--seed 1]` | 바이블 배경 위 실제 크기(1배) 무작위 군중 시트 + 2배 확대본 → `out/<project>/crowd.png`, `crowd@2x.png` (QA `crowd.readability`) |
+| `forge review <project>` | 캐릭터마다 rest + Spec 애니 전 프레임(우향)을 애니 묶음 단위로 줄 채움(한 줄 = 가장 긴 애니 칸 수, 판독 시 축소 방지), 바이블 배경, `rules.qa.sheetScale`배 → `out/<project>/review.png`. pixel-reviewer·보고 문서가 보는 유일한 시트 |
 | `forge variants <spec> --rarity --palette-swap --part-swap` | 아이템 변형 생성(P7) |
 | `forge palette <bible>` | 바이블 팔레트 견본 PNG |
 | `forge ref analyze <png> --source <url> --license <id>` | 레퍼런스 측정값 JSON (P6) |

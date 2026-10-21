@@ -19,7 +19,7 @@
       "id": "attack", "loop": false,
       "keys": [
         { "name": "ready", "ms": 120, "pose": { "upperArmF": { "rot": -10 }, "lowerArmF": { "rot": -10 } } },
-        { "name": "windup", "ms": 140, "pose": { "spine": { "rot": -8 }, "upperArmF": { "rot": -100 }, "lowerArmF": { "rot": -30 }, "weapon": { "rot": -40 } } },
+        { "name": "windup", "ms": 140, "pose": { "spine": { "rot": -16 }, "upperArmF": { "rot": -80 }, "lowerArmF": { "rot": 40 }, "weapon": { "rot": 10 } } },
         { "name": "strike", "ms": 60, "pose": { "root": { "dx": 2 }, "spine": { "rot": 10 }, "upperArmF": { "rot": 40 }, "lowerArmF": { "rot": 20 }, "weapon": { "rot": 60 } }, "fx": "slash" },
         { "name": "follow", "ms": 120, "pose": { "root": { "dx": 2 }, "spine": { "rot": 6 }, "upperArmF": { "rot": 60 }, "lowerArmF": { "rot": 30 }, "weapon": { "rot": 80 } } },
         { "name": "recover", "ms": 160, "pose": {} }

@@ -10,7 +10,7 @@ Phase(단계) 완료 시에만 「pixel-forge 작업 보고」 문서(https://cl
 3. **결과 섹션**: 진행 현황 표 바로 아래(최신이 위)에 `## P{n} 결과 — <요약>` 섹션을 추가한다.
    - 15줄 이내, 표는 최대 1개
    - 첫 문장 = 결과(수락 기준 통과 여부 + 테스트 수)
-   - pixel-reviewer 점수 한 줄(렌더 결과가 있는 단계)
+   - pixel-reviewer 점수 한 줄(렌더 결과가 있는 단계)과 검수 시트 경로 `out/<project>/review.png`(`forge review <project>`로 생성)
    - "확인 필요" 항목(사용자 결정이 필요한 것)
    - 커밋 링크(`https://github.com/kosmosgg-ui/pixel-forge/commit/<sha>`)
 4. 사용자에게 문서 링크를 준다.

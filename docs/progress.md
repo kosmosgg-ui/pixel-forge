@@ -5,6 +5,12 @@
 현재 단계: **P5**
 
 ## 로그
+- [P4 마무리] 완료 | 전사 투구 앞 열림(눈 둘레 피부 3×2)·튜닉 깃 턱 아래로, 도적 단검 = 곧은 날 7×2 + 날밑 1×4 + 손잡이 일직선, 공용 windup(spine -16·upperArmF -80·lowerArmF 40·weapon 10 → 무기·머리 겹침 0), forge review(캐릭터×애니 전 프레임, 바이블 배경, 4배, 애니 단위 줄)
+  - QA: form.face-clear 프레임별 최악 판정 + 머리 위 held 0 + 눈 둘레 창이 얼굴 재질(투구 등 다른 재질 덮임 포함). 재현: 수정 전 warrior 눈 둘레 3/6, rogue·mage windup 가림 0.29·0.46. held-visible 부착은 손 → 같은 뼈 파츠(날밑·손잡이) 8-연결 도달로
+  - 엔진: color.budget-fit은 3단계 이상 재질부터 병합(단검처럼 작은 재질이 한 색으로 뭉개짐 방지)
+  - 수락기준: pnpm build·test → Tests 187 passed (34 files). build-all sample → pass:true 3/3, 필수 전부 통과, face-clear 통과(warrior 0.064, rogue 0, mage 0.035). 선택 실패: detail-min warrior 5·rogue 3
+  - pixel-reviewer 20/24(mage 21, rogue 20, warrior 20), 시트 out/sample/review.png
+
 - [P4 보정] 완료 | 원인: 정리 단계가 아니라 form.outline-thin이 1px 검 12px 중 11px을 외곽선 톤(L 0.28)으로 칠해 배경(L 0.27)에 묻힘
   - 완료: Spec held·decorative, rule form.held-min-width(2px, 미달 spec.held-too-thin), held 파츠 정리·얇은 획 보호, QA form.held-visible(필수), hit 3키(flash 60·flinch 120·recover 160), 무기 2px rect(검 15px·단검·지팡이), 전사 투구 슬릿·견갑·망토 단축·치마→골반, reviewer 24점 기준
   - 재현: 수정 전 build-all exit 2, held-visible warrior 1/12·rogue 1/8·mage 1/29

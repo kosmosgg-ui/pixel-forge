@@ -13,3 +13,5 @@
 - [P4 리뷰] form.outline-thin의 얇음 판정을 프레임마다 회전된 마스크로 함 — 같은 파츠가 프레임 사이에 얇음/아님이 바뀌면 외곽선이 달라질 수 있음(현재 샘플에선 미발생). rest 마스크 기준 1회 판정 검토
 - [P4 보정 리뷰] attack windup(weapon -40)에서 무기가 머리 위에 겹쳐 칼날 모양이 사라짐(전사·도적) — windup 무기 z를 머리 뒤로 보내거나 Spec overrides windup rot -10 검토
 - [P4 보정 리뷰] 도적 strike·follow에서 짙은 회색 단검이 갈색 다리 위에 겹쳐 어두운 배경에서 안 보임 — overrides strike/follow rot 30/45 검토. form.detail-min 5/2(선택) 재조정
+- [P4 마무리 리뷰] 도적 단검 2px 날의 어두운 줄이 배경과 비슷해 1px로 보임 — 날 h 3(사용자 지정 2px와 충돌, 결정 필요) 또는 held 파츠 어두운 단계 하한 검토
+- [P4 마무리 리뷰] 전사 1px 눈이 투구·튜닉 밝은 점 사이에서 잘 안 보임 — eyes.size 2 / pos [2,-1] 검토

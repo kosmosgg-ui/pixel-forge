@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { formHeldVisible } from './checks/held.js';
 import { ctx, frame } from './test-fixture.js';
 
-// 파츠 1 = 손, 2 = 무기
-const parts = (rows: string[]) => Uint16Array.from(rows.join('').split('').map((ch) => (ch === 'h' ? 1 : ch === 'w' ? 2 : 0)));
+// 파츠 1 = 손, 2 = 무기(날), 3 = 날밑(같은 뼈)
+const parts = (rows: string[]) => Uint16Array.from(rows.join('').split('').map((ch) => (ch === 'h' ? 1 : ch === 'w' ? 2 : ch === 'g' ? 3 : 0)));
 const held = [{ part: 2, name: 'sword', hand: [1], restCount: 4 }];
 
 describe('form.held-visible', () => {
@@ -29,5 +29,13 @@ describe('form.held-visible', () => {
 
   it('held 파츠가 없으면 통과', () => {
     expect(formHeldVisible([frame(rows)], ctx()).pass).toBe(true);
+  });
+  it('날밑·손잡이(같은 뼈 파츠)를 거쳐 손에 이어지면 붙은 것, 날밑만 떠 있으면 실패', () => {
+    const viaGuard = ['.....', 'hg...', '.gww.', '..ww.'];
+    const group = [{ ...held[0]!, group: [3] }];
+    const px = ['.....', '24...', '.433.', '..33.'];
+    expect(formHeldVisible([frame(px, { part: parts(viaGuard) })], ctx({ held: group })).pass).toBe(true);
+    const floating = ['h....', '.....', '..gww', '...ww'];
+    expect(formHeldVisible([frame(['2....', '.....', '..433', '...33'], { part: parts(floating) })], ctx({ held: group })).pass).toBe(false);
   });
 });

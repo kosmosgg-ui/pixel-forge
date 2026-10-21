@@ -34,8 +34,8 @@ export interface QaFrame {
   part?: Uint16Array;
   /** 외곽선·내부선·눈 등 정리 대상에서 빠지는 위치 */
   mark?: Uint8Array;
-  /** 머리 뼈 파츠 면적과 그중 다른 파츠에 가려진 픽셀 수 */
-  face?: { area: number; covered: number } | null;
+  /** 머리 뼈 파츠 면적·다른 파츠에 가려진 픽셀 수, 머리 위 held 픽셀 수, 눈 둘레 창 크기·얼굴 재질 아닌 픽셀 수 */
+  face?: { area: number; covered: number; heldOver?: number; eyeWindow?: number; eyeWindowBad?: number } | null;
   /** root가 고정된 키 프레임(발밑 기준선 검사 대상) */
   rootFixed?: boolean;
   /** 앞 프레임과 변환이 같은 파츠 id (깜빡임 검사 대상) */
@@ -68,8 +68,10 @@ export interface HeldInfo {
   /** 파츠 id (spec.parts 순번 + 1) */
   part: number;
   name: string;
-  /** 손 파츠 id들(부착 뼈·그 부모 뼈의 held 아닌 파츠) */
+  /** 손 파츠 id들(부착 뼈의 부모 뼈 파츠) */
   hand: readonly number[];
+  /** 같은 뼈 파츠 id들(날밑·손잡이 등) — 손에서 이 파츠들을 거쳐 이어지면 붙어 있는 것 */
+  group?: readonly number[];
   /** rest 프레임에서 이 파츠 픽셀 수 */
   restCount: number;
 }
