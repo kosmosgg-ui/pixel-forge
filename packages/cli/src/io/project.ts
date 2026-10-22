@@ -20,7 +20,7 @@ export interface Project {
 export function loadProject(specPath: string, cwd: string): Project {
   const spec = readJson(resolve(cwd, specPath), specSchema);
   const data = join(cwd, 'data');
-  const bible = readJson(join(data, 'bibles', `${spec.bible}.bible.json`), bibleSchema);
+  const bible = readJson(bibleFile(spec.bible, cwd), bibleSchema);
   // Spec rig → 크기 등급 기본 리그 → 바이블 기본 리그
   const rigId = spec.rig ?? bible.sizeClassOptions[spec.sizeClass]?.rig ?? bible.defaultRig;
   if (rigId === undefined) throw new ForgeError('spec.refs', 'rig가 없습니다: Spec rig 또는 바이블 defaultRig를 지정하세요');
@@ -34,6 +34,11 @@ export function loadProject(specPath: string, cwd: string): Project {
     rig: readJson(join(data, 'rigs', `${rigId}.rig.json`), rigSchema),
     anims: existsSync(animsPath) ? readJson(animsPath, animsFileSchema) : null,
   };
+}
+
+/** 바이블 파일 경로: data/bibles/<id>.bible.json */
+export function bibleFile(id: string, cwd: string): string {
+  return join(cwd, 'data', 'bibles', `${id}.bible.json`);
 }
 
 /** 한 번만 실행하고 결과를 기억(렌더 여러 번 → Blender·PNG 읽기 1번) */

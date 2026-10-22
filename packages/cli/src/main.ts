@@ -11,7 +11,7 @@ try {
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
       format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
       source: { type: 'string' }, license: { type: 'string' }, id: { type: 'string' },
-      score: { type: 'string' }, note: { type: 'string' }, 'skip-review': { type: 'boolean' }, sheet: { type: 'string' }, obs: { type: 'string' },
+      score: { type: 'string' }, note: { type: 'string' }, 'skip-review': { type: 'boolean' }, probe: { type: 'boolean' }, sheet: { type: 'string' }, obs: { type: 'string' },
     },
     allowPositionals: true,
     strict: true,
@@ -30,6 +30,7 @@ try {
     ...(values.score !== undefined ? { score: values.score } : {}),
     ...(values.note !== undefined ? { note: values.note } : {}),
     ...(values['skip-review'] === true ? { skipReview: true } : {}),
+    ...(values.probe === true ? { probe: true } : {}),
     ...(values.sheet !== undefined ? { sheet: values.sheet } : {}),
     ...(values.obs !== undefined ? { obs: values.obs } : {}),
   });

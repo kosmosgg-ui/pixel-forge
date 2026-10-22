@@ -12,6 +12,7 @@ import { reviewCommand } from './commands/review.js';
 import { compareCommand } from './commands/compare.js';
 import { sceneCommand } from './commands/scene.js';
 import { lineupCommand } from './commands/lineup.js';
+import { importCommand, probeCommand } from './commands/import.js';
 import { validateCommand } from './commands/validate.js';
 import { watchCommand } from './commands/watch.js';
 
@@ -42,6 +43,8 @@ export interface RunInput {
   note?: string;
   /** review-score: 기준별 관찰 JSON */
   obs?: string;
+  /** import --probe <png> */
+  probe?: boolean;
   /** apply·watch: 검수 확인 생략 */
   skipReview?: boolean;
 }
@@ -76,6 +79,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'review-score') return reviewScoreCommand(need('<spec 경로> --score <0~24> --obs <기준별 관찰 JSON> [--note 문장] [--sheet 4]'), input.cwd, Number(input.score), input.obs, input.note, input.sheet === undefined ? 4 : Number(input.sheet));
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
+  if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> | --probe <png>'), input.cwd);
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) });
   if (cmd === 'watch') {
