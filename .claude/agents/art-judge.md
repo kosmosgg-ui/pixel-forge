@@ -14,6 +14,7 @@ model: inherit
 ## 기준 4장 (v2)
 `docs/integrated/P7close/calibration-v2/`: D_prerender-current-knight.png < C_shapes-knight.png < B_handpixel-chibi.png < A_gpt-import-sera.png. 4장 시트: calibration-v2-sheet_4x.png.
 (v1 `docs/integrated/calibration/`은 축이 정의되지 않아 폐기 — 쓰지 않는다.)
+48px 대상(성검의 맹세 주인공 48px, P10)은 `A48_gpt-import-sera.png`(A와 같은 설정의 48px 변환본)과 나란히 본다. 등급 기준은 여전히 D<C<B<A 4장.
 
 ## 절차
 1. 대상과 기준 4장을 **같은 시트 1장**으로 본다. 주어진 시트가 없으면 만든다:

@@ -1,0 +1,12 @@
+{
+  "$comment": "P10 0절: 보정 기준 A의 48px 변환본(A48) — A와 같은 생성 설정(외곽선 없음), 키 48·셀 48×64·발 24,62. 입력은 gitignore",
+  "id": "sera-ref-tall-a48",
+  "kind": "character",
+  "bible": "seonggeom",
+  "sizeClass": "hero",
+  "mode": "import",
+  "source": { "path": "docs/integrated/P8/samples/sera_ref_tall_gpt.png", "origin": "gpt-image", "createdAt": "2026-10-22" },
+  "layout": { "rows": [{ "anim": "idle", "dir": "s" }] },
+  "targetHeight": 48,
+  "outline": "none"
+}

@@ -5,17 +5,21 @@ export interface IndexFrame {
   px: Uint8Array;
 }
 
+/** 발 띠 높이(줄): 걷기에서 한 발만 바닥에 닿아도 두 발을 함께 보게 */
+const FEET_BAND = 3;
+
 /**
- * 발 앵커: 가장 아래 불투명 줄의 불투명 칸 x 가운데 + 그 줄 y. bbox 가운데를 쓰지 않는 이유 —
- * 머리카락·망토가 흔들려도 몸(발)이 떨리지 않게(사용자 승인 P8 6단계).
+ * 발 앵커: 가장 아래 불투명 줄 y + 그 위 FEET_BAND줄(발 띠)의 불투명 칸 x 범위 가운데. bbox 가운데를 쓰지 않는 이유 —
+ * 머리카락·망토가 흔들려도 몸(발)이 떨리지 않게(사용자 승인 P8 6단계). 맨 아래 한 줄만 보면 걷기 접지 프레임에서
+ * 앞발(또는 뒷발) 하나에 앵커가 붙어 몸이 셀 밖으로 밀린다(P10 0절 세라 48px 걷기 실측) — 그래서 띠를 본다.
  */
 export function feetAnchor(f: IndexFrame): [number, number] {
-  for (let y = f.h - 1; y >= 0; y--) {
-    let x0 = -1, x1 = -1;
-    for (let x = 0; x < f.w; x++) if (f.px[y * f.w + x]) { if (x0 < 0) x0 = x; x1 = x; }
-    if (x0 >= 0) return [Math.floor((x0 + x1) / 2), y];
-  }
-  return [Math.floor(f.w / 2), f.h - 1];
+  let bottom = -1;
+  for (let y = f.h - 1; y >= 0 && bottom < 0; y--) for (let x = 0; x < f.w; x++) if (f.px[y * f.w + x]) { bottom = y; break; }
+  if (bottom < 0) return [Math.floor(f.w / 2), f.h - 1];
+  let x0 = -1, x1 = -1;
+  for (let y = Math.max(0, bottom - FEET_BAND + 1); y <= bottom; y++) for (let x = 0; x < f.w; x++) if (f.px[y * f.w + x]) { if (x0 < 0 || x < x0) x0 = x; if (x > x1) x1 = x; }
+  return [Math.floor((x0 + x1) / 2), bottom];
 }
 
 /** 셀에 놓기: 발 앵커를 셀 앵커에 맞춘다. 셀 밖으로 나가는 칸 수를 함께 돌려준다(> 0이면 import.oversize — 축소하지 않는다) */
@@ -57,4 +61,28 @@ export function outlineInPlace(f: IndexFrame, outlineIndex: number): void {
     if (opaque(x - 1, y) || opaque(x + 1, y) || opaque(x, y - 1) || opaque(x, y + 1)) add.push(y * w + x);
   }
   for (const k of add) px[k] = outlineIndex;
+}
+
+/**
+ * 걷기 보폭(1배 px): 접지 프레임마다 발 띠(가장 아래 불투명 줄에서 위로 band줄)에서 불투명 열이 끊긴 덩어리(발)를 찾아
+ * 가장 넓은 두 덩어리(두 발 — 낮게 든 칼끝·망토 끝 같은 가는 조각은 뺀다)의 가운데 사이 거리, 평균(반올림). 발이 붙어 덩어리가 하나면 그 프레임은 뺀다.
+ * 게임이 걷기 재생 속도를 이동 속도에 맞출 때 쓴다(G1 3.3b). 잴 프레임이 없으면 0.
+ */
+export function measureStride(contacts: readonly IndexFrame[], band = 3): number {
+  const gaps = contacts.flatMap((f) => {
+    let bottom = -1;
+    for (let k = f.px.length - 1; k >= 0 && bottom < 0; k--) if (f.px[k]) bottom = Math.floor(k / f.w);
+    if (bottom < 0) return [];
+    const runs: [number, number][] = [];
+    for (let x = 0; x < f.w; x++) {
+      let on = false;
+      for (let y = Math.max(0, bottom - band + 1); y <= bottom && !on; y++) on = (f.px[y * f.w + x] ?? 0) > 0;
+      const last = runs[runs.length - 1];
+      if (on && last && last[1] === x - 1) last[1] = x;
+      else if (on) runs.push([x, x]);
+    }
+    const [a, b] = [...runs].sort((p, q) => (q[1] - q[0]) - (p[1] - p[0]) || p[0] - q[0]).slice(0, 2);
+    return a && b ? [Math.abs((b[0] + b[1]) / 2 - (a[0] + a[1]) / 2)] : [];
+  });
+  return gaps.length ? Math.round(gaps.reduce((x, y) => x + y, 0) / gaps.length) : 0;
 }

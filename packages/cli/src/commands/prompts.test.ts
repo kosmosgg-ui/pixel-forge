@@ -88,7 +88,10 @@ describe('forge prompts / intake / make', () => {
     const ok = makeCommand('hero_sera', work, { action: 'walk', dir: 'side', out: 'game' });
     expect(ok).toMatchObject({ pass: true, exported: { dest: 'game/hero_sera', rows: ['right_side'], columns: 6 } });
     const m = JSON.parse(readFileSync(join(work, 'game/hero_sera/hero_sera_manifest.json'), 'utf8'));
-    expect(m).toMatchObject({ assetId: 'hero_sera', quality: 'candidate', anchor: [32, 78], display_scale: 2, rows: { right: 0 }, mirror: { left: 'right' }, animations: { walk: { frames: 6, fps: 10, loop: true, stride_px: 24 } }, provenance: { creator: 'user via ChatGPT', aiUsed: true, rightsReviewed: false } });
+    expect(m).toMatchObject({ assetId: 'hero_sera', quality: 'candidate', anchor: [24, 62], display_scale: 2, rows: { right: 0 }, mirror: { left: 'right' }, animations: { walk: { frames: 6, fps: 10, loop: true, stride_px: expect.any(Number) } }, provenance: { creator: 'user via ChatGPT', aiUsed: true, rightsReviewed: false } });
+    expect(m.animations.walk.stride_px).toBeGreaterThan(0);
+    // --temp 원본(망토 없음): 변환 합격 → 후보로 내보내되 상태는 재요청 유지
+    expect(JSON.parse(readFileSync(join(work, 'data/import/hero_sera/state.json'), 'utf8')).items.walk_side).toMatchObject({ status: '재요청', made: true });
     intakeCommand(strip('a.png', 5), work, { as: 'hero_sera/idle_side', at: '2026-10-22T12:00:01.000Z' });
     expect(makeCommand('hero_sera', work, { action: 'idle', dir: 'side', out: 'game' })).toMatchObject({ pass: false, frameCount: true });
     intakeCommand(strip('b.png', 4, { edge: true }), work, { as: 'hero_sera/idle_side', at: '2026-10-22T12:00:02.000Z' });

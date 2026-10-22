@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { ForgeError, toRGBA } from '@pixel-forge/core';
 import { godotRowManifest, rowSheetLayout, type RowAnimMeta } from '@pixel-forge/export';
-import { importChecks } from '@pixel-forge/import';
+import { importChecks, measureStride } from '@pixel-forge/import';
 import { encodePng } from '../io/png.js';
 import type { Kit } from '../prompts/kit.js';
 import { readState } from '../prompts/state.js';
@@ -21,7 +21,7 @@ interface Part { key: string; im: Imported; anim: string; dir: string; order: nu
 /** 합격한 항목 전부를 다시 import(결정론 — 같은 원본·Spec → 같은 프레임) */
 function passedParts(kit: Kit, cwd: string): Part[] {
   const st = readState(cwd, kit.actor.id);
-  return Object.entries(st.items).filter(([key, v]) => v.status === '합격' && existsSync(join(cwd, makeSpecPath(kit.actor.id, key)))).sort(([a], [b]) => a.localeCompare(b)).flatMap(([key]) => {
+  return Object.entries(st.items).filter(([key, v]) => (v.status === '합격' || v.made === true) && existsSync(join(cwd, makeSpecPath(kit.actor.id, key)))).sort(([a], [b]) => a.localeCompare(b)).flatMap(([key]) => {
     const im = runImport(makeSpecPath(kit.actor.id, key), cwd);
     return Object.entries(im.result.frameMap).map(([k, order]) => {
       const f = im.result.frames.find((g) => `${g.anim}_${g.dir}` === k);
@@ -30,11 +30,22 @@ function passedParts(kit: Kit, cwd: string): Part[] {
   });
 }
 
-/** 동작 순서 = actor.produce 처음 나온 순서, 메타 = 동작 데이터 */
-const animMetas = (kit: Kit): RowAnimMeta[] => [...new Set(kit.actor.produce.map((p) => p.action))].flatMap((id) => {
+/** 동작 순서 = actor.produce 처음 나온 순서, 메타 = 동작 데이터. walk stride_px는 변환 결과 실측값이 있으면 그것(P10 0절) */
+const animMetas = (kit: Kit, measured: Readonly<Record<string, number>>): RowAnimMeta[] => [...new Set(kit.actor.produce.map((p) => p.action))].flatMap((id) => {
   const a = kit.actions[id];
-  return a ? [{ name: id, fps: a.fps, loop: a.loop, ...(a.stride_px !== undefined ? { stride_px: a.stride_px } : {}) }] : [];
+  const stride = measured[id] ?? a?.stride_px;
+  return a ? [{ name: id, fps: a.fps, loop: a.loop, ...(stride !== undefined ? { stride_px: stride } : {}) }] : [];
 });
+
+/** 걷기 접지 프레임(키트 포즈 1·4번 = 원래 순서 0·3)의 앞뒤 발 간격 평균(옆 방향 걷기만) */
+function measuredStrides(parts: readonly Part[]): Record<string, number> {
+  const walk = parts.find((p) => p.anim === 'walk' && p.dir === 'e');
+  if (!walk) return {};
+  const frames = walk.im.result.frames.filter((f) => f.anim === 'walk' && f.dir === 'e').sort((a, b) => a.index - b.index);
+  const contact = [0, 3].flatMap((i) => { const u = walk.order[i]; const f = u === undefined ? undefined : frames[u]; return f ? [f.frame] : []; });
+  const v = measureStride(contact);
+  return v > 0 ? { walk: v } : {};
+}
 
 /** 셀 하나를 RGBA 시트에 붙인다(원본마다 팔레트가 달라 인덱스가 아니라 RGBA로 합친다) */
 function blit(sheet: Uint8Array, sw: number, rgba: Uint8Array, w: number, h: number, ox: number, oy: number): void {
@@ -49,7 +60,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
   const first = parts[0];
   if (!first) throw new ForgeError('make.empty', `합격한 항목이 없습니다: ${kit.actor.id}`);
   const t = loadTarget(first.im.bible.id, cwd), cell = first.im.cell;
-  const layout = rowSheetLayout(t.rows, animMetas(kit), parts.map((p) => ({ anim: p.anim, dir: p.dir, count: p.order.length })));
+  const layout = rowSheetLayout(t.rows, animMetas(kit, measuredStrides(parts)), parts.map((p) => ({ anim: p.anim, dir: p.dir, count: p.order.length })));
   const W = layout.columns * cell.w, H = layout.rows.length * cell.h, rgba = new Uint8Array(W * H * 4);
   for (const p of parts) {
     const ry = layout.rows.findIndex((r) => r.dir === p.dir), start = layout.animations[p.anim]?.start_column ?? 0;

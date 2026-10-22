@@ -6,7 +6,7 @@ import { writeFileEnsured } from '../io/files.js';
 /** 요청 상태(CHECKLIST 상태 열): 대기 → 등록(intake) → 합격 | 재요청(make) */
 export const STATUS = ['대기', '등록', '합격', '재요청'] as const;
 const stateSchema = z.object({
-  items: z.record(z.string(), z.object({ status: z.enum(STATUS), fails: z.number().int().min(0).default(0), latest: z.string().optional(), note: z.string().optional() })).default({}),
+  items: z.record(z.string(), z.object({ status: z.enum(STATUS), fails: z.number().int().min(0).default(0), latest: z.string().optional(), note: z.string().optional(), made: z.boolean().optional() })).default({}),
 });
 export type ActorState = z.infer<typeof stateSchema>;
 

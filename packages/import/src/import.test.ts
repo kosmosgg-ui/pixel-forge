@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { feetAnchor, placeInCell } from './align.js';
+import { feetAnchor, measureStride, placeInCell } from './align.js';
 import { identityCheck, jitterCheck, paletteDeltaCheck } from './checks.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { silhouetteMatch } from './match.js';
@@ -193,5 +193,16 @@ describe('재현성 측정(P8fix 1)', () => {
     figure(a, 4, 6); figure(b, 18, 7); rect(c, 18, 7, 21, 26, [200, 40, 40, 255]); rect(c, 20, 25, 23, 26, [20, 20, 20, 255]);
     expect(silhouetteMatch(a, b)).toMatchObject({ iou: 1, deltaE: 0, offset: [-14, -1] });
     expect(silhouetteMatch(a, c).iou).toBeLessThan(0.7);
+  });
+});
+
+describe('걷기 보폭 실측(P10 0절)', () => {
+  it('접지 프레임 앞발·뒷발 가운데 거리 평균: 11·13 → 12, 발이 붙은 프레임은 뺀다', () => {
+    const f = (gap: number) => { const px = new Uint8Array(32 * 10); for (let y = 0; y < 7; y++) px[y * 32 + 10] = 1; for (const x of [4, 4 + gap - 1]) for (let y = 7; y < 10; y++) { px[y * 32 + x] = 1; px[y * 32 + x + 1] = 1; } return { w: 32, h: 10, px }; };
+    expect(measureStride([f(12), f(14)])).toBe(12);
+    expect(measureStride([f(12), f(2)])).toBe(11);
+    const tip = f(12); tip.px[9 * 32 + 0] = 1;
+    expect(measureStride([tip])).toBe(11);
+    expect(measureStride([])).toBe(0);
   });
 });

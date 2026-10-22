@@ -73,7 +73,10 @@ function finishMake(kit: Kit, cwd: string, key: string, file: string, stamp: str
   const state = readState(cwd, kit.actor.id);
   const prev = state.items[key];
   const pass = !choice.frameCount && choice.ids.length === 0;
-  state.items[key] = { status: pass ? '합격' : '재요청', fails: pass ? 0 : (prev?.fails ?? 0) + 1, latest: stamp };
+  // --temp로 받은 원본(기준과 다름)은 변환에 합격해도 후보로만 내보내고 재요청 상태를 유지한다(G2: 망토 없는 걷기)
+  const temp = prev?.note !== undefined && prev.status === '재요청';
+  const note = temp && prev?.note !== undefined ? { note: prev.note } : {};
+  state.items[key] = pass && temp ? { ...prev, latest: stamp, made: true } : { status: pass ? '합격' : '재요청', fails: pass ? 0 : (prev?.fails ?? 0) + 1, latest: stamp, ...note };
   writeState(cwd, kit.actor.id, state);
   if (pass) {
     const exported = composeCandidates(kit, cwd, o.out);

@@ -1,12 +1,31 @@
 {
-  "$comment": "P8fix 1 재현성 측정(9번 생산 아님): samples/sera_ref_tall_gpt.png → 키 64, 외곽선 없음 = 보정 기준 A의 생성 설정. 입력은 gitignore",
+  "$comment": "P8fix 1 재현성 측정(9번 생산 아님): samples/sera_ref_tall_gpt.png → 키 64, 외곽선 없음 = 보정 기준 A의 생성 설정. 입력은 gitignore · P10 0절 이후 바이블 hero는 48px — 이 수락 측정은 P8 계약(64px, 셀 64×80)을 Spec에 고정",
   "id": "sera-ref-tall-accept",
   "kind": "character",
   "bible": "seonggeom",
   "sizeClass": "hero",
   "mode": "import",
-  "source": { "path": "docs/integrated/P8/samples/sera_ref_tall_gpt.png", "origin": "gpt-image", "createdAt": "2026-10-22" },
-  "layout": { "rows": [{ "anim": "idle", "dir": "s" }] },
+  "source": {
+    "path": "docs/integrated/P8/samples/sera_ref_tall_gpt.png",
+    "origin": "gpt-image",
+    "createdAt": "2026-10-22"
+  },
+  "layout": {
+    "rows": [
+      {
+        "anim": "idle",
+        "dir": "s"
+      }
+    ]
+  },
   "targetHeight": 64,
-  "outline": "none"
+  "outline": "none",
+  "cell": {
+    "w": 64,
+    "h": 80,
+    "anchor": [
+      32,
+      78
+    ]
+  }
 }

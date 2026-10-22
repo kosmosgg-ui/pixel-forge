@@ -1,5 +1,5 @@
 {
-  "$comment": "P8 수락 측정용(9번 생산 아님): samples/sera_gpt_raw.png(640×240, 3줄 front·back·side × idle 4 + run 6). 입력은 gitignore",
+  "$comment": "P8 수락 측정용(9번 생산 아님): samples/sera_gpt_raw.png(640×240, 3줄 front·back·side × idle 4 + run 6). 입력은 gitignore · P10 0절 이후 바이블 hero는 48px — 이 수락 측정은 P8 계약(64px, 셀 64×80)을 Spec에 고정",
   "id": "sera-accept",
   "kind": "character",
   "bible": "seonggeom",
@@ -95,5 +95,14 @@
   "loop": [
     "idle",
     "run"
-  ]
+  ],
+  "cell": {
+    "w": 64,
+    "h": 80,
+    "anchor": [
+      32,
+      78
+    ]
+  },
+  "targetHeight": 64
 }
