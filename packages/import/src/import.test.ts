@@ -151,3 +151,12 @@ describe('import QA', () => {
     expect(bad).toMatchObject({ pass: false, note: expect.stringContaining('walk_e_3') });
   });
 });
+
+describe('import layout row', () => {
+  it('한 이미지 줄에 애니 둘(row 번호 지정): idle 0~1 + run 2, 줄 수 = row 최댓값 + 1', () => {
+    const img = canvas(80, 24);
+    figure(img, 2, 2); figure(img, 22, 2, 18); figure(img, 42, 2, 16);
+    const r = importImage(img, { ...OPTS, rows: [{ anim: 'idle', dir: 's', row: 0, frames: [0, 1] }, { anim: 'run', dir: 's', row: 0, frames: [2] }] });
+    expect(r.frames.map((f) => `${f.anim}_${f.index}:${f.source.sprite}`)).toEqual(['idle_0:0', 'idle_1:1', 'run_0:2']);
+  });
+});

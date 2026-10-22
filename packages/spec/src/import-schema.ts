@@ -18,6 +18,8 @@ export const importRowSchema = z.object({
   anim: z.string().min(1),
   /** 방향 이름(s = 정면, n = 뒤, e = 옆(오른쪽) …) */
   dir: z.string().min(1),
+  /** 이미지 줄 번호(위에서 0부터, 한 줄에 애니 여러 개일 때). 생략하면 layout 순번 */
+  row: z.number().int().min(0).optional(),
   /** 이 줄에서 왼쪽부터 찾은 스프라이트 순번. 생략하면 줄 전체 */
   frames: z.array(z.number().int().min(0)).optional(),
   fps: z.number().positive().optional(),

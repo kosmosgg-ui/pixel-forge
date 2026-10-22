@@ -1,0 +1,99 @@
+{
+  "$comment": "P8 수락 측정용(9번 생산 아님): samples/sera_gpt_raw.png(640×240, 3줄 front·back·side × idle 4 + run 6). 입력은 gitignore",
+  "id": "sera-accept",
+  "kind": "character",
+  "bible": "seonggeom",
+  "sizeClass": "hero",
+  "mode": "import",
+  "source": {
+    "path": "docs/integrated/P8/samples/sera_gpt_raw.png",
+    "origin": "gpt-image",
+    "createdAt": "2026-10-22"
+  },
+  "layout": {
+    "rows": [
+      {
+        "anim": "idle",
+        "dir": "s",
+        "row": 0,
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fps": 4
+      },
+      {
+        "anim": "run",
+        "dir": "s",
+        "row": 0,
+        "frames": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "fps": 9
+      },
+      {
+        "anim": "idle",
+        "dir": "n",
+        "row": 1,
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fps": 4
+      },
+      {
+        "anim": "run",
+        "dir": "n",
+        "row": 1,
+        "frames": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "fps": 9
+      },
+      {
+        "anim": "idle",
+        "dir": "e",
+        "row": 2,
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fps": 4
+      },
+      {
+        "anim": "run",
+        "dir": "e",
+        "row": 2,
+        "frames": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "fps": 9
+      }
+    ]
+  },
+  "loop": [
+    "idle",
+    "run"
+  ]
+}

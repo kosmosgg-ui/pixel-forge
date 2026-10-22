@@ -1,0 +1,50 @@
+{
+  "$comment": "seonggeom export 타깃 — 게임이 읽는 형식은 samples/seonggeom_sera_manifest.json. 후보 폴더에만 쓴다(게임 규칙: 승인 후에만 asset binding 변경)",
+  "adapter": "godot-rowsheet",
+  "out": "@seonggeom",
+  "dir": "art/candidates",
+  "version": "pixel-forge-P8-import",
+  "rows": [
+    {
+      "name": "front",
+      "dir": "s"
+    },
+    {
+      "name": "back",
+      "dir": "n"
+    },
+    {
+      "name": "right_side",
+      "dir": "e"
+    }
+  ],
+  "directions": {
+    "down": {
+      "row": "front",
+      "flip_h": false
+    },
+    "up": {
+      "row": "back",
+      "flip_h": false
+    },
+    "right": {
+      "row": "right_side",
+      "flip_h": false
+    },
+    "left": {
+      "row": "right_side",
+      "flip_h": true
+    }
+  },
+  "provenance": {
+    "creator": "kosmosgg (GPT 이미지 생성 지시)",
+    "sourceUrl": "",
+    "license": "owned (AI-assisted, rights review pending)",
+    "editedBy": "pixel-forge import",
+    "creditText": ""
+  },
+  "notes": [
+    "pixel-forge import 후보 — Gate C 사람 검수 전",
+    "provenance.rightsReviewed는 사람만 true로 바꾼다"
+  ]
+}

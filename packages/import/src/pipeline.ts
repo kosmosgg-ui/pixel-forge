@@ -12,7 +12,8 @@ import type { ImportWarning, RgbaImage, Sprite } from './types.js';
 const DARK_L = 0.35;
 
 export interface ImportOptions {
-  rows: readonly { anim: string; dir: string; frames?: readonly number[] }[];
+  /** row = 이미지 줄 번호(한 줄에 애니 여러 개일 때). 생략하면 layout 순번 */
+  rows: readonly { anim: string; dir: string; row?: number; frames?: readonly number[] }[];
   cell: { w: number; h: number; anchor: readonly [number, number] };
   alphaThreshold: number;
   dedupe: boolean;
@@ -46,10 +47,14 @@ export interface ImportResult {
   scale: number;
 }
 
+/** 이미지 줄 수 = layout row 번호 최댓값 + 1 */
+const imageRows = (o: ImportOptions) => 1 + Math.max(...o.rows.map((r, li) => r.row ?? li));
+
 /** 줄 배치대로 스프라이트 고르기 + 잘림 경고(번호 = 줄:스프라이트) */
 function pick(rows: Sprite[][], o: ImportOptions, warnings: ImportWarning[]): { anim: string; dir: string; row: number; sprites: { s: Sprite; i: number }[] }[] {
   const clipped: string[] = [];
-  const out = o.rows.map((r, ri) => {
+  const out = o.rows.map((r, li) => {
+    const ri = r.row ?? li;
     const row = rows[ri] ?? [];
     const idx = r.frames ?? row.map((_, i) => i);
     const sprites = idx.map((i) => {
@@ -74,7 +79,7 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   const rawAlpha = alphaOf(img);
   binarizeAlphaInPlace(img, o.alphaThreshold);
   const warnings: ImportWarning[] = [];
-  const picked = pick(rowsByKmeans(segmentSprites(img, { rawAlpha }), o.rows.length), o, warnings);
+  const picked = pick(rowsByKmeans(segmentSprites(img, { rawAlpha }), imageRows(o)), o, warnings);
   const frameMap: Record<string, number[]> = {};
   const chosen = picked.map((p) => {
     const d = o.dedupe ? dedupeRow(p.sprites.map((x) => x.s)) : { unique: p.sprites.map((x) => x.s), frameMap: p.sprites.map((_, i) => i) };

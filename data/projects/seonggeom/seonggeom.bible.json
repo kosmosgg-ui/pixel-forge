@@ -1,0 +1,93 @@
+{
+  "$comment": "「성검의 맹세」(seonggeom) 아트 바이블 — 사용자 결정 2026-10-22(P8 7번). 게임 이름·수치는 여기와 target.json에만 둔다.",
+  "id": "seonggeom",
+  "internalResolution": [
+    640,
+    360
+  ],
+  "internalResolutionSource": "게임 기준 해상도 640×360, 엔진에서 정수 2·3배. 에셋은 1배 논리 크기로만(사용자 승인 P8)",
+  "view": "side",
+  "directions": 4,
+  "sizeClasses": {
+    "hero": {
+      "size": [
+        64,
+        80
+      ],
+      "anchor": [
+        32,
+        78
+      ],
+      "height": 64
+    },
+    "enemy": {
+      "size": [
+        64,
+        64
+      ],
+      "height": 52
+    },
+    "boss": {
+      "size": [
+        128,
+        128
+      ],
+      "height": 96
+    }
+  },
+  "sizeClassesSource": "주인공 키 64(셀 64×80, 발 (32,78) — 게임 기존 계약), 일반 적 52(64×64), 보스 96(128×128). 기존 표시 키 비율 72:60:110 유지(사용자 승인 P8, Gate C에서 조정 가능)",
+  "defaultCreatureMode": "import",
+  "defaultCreatureModeSource": "사실 비례(약 6등신) 애니풍 도트 — GPT 깔끔한 애니 일러스트(흰/초록 단색 배경) → forge import(사용자 승인 P8)",
+  "defaultRig": "humanoid-34-v1",
+  "motion": {
+    "bob": {
+      "px": 1,
+      "ms": 400
+    },
+    "squash": {
+      "x": 1.1,
+      "y": 0.9,
+      "ms": 80
+    },
+    "hitFlash": {
+      "ms": 60
+    }
+  },
+  "pivot": "bottom-center",
+  "facing": "right",
+  "background": "#1f1a24",
+  "light": {
+    "dir": [
+      -0.6,
+      -0.7,
+      0.4
+    ],
+    "ambient": 0.15
+  },
+  "outline": {
+    "mode": "dark",
+    "globalColor": "#1a1020"
+  },
+  "colorBudget": {
+    "hero": 32,
+    "enemy": 32,
+    "boss": 32
+  },
+  "colorBudgetSource": "import 팔레트 기본 max 32와 같게(P8 제안값 — Gate C에서 조정)",
+  "materials": {
+    "skin": {
+      "base": "#d9a07a",
+      "steps": 4,
+      "kind": "skin"
+    }
+  },
+  "fxColors": [
+    "#ffffff",
+    "#ffe08a",
+    "#ff6a3c"
+  ],
+  "apply": {
+    "target": "godot-rowsheet",
+    "out": "@seonggeom"
+  }
+}

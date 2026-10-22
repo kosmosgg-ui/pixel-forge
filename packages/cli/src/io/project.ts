@@ -36,9 +36,11 @@ export function loadProject(specPath: string, cwd: string): Project {
   };
 }
 
-/** 바이블 파일 경로: data/bibles/<id>.bible.json */
+/** 바이블 파일 경로: data/bibles/<id>.bible.json, 없으면 프로젝트 폴더 data/projects/<id>/<id>.bible.json(게임별 바이블·타깃을 한곳에) */
 export function bibleFile(id: string, cwd: string): string {
-  return join(cwd, 'data', 'bibles', `${id}.bible.json`);
+  const shared = join(cwd, 'data', 'bibles', `${id}.bible.json`);
+  const project = join(cwd, 'data', 'projects', id, `${id}.bible.json`);
+  return existsSync(shared) || !existsSync(project) ? shared : project;
 }
 
 /** 한 번만 실행하고 결과를 기억(렌더 여러 번 → Blender·PNG 읽기 1번) */
