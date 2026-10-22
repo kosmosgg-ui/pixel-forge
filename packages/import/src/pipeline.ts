@@ -1,6 +1,7 @@
 import { ForgeError, srgbToOklab } from '@pixel-forge/core';
 import { outlineInPlace, placeInCell, ringStats, seloutInPlace, type IndexFrame } from './align.js';
-import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
+import { binarizeAlphaInPlace, cornerBackground, removeBackgroundInPlace } from './background.js';
+import { cleanupFramesInPlace, type CleanupStats } from './cleanup.js';
 import { medianCut, quantize } from './palette.js';
 import { dedupeRow, rowsByKmeans } from './rows.js';
 import { boxDownscale } from './scale.js';
@@ -26,6 +27,8 @@ export interface ImportOptions {
   outline?: number;
   /** ring = 실루엣 밖 1px 고리(바이블 dark), selout = 바깥 경계를 같은 계열 어두운 색으로(바이블 selout, P10 1절 — 실루엣 크기 그대로) */
   outlineMode?: 'ring' | 'selout';
+  /** 정리 개선(P10 2.4): 배경 색조 잔여 제거·붙은 단계 병합·외톨이 흡수 */
+  cleanup?: boolean;
 }
 
 export interface ImportedFrame {
@@ -48,6 +51,7 @@ export interface ImportResult {
   /** 양자화 전후 평균 OKLab ΔE */
   paletteDelta: number;
   scale: number;
+  cleanup?: CleanupStats;
 }
 
 /** 이미지 줄 수 = layout row 번호 최댓값 + 1 */
@@ -78,6 +82,7 @@ function pick(rows: Sprite[][], o: ImportOptions, warnings: ImportWarning[]): { 
  */
 export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   const img: RgbaImage = { w: src.w, h: src.h, rgba: src.rgba.slice() };
+  const bgRgb = o.background === 'auto' ? cornerBackground(img) : null;
   if (o.background === 'auto') removeBackgroundInPlace(img);
   binarizeAlphaInPlace(img, o.alphaThreshold);
   const warnings: ImportWarning[] = [];
@@ -89,7 +94,7 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
     return { ...p, unique: d.unique.map((s) => ({ s, i: p.sprites.find((x) => x.s === s)?.i ?? 0 })) };
   });
   const maxH = Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
-  const first = scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap);
+  const first = withCleanup(scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap), o, bgRgb);
   if (o.outline !== undefined && o.outlineMode === 'selout') {
     // 48px 실루엣 분리(P10 1절): 이미 어두운 선이 있어도 축소로 흐려진 경계를 항상 다시 세운다
     const darker = darkerPairs(first.palette);
@@ -99,7 +104,7 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   if (o.outline === undefined || !needsOutline(first)) return first;
   // 외곽선은 실루엣을 위아래 1px씩 키운다 → 키 targetHeight·발 앵커 y를 지키게 2px 작게 줄이고 1px 위에 놓은 뒤 둘레 전체에(프레임마다 따로 정하면 깜빡인다)
   const anchor: readonly [number, number] = [o.cell.anchor[0], o.cell.anchor[1] - 1];
-  const r = o.targetHeight ? scaleQuantize(chosen, o, maxH, o.targetHeight - 2, anchor, warnings, frameMap) : scaleQuantize(chosen, o, maxH, undefined, anchor, warnings, frameMap);
+  const r = withCleanup(o.targetHeight ? scaleQuantize(chosen, o, maxH, o.targetHeight - 2, anchor, warnings, frameMap) : scaleQuantize(chosen, o, maxH, undefined, anchor, warnings, frameMap), o, bgRgb);
   const palette = [...r.palette];
   const outlineIndex = palette.indexOf(o.outline) + 1 || palette.push(o.outline);
   for (const f of r.frames) outlineInPlace(f.frame, outlineIndex);
@@ -119,6 +124,12 @@ function darkerPairs(palette: readonly number[]): number[] {
     });
     return (best < 0 ? darkest : best) + 1;
   });
+}
+
+function withCleanup(r: ImportResult, o: ImportOptions, bg: readonly [number, number, number] | null): ImportResult {
+  if (!o.cleanup) return r;
+  const stats = cleanupFramesInPlace(r.frames.map((f) => f.frame), r.palette, { background: bg ? (bg[0] << 16) | (bg[1] << 8) | bg[2] : null });
+  return { ...r, cleanup: stats };
 }
 
 type Chosen = { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[] }[];

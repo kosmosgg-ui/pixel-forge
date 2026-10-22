@@ -4,6 +4,9 @@ import { ForgeError, toRGBA } from '@pixel-forge/core';
 import { godotRowManifest, rowSheetLayout, type RowAnimMeta } from '@pixel-forge/export';
 import { importChecks, measureStride } from '@pixel-forge/import';
 import { encodePng } from '../io/png.js';
+import { writeFileEnsured } from '../io/files.js';
+import { pxlBin, pxlStudy } from '../io/pxl.js';
+import { parseStudy, studyWarnings, type StudyNumbers } from './study.js';
 import type { Kit } from '../prompts/kit.js';
 import { readState } from '../prompts/state.js';
 import { qaContextOf, runImport, type Imported } from './import.js';
@@ -47,6 +50,16 @@ function measuredStrides(parts: readonly Part[]): Record<string, number> {
   return v > 0 ? { walk: v } : {};
 }
 
+/** pxl study 수치(P10 2.4, qa.study) — pxl이 없으면 null(정보 항목이라 make를 막지 않는다) */
+function studyOf(cwd: string, actorId: string, png: Buffer): (StudyNumbers & { warnings: string[] }) | null {
+  let bin: string;
+  try { bin = pxlBin(process.env, process.version); } catch { return null; }
+  const file = join(cwd, 'out', 'make', actorId, 'study_sheet.png');
+  writeFileEnsured(file, png);
+  const s = parseStudy(pxlStudy(bin, file));
+  return { ...s, warnings: studyWarnings(s) };
+}
+
 /** 셀 하나를 RGBA 시트에 붙인다(원본마다 팔레트가 달라 인덱스가 아니라 RGBA로 합친다) */
 function blit(sheet: Uint8Array, sw: number, rgba: Uint8Array, w: number, h: number, ox: number, oy: number): void {
   for (let y = 0; y < h; y++) sheet.set(rgba.subarray(y * w * 4, (y + 1) * w * 4), ((oy + y) * sw + ox) * 4);
@@ -85,5 +98,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
     qa: { pass: true, warnings: [...new Map(parts.map((p) => [p.key, p.im])).entries()].flatMap(([k, im]) => importChecks(im.result, qaContextOf(im)).filter((c) => !c.pass).map((c) => ({ id: c.id, note: `${k}: ${c.note ?? ''}`.trim() }))) },
   });
   const png = encodePng({ w: W, h: H, rgba });
+  const study = studyOf(cwd, kit.actor.id, png);
+  if (study) Object.assign(manifest.qa, { study });
   return { ...writeRowExport(cwd, t, kit.actor.id, png, manifest, join(cwd, 'out', 'make', kit.actor.id, 'godot-rowsheet'), outArg), columns: layout.columns, rows: layout.rows.map((r) => r.name), sheetSize: [W, H], parts: keys };
 }

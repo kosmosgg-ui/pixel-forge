@@ -48,7 +48,7 @@ export function runImport(specPath: string, cwd: string): Imported {
   const fixed = spec.palette.from === 'bible' ? [...buildBiblePalette(bible, rules).palette.colors.slice(1)].map((c) => c >>> 8) : undefined;
   const targetHeight = spec.targetHeight ?? bible.sizeClassOptions[spec.sizeClass]?.height;
   const result = importImage(decodePng(bytes), {
-    rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, dedupe: spec.dedupe, background: spec.background,
+    rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, cleanup: spec.cleanup, dedupe: spec.dedupe, background: spec.background,
     palette: { max: spec.palette.max, ...(fixed ? { fixed } : {}) },
     ...(targetHeight !== undefined ? { targetHeight } : {}),
     ...(spec.outline === 'bible' && bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16), outlineMode: bible.outline.mode === 'selout' ? 'selout' as const : 'ring' as const } : {}),
@@ -81,7 +81,7 @@ export function importCommand(specPath: string, cwd: string, o: { target?: strin
   writeFileEnsured(join(dir, 'sheet.png'), encodePng({ w: sheet.raster.w, h: sheet.raster.h, rgba: toRGBA(sheet.raster, sheet.palette) }));
   const warnings = checks.filter((c) => !c.pass).map((c) => c.id);
   // import 검사는 경고만(사람이 원본을 다시 생성할지 정한다) — 처리 실패는 ForgeError로 이미 멈췄다
-  const qa = { id: spec.id, mode: 'import', pass: true, warnings, checks, scale: Math.round(r.scale * 10000) / 10000, paletteSize: r.palette.length, sheet: { path: relative(cwd, join(dir, 'sheet.png')) } };
+  const qa = { id: spec.id, mode: 'import', pass: true, warnings, checks, ...(r.cleanup ? { cleanup: r.cleanup } : {}), scale: Math.round(r.scale * 10000) / 10000, paletteSize: r.palette.length, sheet: { path: relative(cwd, join(dir, 'sheet.png')) } };
   writeFileSync(join(dir, 'qa.json'), JSON.stringify(qa, null, 2) + '\n');
   const files = writeImportPack(im, dir);
   // --target: 게임 형식으로 후보 폴더에(기본 타깃 = 바이블 apply.target)

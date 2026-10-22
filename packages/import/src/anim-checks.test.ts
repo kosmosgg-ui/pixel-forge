@@ -32,3 +32,19 @@ describe('가독성 QA(P10 1절)', () => {
     expect(topVisibilityCheck(res([2]))).toMatchObject({ id: 'view.top-visibility', pass: true });
   });
 });
+
+describe('정리 개선(P10 2.4)', () => {
+  it('배경 색조 잔여 → 다른 색, 붙은 단계 병합, 안쪽 외톨이 흡수(경계·가장 어두운 색 보호)', async () => {
+    const { cleanupFramesInPlace } = await import('./cleanup.js');
+    // 팔레트: 1 어두운 선, 2 빨강, 3 거의 같은 빨강(병합), 4 초록 잔여(배경 #00ff00 색조), 5 밝은 크림(외톨이)
+    const palette = [0x101010, 0xc03030, 0xc23232, 0x10d010, 0xe8e0b0];
+    const w = 7, px = new Uint8Array(w * 7).fill(2);
+    px[3 * w + 3] = 5;           // 안쪽 외톨이 → 2로 흡수
+    px[0] = 4;                    // 초록 잔여 → 다른 색
+    px[1] = 3;                    // 붙은 단계 → 2로
+    px[6 * w + 6] = 1;            // 가장 어두운 색(보호)
+    const s = cleanupFramesInPlace([{ w, h: 7, px }], palette, { background: 0x00ff00 });
+    expect([px[3 * w + 3], px[0] !== 4, px[1], px[6 * w + 6]]).toEqual([2, true, 2, 1]);
+    expect(s).toMatchObject({ despilled: 1, merged: 1, absorbed: 1 });
+  });
+});

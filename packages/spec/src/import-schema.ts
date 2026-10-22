@@ -55,6 +55,8 @@ export const importFields = {
   targetHeight: z.number().int().min(4).optional(),
   /** bible = 바이블 outline 설정(이미 어두운 테두리면 생략), none = 외곽선을 더하지 않음(원본 선을 그대로 — 보정 기준 A의 생성 설정) */
   outline: z.enum(['bible', 'none']).default('bible'),
+  /** 정리 개선(P10 2.4, pxl study 근거): 배경 색조 잔여 제거·붙은 단계(OKLab<0.05) 병합·외톨이 흡수(외곽선·가장 어두운 2색 보호). 게임 출력(make)은 켠다 */
+  cleanup: z.boolean().default(false),
   /** auto = 불투명 배경이면 모서리 최빈색 중 가장자리와 이어진 영역만 투명(흰 천 내부 보존), none = 처리 안 함 */
   background: z.enum(['auto', 'none']).default('auto'),
 };
