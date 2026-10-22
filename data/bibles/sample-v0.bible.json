@@ -18,7 +18,7 @@
   "background": "#2a2238",
   "light": { "dir": [-0.6, -0.7, 0.4], "ambient": 0.15 },
   "outline": { "mode": "selout", "globalColor": "#1a1020" },
-  "colorBudget": { "character": 15, "smallMonster": 9, "large": 20, "boss": 30 },
+  "colorBudget": { "character": 15, "smallMonster": 12, "large": 20, "boss": 30 },
   "colorBudgetSource": "SNES 스프라이트 팔레트 15색+투명, 보스는 팔레트 2개. 프레임에 실제로 쓰인 고유 색 수(외곽선 톤·fx 포함)로 센다",
   "materials": {
     "skin": { "base": "#d9a07a", "steps": 4, "kind": "skin" },

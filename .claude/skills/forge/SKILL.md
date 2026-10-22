@@ -14,7 +14,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 - 바이블은 `node -e`로 필요한 키만 본다: `sizeClasses`, `colorBudget`, `materials` 이름, `roleColorKey`.
 
 ## 1. 크기·재질 결정 (멈춤 지점 2곳)
-- sizeClass: 아군·인간형 = `character`(48×48, 15색). 작은 적 = `smallMonster`(32×32, 7색). 지시에 크기가 있으면 그것.
+- sizeClass: 아군·인간형 = `character`(48×48, 15색). 작은 적 = `smallMonster`(32×32, 12색). 지시에 크기가 있으면 그것.
   - 큰 무기·큰 몸집이 캔버스를 넘으면 엔진이 자동으로 다음 등급(예: `large` 64×64, 20색)으로 올린다(build JSON `sizeClass.used`). 등급을 고정해야 하면 Spec에 `"sizeClassLock": true`.
 - 재질은 **바이블에 있는 것만**. 표현에 꼭 필요한 재질(예: 뼈, 녹슨 금속)이 없으면:
   1. `docs/proposals/bible-<내용>.md`에 제안서(재질 이름·base 색·steps·쓰는 캐릭터·이유)를 쓰고
@@ -35,7 +35,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
    - 손에 든 무기·소품은 `"held": true`, 두께 2px 이상. 1px 장식은 `"decorative": true`(held 아님).
    - 무기 조각(날·날밑·손잡이)은 `weapon` 뼈에 같은 축으로, `orient: "world"`, `anchor: "joint"`. 손잡이가 손을 지나가게.
    - 눈: `eyes.pos`를 얼굴 재질 위에. 눈 둘레 3×2가 얼굴 재질이어야 한다(투구·두건이 덮지 않게).
-   - **smallMonster는 축소한 사람이 아니라 별도 설계**: 기본 리그 `humanoid-small-v1`(키 20, 머리 45%, 짧은 팔다리, 손 2×2 — Spec에 `rig`를 쓰지 않으면 크기 등급 기본 리그). 외곽선은 등급 설정의 단색(dark), 색 예산 9(외곽선 1색 포함).
+   - **smallMonster는 축소한 사람이 아니라 별도 설계**: 기본 리그 `humanoid-small-v1`(키 20, 머리 45%, 짧은 팔다리, 손 2×2 — Spec에 `rig`를 쓰지 않으면 크기 등급 기본 리그). 외곽선은 등급 설정의 단색(dark), 색 예산 12(외곽선 1색 포함, 사용자 승인 P6.5).
      - Spec `"signature": "<특징 하나>"`(예: ears, skull)를 적고 그 파츠에 `"signature": true`. 면적은 15~40% 밖일 때만 경고(QA `form.signature`, 선택). 수치 기준을 맞추려고 디자인을 과장하지 않는다 — 시안·레퍼런스와의 비교가 우선, 특징 판정은 pixel-reviewer "역할 원형 판독".
      - 얼굴·특징처럼 형태가 중요한 파츠는 mask 파츠(§7.3)를 먼저 쓴다. dark 외곽선 등급에서는 mask 안의 1px 빈칸(눈구멍·이빨 틈·갈비 틈)이 외곽선색(검정)으로 채워진다.
      - dark 등급에서 1px 획(뼈 팔다리 등)은 재질색 그대로 양옆에 외곽선이 붙는다. 1px held는 안 되고 `decorative: true`만.

@@ -7,14 +7,14 @@
 ## 로그
 - [P7-alt] 막힘 | 3D 프리렌더 → 도트 실험(사용자 승인). 컨테이너에 Blender 없음(`which blender` 없음, `python3 -c "import bpy"` 실패, pip bpy 배포판 없음) → 지시대로 설치 방법만 보고하고 멈춤. P6.5 미결 2건은 커밋 404e119 상태로 보류
 
-- [P6.5] 완료(조건부 — 미달 2개 사용자 결정 대기) | 그리드 파츠(재질:단계·@eye·@outline), frames 모드(base+patch), atoms 모드(관절 원점 아톰·각도 변형·upright), 시안 docs/quality-ref/target-grids.json, forge compare(시안 열·iou·diff·headDiff), review.json v2(sheetHash·12기준 관찰), shoot(당김 5px·−8°·시위 화살). 사용자 승인: 기본 모드(생물 = atoms, 아이템·리그 없는 생물 = frames, shapes = 시안용), humanoid-small-v1 비율, signature 15~40% 경고, 새 필수 QA anim.pose-distinct
+- [P6.5] 완료 | 그리드 파츠(재질:단계·@eye·@outline), frames 모드(base+patch), atoms 모드(관절 원점 아톰·각도 변형·upright), 시안 docs/quality-ref/target-grids.json, forge compare(시안 열·iou·diff·headDiff), review.json v2(sheetHash·12기준 관찰), shoot(당김 5px·−8°·시위 화살). 사용자 승인: 기본 모드(생물 = atoms, 아이템·리그 없는 생물 = frames, shapes = 시안용), humanoid-small-v1 비율, signature 15~40% 경고, 새 필수 QA anim.pose-distinct
   | 캐릭터 | 모드 | reviewer | 시안 대비 |
   | goblin | atoms | 22 | rest 실루엣 IoU 1.0, 색 예산 9 병합으로 30px(머리 19) 차이 → 예산 12 제안(승인 대기, 12면 diff 0) |
   | skeleton | atoms | 22 | 머리 diff 0, 곤봉(지시: 2×7·혹 3) 때문에 IoU 0.911(곤봉 반영 시안과는 diff 0) |
   | archer | shoot | 18 | aim 읽힘, draw·release 약함(시위 고정선·궤적 짧음 → backlog) |
   - 비교: out/sample/mode-compare.png(frames / atoms / 시안, 8배) — 두 몬스터 모두 atoms 우세. out/compare/review.png — 도적 atoms가 도형보다 깔끔(두건·눈·노이즈)
   - 수락: build-all sample 8/8, Tests 231 passed, code-reviewer 높음 0 · 중간 3 수정
-  - 미달 기준 2개(사용자 결정 필요): 고블린 머리 diff 0(예산), 스켈레톤 IoU ≥ 0.95(곤봉 지시와 충돌)
+  - 사용자 결정 반영: smallMonster 예산 9→12 → 고블린 diff 0·headDiff 0(reviewer 재검수 22), 스켈레톤은 곤봉 반영 시안(target-grids.json 갱신) 기준 diff 0 → 수락 기준 전부 통과
 
 - [P6] 완료 | /forge 스킬, forge ref analyze·compare, 크기 등급 자동 맞춤(렌더 판정, sizeClassLock), 등급별 외곽선·기본 리그(smallMonster = dark·humanoid-small-v1, 예산 9), signature·form.signature, apply 검수 게이트(review-score, 입력+시트 해시, QA 통과 필수), form.head-clearance, fx 축척. 사용자 승인: 바이블 bone·metal_rust·large·smallMonster 설정, rules signatureMin
   | 캐릭터 | build 횟수 | reviewer 최종 | 비고 |

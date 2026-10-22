@@ -1,4 +1,4 @@
-# 제안: sample-v0 smallMonster 색 예산 9 → 12 (승인 전 — 바이블 미변경)
+# 제안: sample-v0 smallMonster 색 예산 9 → 12 — **승인·적용됨**(사용자 승인 P6.5)
 
 시안 고블린(docs/quality-ref/target-grids.json)은 외곽선 포함 12색을 쓴다. 지금 예산 9에서는 color.budget-fit이 3쌍을 병합한다(`forge build data/specs/sample/goblin.spec.json`, out/goblin/qa.json `budget`):
 

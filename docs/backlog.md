@@ -32,4 +32,4 @@
 - [P6.5 시각] 궁수 shoot: 시위가 무기 뼈 고정선이라 draw에서 당겨지지 않음, release 궤적이 짧아 aim 화살과 비슷 — 시위 fx(handB 추종)·궤적 길이(크기 등급 넘침 주의) 검토
 - [P6.5 시각] 아톰 고블린·스켈레톤 hit 2에서 머리+척추 회전 합이 15°를 넘어 upright 머리가 RotSprite로 찌그러짐 — hit 오버라이드로 합 ≤ 15° 또는 upright를 누적 각도로
 - [P6.5 시각] 스켈레톤 곤봉이 팔과 같은 뼈색이라 묻힘(자루 bone:0 또는 @outline 한 줄), 공격 2에서 곤봉이 해골과 겹침(weapon rot 30→15)
-- [P6.5] 고블린 색 예산 9에서 시안 대비 30px(머리 19) 병합 손실 — docs/proposals/bible-smallmonster-budget.md(12 제안, 승인 대기)
+- [P6.5 시각] 아톰 death fall·lie에서 root 통째 회전(-40·-80°)이 귀·얼굴을 계단 노이즈로 깸 — 쓰러짐 키는 그린 각도 변형(variants) 또는 45° 단위로
