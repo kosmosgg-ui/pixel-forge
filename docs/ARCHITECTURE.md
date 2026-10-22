@@ -207,6 +207,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - 모델 폴더: 모델 파일(저장소 제외, .gitignore) + `source.json`(출처·라이선스 필수) + `materials.json`(모델 재질 → 바이블 재질 | `@eye` | `@eye:<재질>:<단계>` | `@outline` | `@palette`; `palette` = 팔레트형 텍스처의 견본 색 표, 알베도와 OKLab 최근접). 넣는 법: `data/models/README.md`.
 - 흐름: `packages/render3d`(Blender 실행 래퍼, `.venv-bpy`의 bpy 5.2.2 / Python 3.13, `FORGE_BPY_PYTHON`) → `blender/render_passes.py`가 2배 해상도로 재질·오브젝트 번호(Raw)·카메라 공간 법선(Raw)·알베도(Standard) 패스, 카메라는 **전 애니·전 프레임·8방향 범위**로 한 번 맞춤(쓰러짐 잘림 방지), 결과는 `.forge-cache/prerender/<해시>`에 캐시 → `render/prerender.ts`(순수): 2×2 다수결(눈 칸 우선) → 바이블 재질 + 3단계 툰(`rules.prerender.toon`, 광원 = bible.light) → 기존 정리(작은 음영 섬)·외곽선·눈·공동 색 예산.
 - `directions: 4`: 8방향 rest를 먼저 렌더해 눈 픽셀이 보이는 방향만(많이 보이는 순 최대 4, 사용자 승인: 해골 미니언의 3방향 결과 허용). 방향별 프레임은 반전하지 않는다(`AnimFrame.dir`, 프레임 이름 `<anim>_<dir>_<n>`, manifest `facing: "dirs"`, `directions`).
+- 검증 시점 예외: `source.json`·`materials.json`은 모델 폴더의 메타라 Spec 진입 검증이 아니라 렌더 직전(io/prerender.ts)에 zod로 한 번 검증한다(Blender 실행 전, 같은 실행 안에서 1회). 패스 캐시 키 = 모델 바이트 + 작업 JSON + 스크립트(bpy 버전 미포함 — backlog), passes.json은 스크립트 마지막에 쓰여 중간 실패 산출물은 캐시로 쓰지 않는다.
 - 한계: 스키닝 메시는 오브젝트 행렬로 정지 판정을 못 해 anim.flicker가 사실상 비교 대상이 없다(보조 지표는 보고서). rest만 발밑 고정 검사.
 
 

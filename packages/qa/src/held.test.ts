@@ -38,4 +38,18 @@ describe('form.held-visible', () => {
     const floating = ['h....', '.....', '..gww', '...ww'];
     expect(formHeldVisible([frame(['2....', '.....', '..433', '...33'], { part: parts(floating) })], ctx({ held: group })).pass).toBe(false);
   });
+
+  it('프리렌더 소품: 방향마다 첫 프레임 소품 픽셀 ÷ rest < 60%면 경고(선택), rest 소품 0px·소품 없음은 통과', () => {
+    const p = (rows: string[]) => Uint16Array.from(rows.join('').split('').map((ch) => (ch === 'w' ? 7 : 0)));
+    const restF = { ...frame(['.....', '.22..', '.22..', '.....'], { part: p(['.....', '.ww..', '.ww..', '.....']) }) };
+    const se = { ...frame(['.....', '.22..', '.22..', '.....'], { part: p(['.....', '.ww..', '.ww..', '.....']) }), dir: 'se' };
+    const ne = { ...frame(['.....', '.2...', '.....', '.....'], { part: p(['.....', '.w...', '.....', '.....']) }), dir: 'ne' };
+    const props = [{ name: 'Sword', part: 7 }];
+    const c = formHeldVisible([restF, se, ne], ctx({ props }));
+    expect([c.required, c.pass, c.value]).toEqual([false, false, 0.25]);
+    expect(c.note).toContain('Sword@ne 25%');
+    expect(formHeldVisible([restF, se], ctx({ props })).pass).toBe(true);
+    expect(formHeldVisible([frame(['.....']), se], ctx({ props })).pass).toBe(true);
+    expect(formHeldVisible([restF, se], ctx({ props: [] }))).toMatchObject({ pass: true, note: '소품 없음' });
+  });
 });

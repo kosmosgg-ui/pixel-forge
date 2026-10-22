@@ -44,3 +44,4 @@
 - [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 6: KayKit 생산(주인공 Knight·Rogue_Hooded·Mage·Barbarian, 적 Skeleton 4종 × 색 변형 3단계) + 장면
 - [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 4 나머지: 서브에이전트 prerender-worker·asset-scout·pixel-designer, 스킬 /batch-prerender·/best-of
 - [P7 마감] forge apply 검수 게이트가 review-score 점수(/24) 기반 — art-judge 등급(보정 세트 v2) 기반으로 바꿀지 검토
+- [P7 리뷰] 프리렌더 패스 캐시 키에 Blender(bpy) 버전 미포함 — bpy 업그레이드 시 .forge-cache/prerender 수동 삭제 필요

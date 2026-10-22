@@ -2,11 +2,14 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P7**
+현재 단계: **P8**
 
 ## 로그
-- [P7] 진행 중(1번 수락 판정에서 멈춤) | 0 완료(생물 기본 prerender, se 1방향 + mirror). 1 구현: POC 툰(밝음 +1 규칙 삭제)·원본 명도 순위 → 램프 단계, 외곽선 = 등급 설정 없으면 dark(가장자리 140/140 외곽선색), se = yaw −35°, 소품 가시성(held, 방향별 경고), 바이블 pixelsPerUnit 17.72(기사 44px·해골 40px), forge lineup
-  - 막힘: art-judge 보정 확인 2회 무효(판정자 순서 C<D<A−≈B, C<A−<D<B — 손 도트 2장을 프리렌더 위로 둠). 가설: ① 판정자는 "게임 스프라이트 완성도"(얼굴·역할색·외곽선)로 보고 기준 세트는 "프리렌더 방식의 잠재력"을 매김 ② A− 이미지가 회색 단색·얼굴 가림이라 판정 축(역할색·얼굴)에서 불리 ③ 기준이 무엇을 재는지(축) 지시가 art-judge에 없음
+- [P7] 완료(마감, 사용자 승인 P7close) | 0 생물 기본 모드 결정(→ 바이블 defaultCreatureMode로 일반화, 스키마 기본 atoms), se(yaw −35°) 1방향 + manifest mirror. 1 렌더 회귀 수정(POC 툰·명도 순위 램프·dark 외곽선·소품 가시성 경고·바이블 pixelsPerUnit 17.72) 기술 수락. 판정 체계: 보정 세트 v2 + art-judge(축 "1배 게임 화면 SD 스프라이트 완성도"), pixel-reviewer 폐기, forge lineup
+  - 수락: pnpm build && pnpm test → Tests 241 passed(test-runner), art-judge v2 보정 확인 유효(D<C<B<A), 기사 프리렌더 등급 D–C(기록만)
+  - code-reviewer: 높음 0, 중간 6 → 5 수정(pose-distinct 방향 경계, 소품·lineup 테스트, prerenderDeps 경로, 검증 시점 문서화), 1 backlog(bpy 버전 캐시 키)
+  - 이동: 2·3·5·6번과 나머지 서브에이전트·스킬 → backlog "prerender 트랙"
+  - v1 보정 세트 무효 3회(축 미정의) → v2로 교체
 
 - [P7-alt] 실험 완료(판정 보고) | 3D 프리렌더 → 도트: packages/render3d(Blender 래퍼, bpy 5.2.2 venv) + render/prerender.ts(재질·색 표 매핑, 2×2 다수결·눈 우선, 3단계 툰) → 기존 정리·외곽선·QA·pack. 모델 KayKit Knight·Skeleton_Minion(CC0, 저장소 제외, source.json). forge scene 추가
   | 캐릭터 | 방향 | 키 | QA | reviewer | 비고 |

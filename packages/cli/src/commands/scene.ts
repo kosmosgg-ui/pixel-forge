@@ -1,4 +1,4 @@
-import { join, relative } from 'node:path';
+import { basename, join, relative } from 'node:path';
 import { z } from 'zod';
 import { addColor, blitInPlace, createIndexed, ForgeError, hexToRgba, scaleNearest, toRGBA } from '@pixel-forge/core';
 import { readJson, writeFileEnsured } from '../io/files.js';
@@ -72,7 +72,7 @@ export function sceneCommand(scenePath: string, cwd: string, scale?: number) {
     blitInPlace(canvas, frameOf(r, it.anim, it.dir, it.index), it.at[0] - px, it.at[1] - py);
   }
   const big = scaleNearest(canvas, k);
-  const name = path.split('/').pop()?.replace(/\.scene\.json$/, '') ?? 'scene';
+  const name = basename(path).replace(/\.scene\.json$/, '');
   const out = join(cwd, 'out', 'scenes', `${name}.png`);
   writeFileEnsured(out, encodePng({ w: big.w, h: big.h, rgba: toRGBA(big, palette) }));
   return { ok: true as const, cmd: 'scene', scene: name, items: items.length, specs: cache.size, size: [w, h], scale: k, out: relative(cwd, out) };

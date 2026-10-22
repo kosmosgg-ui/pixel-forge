@@ -203,7 +203,9 @@ export function prerenderEyeCount(ctx: RenderContext, passes: PrerenderPasses, f
  */
 export function renderPrerender(ctx: RenderContext, passes: PrerenderPasses, o: PrerenderOptions): AnimRender {
   const classify = classifier(ctx, passes, o);
-  const missing = passes.materials.filter((m, i) => passes.frames.some((f) => f.mat.includes(i + 1)) && o.materialMap[m] === undefined && !o.palette?.[m]);
+  const used = new Set<number>();
+  for (const f of passes.frames) for (const v of f.mat) used.add(v);
+  const missing = passes.materials.filter((m, i) => used.has(i + 1) && o.materialMap[m] === undefined && !o.palette?.[m]);
   if (missing.length) throw new ForgeError('spec.refs', `materials.json에 모델 재질 매핑이 없습니다: ${missing.join(', ')}`);
   const ramps = rampsOf(ctx.bible, ctx.palette);
   const stepsOf = (m: number) => ramps[m - 1]?.indices.length ?? 1;

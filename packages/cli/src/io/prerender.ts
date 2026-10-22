@@ -10,7 +10,6 @@ import { resolveInside } from './paths.js';
 
 /** data/models/<id>/source.json — 출처·라이선스 기록 필수(모델 파일은 저장소에 넣지 않는다) */
 const sourceSchema = z.object({ file: z.string().min(1), url: z.string().min(1), author: z.string().min(1), license: z.string().min(1) }).passthrough();
-/** data/models/<id>/materials.json — 모델 재질 이름 → 바이블 재질 */
 /** data/models/<id>/materials.json — 모델 재질 이름 → 바이블 재질 | "@eye" | "@eye:<재질>:<단계>" | "@palette".
  * palette: 팔레트형 텍스처(재질 하나에 여러 색)의 색 영역 표 — 견본 색(hex)마다 대상. 알베도와 가장 가까운 견본(OKLab)으로 */
 const materialsSchema = z.object({
@@ -30,7 +29,8 @@ export interface PrerenderInput {
 /** 캐시 키(build)에 넣을 파일: 모델·재질 매핑·출처·Blender 스크립트 */
 export function prerenderDeps(spec: Spec, cwd: string): string[] {
   if (spec.mode !== 'prerender' || !spec.model) return [];
-  const model = resolve(cwd, spec.model), dir = dirname(model);
+  // 캐시 키·watch 목록도 data/models 안만(밖 경로 파일을 해시로 읽지 않게)
+  const model = resolveInside(join(cwd, 'data', 'models'), resolve(cwd, spec.model)), dir = dirname(model);
   return [model, join(dir, 'materials.json'), join(dir, 'source.json'), PASS_SCRIPT];
 }
 

@@ -51,7 +51,7 @@ export function lineupCommand(outPath: string, items: readonly string[], cwd: st
   const H = Math.max(...imgs.map((i) => i.h)), W = imgs.reduce((a, i) => a + i.w + GAP, GAP);
   const [br, bg, bb] = parseHex(background);
   const ow = W * k, oh = (H + 2 * GAP) * k, rgba = new Uint8Array(ow * oh * 4);
-  for (let p = 0; p < ow * oh; p++) rgba.set([br, bg, bb, 255], p * 4);
+  for (let p = 0; p < ow * oh; p++) { rgba[p * 4] = br; rgba[p * 4 + 1] = bg; rgba[p * 4 + 2] = bb; rgba[p * 4 + 3] = 255; }
   let ox = GAP;
   for (const img of imgs) {
     const oy = GAP + H - img.h;

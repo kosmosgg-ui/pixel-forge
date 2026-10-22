@@ -93,7 +93,8 @@ export function animPoseDistinct(frames: readonly QaFrame[], ctx: QaContext): Ch
     const keys = frames.map((f, i) => ({ f, i })).filter(({ f }) => f.anim === anim && f.key !== false);
     for (let j = 1; j < keys.length; j++) {
       const a = keys[j - 1], b = keys[j];
-      if (!a || !b) continue;
+      // 방향이 여러 개(프리렌더)면 방향이 바뀌는 경계는 연속 키가 아니다
+      if (!a || !b || a.f.dir !== b.f.dir) continue;
       const iou = silhouetteIoU(a.f, b.f);
       if (iou > worst) { worst = iou; frame = b.i; note = `${a.f.name}→${b.f.name} IoU ${Math.round(iou * 1000) / 1000}`; }
     }
