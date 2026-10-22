@@ -6,6 +6,8 @@
 
 ## 로그
 - [P6.5] 진행 중 | 픽셀 그리드 모드(사용자 승인): grid 파츠(재질:단계·@eye·@outline, 외곽선은 엔진), 프레임 모드(base+patch, 깜빡임은 patch 밖), 아톰 모드(각도 변형 + 남은 각도 RotSprite, 머리 upright, 경고 qa.json), render --sheet 8, manifest motion.shadow, pixel-studio 스킬
+  - goblin(frames) | 반복 2 | QA pass(signature 0.255) | reviewer 22/24 · skeleton(frames) | 반복 2 | QA pass(signature 0.458) | 20/24 · archer(shoot) 19/24
+  - 비교: out/sample/mode-compare.png(도형/프레임/시안 X — docs/quality-ref 없음), out/compare/review.png(rogue atoms 19 vs shapes 17). 미완: quality-ref 대비 판정
   - 도적 아톰 비교: data/specs/compare/(rogue-atoms·rogue-shapes) → out/compare/review.png. 아톰 QA 필수 통과
   - 막힘: quality-ref.zip이 컨테이너에 없음(업로드 없음) → 고블린·스켈레톤 프레임 모드 재제작 대기
   - P6 소형 몬스터 보정(등급별 외곽선·소형 리그·signature)은 이미 반영돼 있어 유지 — 그리드 모드가 등급별 외곽선을 쓴다
