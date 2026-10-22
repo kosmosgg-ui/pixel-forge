@@ -7,3 +7,4 @@ export * from './scale.js';
 export * from './palette.js';
 export * from './align.js';
 export * from './pipeline.js';
+export * from './checks.js';

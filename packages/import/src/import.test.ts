@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { feetAnchor, placeInCell } from './align.js';
+import { identityCheck, jitterCheck, paletteDeltaCheck } from './checks.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { medianCut } from './palette.js';
 import { importImage, type ImportOptions } from './pipeline.js';
@@ -127,5 +128,26 @@ describe('import 처리 단계', () => {
     const oi = r.palette.indexOf(0x101010) + 1;
     expect(oi).toBeGreaterThan(0);
     expect([...(f?.px ?? [])].filter((v) => v === oi).length).toBeGreaterThan(20);
+  });
+});
+
+describe('import QA', () => {
+  const base = (frames: { anim: string; dir: string; index: number; px: number[] }[], paletteDelta = 0.01) => ({
+    palette: [0x202020, 0xc03030, 0x30c030], warnings: [], frameMap: {}, scale: 1, paletteDelta,
+    frames: frames.map((f) => ({ anim: f.anim, dir: f.dir, index: f.index, source: { row: 0, sprite: f.index }, frame: { w: 4, h: 4, px: Uint8Array.from(f.px) } })),
+  });
+  const A = [0, 2, 2, 0, 0, 2, 2, 0, 0, 2, 2, 0, 0, 1, 1, 0], B = [0, 0, 2, 2, 0, 0, 2, 2, 0, 0, 2, 2, 0, 1, 1, 0], G = [0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 1, 1, 0];
+  it('palette-delta > 0.06 경고, jitter: idle 연속 프레임 몸 이동 > 1px 경고', () => {
+    expect(paletteDeltaCheck(base([], 0.08)).pass).toBe(false);
+    expect(jitterCheck(base([{ anim: 'idle', dir: 's', index: 0, px: A }, { anim: 'idle', dir: 's', index: 1, px: A }])).pass).toBe(true);
+    const L = [2, 2, 0, 0, 2, 2, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0]; // 몸 무게중심 x 0.75 → B 2.25(1.5px)
+    const j = jitterCheck(base([{ anim: 'idle', dir: 's', index: 0, px: A }, { anim: 'idle', dir: 's', index: 1, px: L }, { anim: 'idle', dir: 's', index: 2, px: B }]));
+    expect(j).toMatchObject({ pass: false, note: expect.stringContaining('idle_s_1→2') });
+  });
+  it('identity: 한 프레임만 색 분포가 튀면 경고(AI 드리프트)', () => {
+    const ok = identityCheck(base([0, 1, 2, 3].map((i) => ({ anim: 'walk', dir: 'e', index: i, px: A }))));
+    expect(ok.pass).toBe(true);
+    const bad = identityCheck(base([0, 1, 2].map((i) => ({ anim: 'walk', dir: 'e', index: i, px: A })).concat([{ anim: 'walk', dir: 'e', index: 3, px: G }])));
+    expect(bad).toMatchObject({ pass: false, note: expect.stringContaining('walk_e_3') });
   });
 });
