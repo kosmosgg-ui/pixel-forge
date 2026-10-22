@@ -28,6 +28,7 @@ export function writePack(r: Rendered, cwd: string): string[] {
   const packed = packCharacter({
     id: p.spec.id, bible: p.bible.id, sizeClass: p.spec.sizeClass, rest: r.rest.raster, rootX,
     frames: r.frames.map((f) => ({ anim: f.anim, index: f.index, raster: f.raster, ms: f.ms, ...(f.dir ? { dir: f.dir } : {}) })),
+    ...(p.spec.mode === 'prerender' && new Set(r.frames.map((f) => f.dir)).size === 1 ? { mirror: true } : {}),
     loops, motion: { ...resolveMotion(p.bible.motion, p.spec.motion), shadow: shadowOf(r.rest.raster) }, palette: r.palette.palette, version: FORGE_VERSION,
   }, `${p.spec.id}.png`);
   const png = encodePng({ w: packed.sheet.w, h: packed.sheet.h, rgba: toRGBA(packed.sheet, r.palette.palette) });

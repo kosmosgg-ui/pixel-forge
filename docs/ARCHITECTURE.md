@@ -14,7 +14,12 @@
   4. **색 예산 강제**: 스프라이트당 사용 색 수를 규칙으로 제한한다. (근거: Shovel Knight, Mina the Hollower)
   5. **검수가 품질을 만든다**: 모든 빌드는 자동 QA를 통과해야 산출물로 승격된다.
   6. 품질 기준은 성공한 인디(브로테이토·뱀파이어 서바이버즈 체급): 군중 속 가독성, 전 에셋 일관성, 손맛 연출, 대량 생산. 프레임 수보다 실루엣·색 구분을 우선한다.
-  7. **기본 모드(사용자 승인 P6.5)**: 리그로 움직이는 모든 생물(character·smallMonster·large·boss) = `atoms`(시안 그리드를 뼈별 아톰으로 나눠 rest에서 시안 그대로). 아이템·이펙트·리그 없는 생물(슬라임 등) = `frames`. `shapes` = 시안·자리표시용(§7.3.1).
+  7. **기본 모드(사용자 승인 P7, P6.5 결정을 대체)**:
+     | 대상 | 모드 |
+     | --- | --- |
+     | 생물(캐릭터·적), 3D 모델이 있을 때 | `prerender`(§7.3.2) — 방향 기본 `["se"]` 1방향 + 엔진 좌우 반전, 4방향은 Spec에서 선택 |
+     | 아이콘·얼굴 템플릿·이펙트·리그 없는 생물(슬라임 등) | `atoms`·`frames`(§7.3.1) |
+     | 시안·자리표시 | `shapes` |
   8. **수치보다 시안**: QA 수치(특징 면적 등)를 맞추려고 디자인을 과장하지 않는다. 시안(`docs/quality-ref/`)·레퍼런스와의 비교가 우선이다.
 
 ## §2 저장소 구조
@@ -198,10 +203,10 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ### §7.4 Rules (`data/rules/default.rules.json`) — 수치와 근거 id를 함께 보관. 렌더러는 rule id를 로그로 남긴다.
 
 ### §7.3.2 프리렌더 모드 (P7-alt 실험, 사용자 승인) — 3D 모델 → 도트
-- Spec: `"mode": "prerender"`, `"model": "data/models/<id>/<파일>"`(glb·fbx), `"actions": { "<애니>": "<모델 액션>" }`, `"frames": { "<애니>": [원본 프레임 번호…] }`(키 포즈 중심, 연속 키 실루엣 IoU ≤ 0.9 — anim.pose-distinct), `"directions": 8 | 4 | 1`, `"height"`(목표 키 px), `"camera": "iso"(30°) | "side"(10°)`, `"hide": [숨길 오브젝트]`, `"loop"`.
+- Spec: `"mode": "prerender"`, `"model": "data/models/<id>/<파일>"`(glb·fbx), `"actions": { "<애니>": "<모델 액션>" }`, `"frames": { "<애니>": [원본 프레임 번호…] }`(키 포즈 중심, 연속 키 실루엣 IoU ≤ 0.9 — anim.pose-distinct), `"directions"`(기본 1 = `se`(yaw −35°, POC와 같음) + 엔진 좌우 반전(manifest `mirror`) · 4 = 8방향 중 눈이 보이는 방향 · 8 · 이름 목록 `["se","sw",…]`), `"height"`(목표 키 px), `"camera": "iso"(30°) | "side"(10°)`, `"hide": [숨길 오브젝트]`, `"loop"`.
 - 모델 폴더: 모델 파일(저장소 제외, .gitignore) + `source.json`(출처·라이선스 필수) + `materials.json`(모델 재질 → 바이블 재질 | `@eye` | `@eye:<재질>:<단계>` | `@outline` | `@palette`; `palette` = 팔레트형 텍스처의 견본 색 표, 알베도와 OKLab 최근접). 넣는 법: `data/models/README.md`.
 - 흐름: `packages/render3d`(Blender 실행 래퍼, `.venv-bpy`의 bpy 5.2.2 / Python 3.13, `FORGE_BPY_PYTHON`) → `blender/render_passes.py`가 2배 해상도로 재질·오브젝트 번호(Raw)·카메라 공간 법선(Raw)·알베도(Standard) 패스, 카메라는 **전 애니·전 프레임·8방향 범위**로 한 번 맞춤(쓰러짐 잘림 방지), 결과는 `.forge-cache/prerender/<해시>`에 캐시 → `render/prerender.ts`(순수): 2×2 다수결(눈 칸 우선) → 바이블 재질 + 3단계 툰(`rules.prerender.toon`, 광원 = bible.light) → 기존 정리(작은 음영 섬)·외곽선·눈·공동 색 예산.
-- 4방향 기본값: 8방향 rest를 먼저 렌더해 눈 픽셀이 보이는 방향만(많이 보이는 순 최대 4). 방향별 프레임은 반전하지 않는다(`AnimFrame.dir`, 프레임 이름 `<anim>_<dir>_<n>`, manifest `facing: "dirs"`, `directions`).
+- `directions: 4`: 8방향 rest를 먼저 렌더해 눈 픽셀이 보이는 방향만(많이 보이는 순 최대 4, 사용자 승인: 해골 미니언의 3방향 결과 허용). 방향별 프레임은 반전하지 않는다(`AnimFrame.dir`, 프레임 이름 `<anim>_<dir>_<n>`, manifest `facing: "dirs"`, `directions`).
 - 한계: 스키닝 메시는 오브젝트 행렬로 정지 판정을 못 해 anim.flicker가 사실상 비교 대상이 없다(보조 지표는 보고서). rest만 발밑 고정 검사.
 
 

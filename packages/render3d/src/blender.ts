@@ -8,13 +8,22 @@ import { ForgeError } from '@pixel-forge/core';
 /** Blender 패스 스크립트(packages/render3d/blender/render_passes.py) */
 export const PASS_SCRIPT = fileURLToPath(new URL('../blender/render_passes.py', import.meta.url));
 
-/** 방향 이름 → 모델 회전(도). 0° = 카메라를 봄(s), 90° = 화면 오른쪽(e) */
+/**
+ * 방향 이름 → 모델 회전(도, 모델 정면 = 0°가 카메라를 봄). 사용자 승인 P7: POC와 같이 yaw −35° = "se"(3/4 대각),
+ * 대각 4방향 = POC의 [-35, 35, 145, -145]. 기본은 se 1방향 + 엔진 좌우 반전(manifest mirror).
+ */
 export const DIRECTIONS: Readonly<Record<8 | 4 | 1, Readonly<Record<string, number>>>> = {
-  8: { s: 0, se: 45, e: 90, ne: 135, n: 180, nw: 225, w: 270, sw: 315 },
-  /** 4방향 기본값은 8방향 중 눈이 보이는 방향에서 고른다(cli) — 이 표는 눈 정보가 없을 때 */
-  4: { s: 0, e: 90, n: 180, w: 270 },
-  1: { se: 45 },
+  8: { s: 0, se: -35, e: -90, ne: -145, n: 180, nw: 145, w: 90, sw: 35 },
+  /** 4방향(옥토패스형) 기본값은 8방향 중 눈이 보이는 방향에서 고른다(cli) — 이 표는 눈 정보가 없을 때 */
+  4: { se: -35, sw: 35, nw: 145, ne: -145 },
+  1: { se: -35 },
 };
+
+/** Spec directions(1·4·8 또는 방향 이름 목록) → 이름 → 회전 */
+export function yawsOf(d: number | readonly string[]): Record<string, number> {
+  if (typeof d !== 'number') return Object.fromEntries(d.map((n) => [n, DIRECTIONS[8][n] ?? 0]));
+  return { ...(DIRECTIONS[d === 8 || d === 4 ? d : 1]) };
+}
 
 /** rule: prerender.camera — iso = 30° 내려다봄(아이소메트릭 도트), side = 측면 3/4(10°) */
 export const ELEVATION = { iso: 30, side: 10 } as const;

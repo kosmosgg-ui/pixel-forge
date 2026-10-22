@@ -24,6 +24,8 @@ export interface PackInput {
   motion: unknown;
   palette: Palette;
   version: string;
+  /** 한 방향만 렌더해 반대쪽은 엔진이 좌우 반전(프리렌더 se 1방향) */
+  mirror?: boolean;
 }
 
 export interface PackResult {
@@ -63,7 +65,7 @@ export function packCharacter(c: PackInput, image: string, o: PackOptions = {}):
   const used = [...new Set(sheet.px)].filter((v) => v).sort((a, b) => a - b);
   const manifest: Omit<Manifest, 'hash'> = {
     id: c.id, bible: c.bible, sizeClass: c.sizeClass, frameSize: [c.rest.w, c.rest.h],
-    pivot: [c.rootX, bottomRow(c.rest) + 1], facing: dirs.length ? 'dirs' : DIR, ...(dirs.length ? { directions: dirs } : {}), anims, motion: c.motion,
+    pivot: [c.rootX, bottomRow(c.rest) + 1], facing: dirs.length ? 'dirs' : DIR, ...(dirs.length ? { directions: dirs } : {}), ...(c.mirror ? { mirror: true } : {}), anims, motion: c.motion,
     palette: used.map((v) => hex(c.palette.colors[v] ?? 0)),
   };
   return { sheet, json, manifest };

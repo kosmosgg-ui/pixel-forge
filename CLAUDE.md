@@ -43,7 +43,8 @@ pnpm forge <cmd>    # CLI (packages/cli)
 
 ## 5. 지도
 - docs: ARCHITECTURE.md(절 번호로 참조), phases/P0~P10.md, references.md(기준작 측정 목표), progress.md(단계당 10줄), backlog.md
-- data: rules/default.rules.json(규칙 수치·근거), bibles/*.bible.json(프로젝트별 아트 바이블)
+- data: rules/default.rules.json(규칙 수치·근거), bibles/*.bible.json(프로젝트별 아트 바이블), models/<id>/(3D 모델 출처·재질 매핑, 모델 파일은 저장소 제외)
+- 모드(사용자 승인 P7): 생물(캐릭터·적) = prerender(3D 모델이 있을 때, 기본 "se" 1방향 + 엔진 좌우 반전) · atoms/frames = 아이콘·얼굴 템플릿·이펙트·리그 없는 생물 · shapes = 시안용
 - 서브에이전트: test-runner(전체 빌드·테스트), pixel-reviewer(시각 검수), code-reviewer(Phase 종료 전 독립 검토)
 - 스킬: /phase-done(Phase 마무리), /tool-scan(외부 도구 조사), report-doc(보고 문서 형식), external-tools(외부 도구 원칙)
 - 습관: Phase 시작은 플랜 모드, 작업 단위가 끝나면 /compact, Phase가 바뀌면 새 세션.

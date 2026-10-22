@@ -10,6 +10,8 @@ export interface Manifest {
   /** 'r' = 시트 프레임은 우향, 좌향은 엔진에서 좌우 반전. 'dirs' = 방향마다 렌더한 프레임(directions, 프리렌더) */
   facing: 'r' | 'dirs';
   directions?: string[];
+  /** true면 directions의 반대쪽은 엔진이 좌우 반전(프리렌더 1방향) */
+  mirror?: boolean;
   anims: Record<string, { frames: string[]; ms: number[]; loop: boolean }>;
   motion: unknown;
   /** 시트가 쓰는 색(#rrggbb, 팔레트 인덱스 순) */
@@ -21,7 +23,7 @@ export interface Manifest {
 export function buildManifest(m: Manifest): Manifest {
   // 키 순서를 고정해 같은 입력 → 같은 바이트
   return {
-    id: m.id, bible: m.bible, sizeClass: m.sizeClass, frameSize: m.frameSize, pivot: m.pivot, facing: m.facing, ...(m.directions ? { directions: m.directions } : {}),
+    id: m.id, bible: m.bible, sizeClass: m.sizeClass, frameSize: m.frameSize, pivot: m.pivot, facing: m.facing, ...(m.directions ? { directions: m.directions } : {}), ...(m.mirror ? { mirror: true } : {}),
     anims: Object.fromEntries(Object.entries(m.anims).map(([k, a]) => [k, { frames: a.frames, ms: a.ms, loop: a.loop }])),
     motion: m.motion, palette: m.palette, hash: m.hash,
   };

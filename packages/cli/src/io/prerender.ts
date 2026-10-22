@@ -3,7 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 import { z } from 'zod';
 import { ForgeError } from '@pixel-forge/core';
 import { BOTTOM_GAP, type PrerenderOptions, type PrerenderPasses } from '@pixel-forge/render';
-import { bpyPython, DIRECTIONS, ELEVATION, PASS_SCRIPT, readPasses, renderPasses } from '@pixel-forge/render3d';
+import { bpyPython, DIRECTIONS, ELEVATION, PASS_SCRIPT, readPasses, renderPasses, yawsOf } from '@pixel-forge/render3d';
 import { sampleFramesOf, type Bible, type Rules, type Spec } from '@pixel-forge/spec';
 import { readJson } from './files.js';
 import { resolveInside } from './paths.js';
@@ -61,6 +61,6 @@ export function prerenderLoader(spec: Spec, bible: Bible, rules: Rules, cwd: str
       }, blender);
       return readPasses(passDir, size, supersample, frames);
     };
-    return { options: { materialMap: map, ...(palette ? { palette } : {}), toon }, yaws: { ...DIRECTIONS[spec.directions] }, render };
+    return { options: { materialMap: map, ...(palette ? { palette } : {}), toon }, yaws: yawsOf(spec.directions), render };
   };
 }

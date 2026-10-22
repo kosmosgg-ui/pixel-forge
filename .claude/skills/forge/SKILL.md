@@ -24,7 +24,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 - 리그에 없는 동작(활 쏘기, 시전 등)은 새 애니를 만들지 않고 `attack`을 재사용, `docs/backlog.md`에 한 줄 기록.
 
 ## 2. Spec 작성
-0. **모드**(사용자 승인 P6.5): 리그로 움직이는 생물 = `atoms`(시안 그리드가 있으면 pixel-studio 스킬로 아톰 분할), 아이템·이펙트·리그 없는 생물 = `frames`, `shapes` = 시안·자리표시용(시안이 없을 때의 초안).
+0. **모드**(사용자 승인 P7): 생물(캐릭터·적) = `prerender`(3D 모델이 있을 때 — `data/models/README.md`로 모델·`source.json`·`materials.json`을 넣고 Spec은 `data/specs/prerender/*.spec.json`을 복사, 방향 기본 `["se"]` + 엔진 좌우 반전, 여러 개는 `/batch-prerender`). 아이콘·얼굴 템플릿·이펙트·리그 없는 생물 = `atoms`·`frames`(pixel-studio 스킬), `shapes` = 시안용.
 1. 같은 sizeClass의 기존 Spec 1개를 템플릿으로 복사한다: `data/specs/<project>/*.spec.json`. 같은 sizeClass가 없으면 가장 비슷한 체형의 Spec.
 2. 새 파일 `data/specs/<project>/<id>.spec.json`(id는 `^[a-z0-9][a-z0-9_-]*$`)에서 고친다:
    - `id`, `sizeClass`, `role`, `parts`, `eyes`, `overrides`(필요한 키만).

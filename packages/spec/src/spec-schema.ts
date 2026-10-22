@@ -82,7 +82,8 @@ export const specSchema = z
     /** 프리렌더: 모델 파일(data/models/<id>/…), 애니 이름 → 모델 액션 이름, 방향 수, 목표 키(px), 카메라 */
     model: z.string().min(1).optional(),
     actions: z.record(z.string().min(1), z.string().min(1)).optional(),
-    directions: z.union([z.literal(8), z.literal(4), z.literal(1)]).default(8),
+    /** 1(기본, se + 엔진 좌우 반전) | 4(눈이 보이는 방향에서 고름) | 8 | 방향 이름 목록(s·se·e·ne·n·nw·w·sw) */
+    directions: z.union([z.literal(8), z.literal(4), z.literal(1), z.array(z.enum(['s', 'se', 'e', 'ne', 'n', 'nw', 'w', 'sw'])).min(1)]).default(1),
     height: z.number().int().min(8).optional(),
     /** 프리렌더: 숨길 모델 오브젝트(소품 고르기, 예: 기사의 다른 무기·방패) */
     hide: z.array(z.string().min(1)).default([]),
