@@ -14,6 +14,8 @@
   4. **색 예산 강제**: 스프라이트당 사용 색 수를 규칙으로 제한한다. (근거: Shovel Knight, Mina the Hollower)
   5. **검수가 품질을 만든다**: 모든 빌드는 자동 QA를 통과해야 산출물로 승격된다.
   6. 품질 기준은 성공한 인디(브로테이토·뱀파이어 서바이버즈 체급): 군중 속 가독성, 전 에셋 일관성, 손맛 연출, 대량 생산. 프레임 수보다 실루엣·색 구분을 우선한다.
+  7. **기본 모드(사용자 승인 P6.5)**: 리그로 움직이는 모든 생물(character·smallMonster·large·boss) = `atoms`(시안 그리드를 뼈별 아톰으로 나눠 rest에서 시안 그대로). 아이템·이펙트·리그 없는 생물(슬라임 등) = `frames`. `shapes` = 시안·자리표시용(§7.3.1).
+  8. **수치보다 시안**: QA 수치(특징 면적 등)를 맞추려고 디자인을 과장하지 않는다. 시안(`docs/quality-ref/`)·레퍼런스와의 비교가 우선이다.
 
 ## §2 저장소 구조
 ```
@@ -172,7 +174,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - 뼈 로컬 +y: 위로 선 뼈에서는 화면 앞(+x), 아래로 향한 뼈에서는 화면 뒤(−x).
 - `proportions.height`: 리그 전체(관절 위치·뼈 길이)를 `rig.baseHeight` 대비 이 비율로 축척한다. 파츠 크기는 축척하지 않는다. `headRatio`·`bulk`는 지금은 기록용(P6 레퍼런스 비교).
 - `role`(선택): `bible.roleColorKey`의 키.
-- `signature`(선택, 소형 몬스터 권장): 과장할 특징 1개 이름(예: `"ears"`, `"skull"`). 그 파츠에 `"signature": true`. QA `form.signature`(선택): rest 프레임에서 signature 파츠 ÷ 불투명 픽셀 ≥ `rules.qa.signatureMin`(0.25).
+- `signature`(선택, 소형 몬스터 권장): 과장할 특징 1개 이름(예: `"ears"`, `"skull"`). 그 파츠에 `"signature": true`. QA `form.signature`(선택, 경고만): rest 프레임에서 signature 파츠 ÷ 불투명 픽셀이 `rules.qa.signatureRange`(0.15~0.40) 밖이면 경고. 특징이 읽히는지는 pixel-reviewer '역할 원형 판독'과 시안 비교로 판정(수치를 맞추려고 과장하지 않는다).
 - `sizeClassLock`(선택): true면 크기 등급 자동 상향 금지.
 - 리그 결정: Spec `rig` → `bible.sizeClasses[sizeClass].rig` → `bible.defaultRig`. 소형 리그 `humanoid-small-v1`: 키 20(머리 45%, 짧은 팔다리), 공용 애니는 휘두름 폭을 줄이고 attack 4키(ready·windup·strike·recover).
 - `eyes`(선택, rule `form.face`): `{ bone, pos: [x, y], size: 1|2, color: "<재질>:<단계>" }`. 위치는 뼈 중간점에서 화면 축으로 `pos`. `size`는 세로 픽셀 수. 3/4 리그는 먼 쪽 눈이 자동으로 붙는다.
@@ -189,7 +191,8 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 ### §7.3.1 그리드 파츠·프레임 모드·아톰 모드 (P6.5, 픽셀 직접 설계)
 - 그리드: `{ "type": "grid", "rows": [...], "legend": { "<문자>": "<재질>:<단계>" | "@eye" | "@eye:<재질>:<단계>" | "@outline" }, "origin"?: [열, 행] }`. `.` = 투명. 범례가 재질·단계를 가리키므로 팔레트 교체·색 변형이 그대로 적용된다. `@eye` = 검은 눈(외곽선색), `@eye:…` = 그 색 눈, 둘 다 정리 보호. `@outline` = 그 칸에 외곽선색 강제. **외곽선은 그리드에 그리지 않는다** — 엔진이 크기 등급 outline 모드로 붙인다. 그리드 파츠는 범례 단계 그대로(자동 셰이딩·작은 섬 병합·고립 정리·얇은 획 규칙 제외), 한 변 최대 96칸.
 - `mode: "frames"`(소형·형태 중요): `grid`(rest, `pivot` = 발밑 칸, 생략하면 불투명 칸 아래 가운데) + `frames: { <애니>: [ { grid | patch, ms, fx?: "flash", grounded? } ] }` + `loop`(기본 `["idle"]`). patch = `{ at: [열, 행], rows, legend }`(`.` = base 유지, `~` = 지움). 리그·공용 애니를 쓰지 않는다. QA 레이어 파츠 id: base = 1, patch = 2 → anim.flicker는 patch 밖(base) 영역 기준. 좌향은 반전.
-- `mode: "atoms"`(character 이상): 파츠 shape가 그리드, 뼈가 배치. 파츠 `variants: { "<도>": grid }`(화면 방향으로 그린 각도 변형) 중 파츠 각도에 가장 가까운 것 + 남은 각도만 RotSprite. 변형 없이 22.5°보다 크게 돌면 qa.json `warnings`. `upright: true`(머리)는 ±15° 이내면 돌리지 않고 1px 이동.
+- `mode: "atoms"`(리그로 움직이는 생물의 기본, §1 원칙 7): 파츠 shape가 그리드, 뼈가 배치. 파츠 `variants: { "<도>": grid }`(화면 방향으로 그린 각도 변형) 중 파츠 각도에 가장 가까운 것 + 남은 각도만 RotSprite. 변형 없이 22.5°보다 크게 돌면 qa.json `warnings`. `upright: true`(머리)는 ±15° 이내면 돌리지 않고 1px 이동. 아톰은 `anchor: "joint"`·`orient: "world"`·`origin` = 관절 칸으로 두면 rest에서 시안 그대로 놓인다(자동 내부선·held 얇은 날 명암도 그리드 아톰에는 적용하지 않는다). 시안 분할 예: `data/specs/sample/goblin.spec.json`(머리·귀·몸통 2·팔 3마디·다리 2마디·무기).
+- frames 모드 death는 스프라이트를 통째로 30° 넘게 돌리지 않는다(anim.pose-distinct) — 무릎 꿇기·주저앉기처럼 쓰러지는 단계를 그린다.
 - 바닥 그림자: manifest `motion.shadow = { w: rest 가장 아래 불투명 줄 폭 + 4, h: 3 }` — 엔진이 그린다(스프라이트에 굽지 않음).
 - `forge render <spec> --sheet 8` → `out/<id>/studio.png`(rest + 전 프레임, 게임 배경, 8배) — pixel-studio 루프용.
 ### §7.4 Rules (`data/rules/default.rules.json`) — 수치와 근거 id를 함께 보관. 렌더러는 rule id를 로그로 남긴다.
@@ -231,6 +234,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `bounds.canvas` | ✔ | 모든 프레임이 캔버스 안, 여백 ≥ 1px |
 | `baseline.stable` | ✔ | root 고정 키들에서 발 최하단 y 동일 |
 | `anim.flicker` | ✔ | 변환이 같은 파츠 영역에서 프레임 간 색 변화 픽셀 0개 |
+| `anim.pose-distinct` | ✔ | attack·death 연속 키 프레임 실루엣 IoU ≤ `poseDistinctMax`(0.9, 같은 그림 반복 방지). frames 모드 death는 rest를 `deathRotateMax`(30°)보다 크게 돌린 그림 금지(rest를 45° 간격으로 돌려 맞춰 판정) |
 | `form.held-visible` | ✔ | 모든 프레임에서 held 파츠의 보이는 픽셀(외곽선 톤·전역 외곽선색 제외) ≥ rest 픽셀 × `heldVisibleMin`(0.6), 손 파츠(부착 뼈의 부모 뼈 파츠)에서 같은 뼈 파츠(날밑·손잡이)를 거쳐 8-연결로 이어짐 |
 | `cleanup.orphans` |  | 고립 픽셀 수 ≤ 임계 |
 | `cleanup.banding` |  | 서로 다른 램프 단계가 평행 계단을 이루는 구간 수 ≤ 임계. 띠 = 같은 램프 A\|B\|C(단계 단조)에서 1px 폭 B, 8-연결 2px 이상 이어진 것만 1구간 |
@@ -239,7 +243,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
 | `form.face-clear` |  | 프레임마다(공격 프레임 포함) 가장 나쁜 프레임으로: 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ `faceCoverMax`, 머리 위 held 파츠 픽셀 0, 눈 둘레 창(눈 픽셀 박스, 최소 3×2)이 전부 얼굴 재질(머리 뼈 첫 파츠 재질) — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림 |
 | `form.head-clearance` |  | 머리 밖 2px 안에 다른 뼈의 held·decorative 파츠 픽셀 0(무기 끝·화살 깃이 머리 윤곽에 붙어 실루엣이 뭉치지 않게). 가장 나쁜 프레임 |
-| `form.signature` |  | rest 프레임에서 Spec signature 파츠 픽셀 ÷ 불투명 픽셀 ≥ `signatureMin`(0.25). signature 없으면 통과 |
+| `form.signature` |  | 경고: rest 프레임에서 Spec signature 파츠 픽셀 ÷ 불투명 픽셀이 `signatureRange`(0.15~0.40) 밖. signature 없으면 통과 |
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
 - `read.contrast`의 명도는 OKLab L, 실루엣 = 모든 불투명 픽셀. `form.silhouette`은 발밑 가운데를 맞춘 IoU.
@@ -274,7 +278,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge ref compare <spec> <ref.json>` | Spec rest 프레임을 같은 측정기로 재서 차이 표 → `out/<id>/ref-<refid>.json` (규칙·Spec 조정 근거) |
 | `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 + 검수 통과(`out/<id>/review.json`, 지금 입력 해시로 채점한 점수 ≥ 18/24, `--skip-review`로만 생략) 시 어댑터로 복사. 미달·기록 없음은 복사하지 않고 exit 2. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
 | `forge review-score <spec> --score <0~24> --obs '<기준별 관찰 JSON>' [--note 문장] [--sheet 4]` | pixel-reviewer가 `out/<id>/review.json`에 점수·12기준 관찰·`sheetHash`(검수한 `out/<id>/studio.png`의 SHA-256, `forge render --sheet`로 생성)·입력 해시를 기록. QA 통과(`review.no-build`), 관찰 12개(`review.observations`), 시트 = 지금 렌더(`review.stale-sheet`) 필수. apply는 지금 렌더로 같은 시트를 만들어 sheetHash와 다르면 exit 2 |
-| `forge compare <out/….png> <a.spec.json,b.spec.json> ...` | 모드 비교 시트: 줄마다 Spec 묶음(rest + attack)을 나란히, 끝 칸은 `docs/quality-ref/<줄 마지막 id>.png` 시안 자리(이미지 삽입 전까지 X 표시, `missingRefs`). `out/` 안에만 쓴다 |
+| `forge compare <out/….png> <a.spec.json,b.spec.json> ... [--sheet 8]` | 모드 비교 시트: 줄마다 Spec 묶음(rest + attack)을 나란히, 끝 칸은 `docs/quality-ref/target-grids.json`의 `<줄 마지막 id>` 시안을 엔진으로 렌더(색 예산 무제한, 없으면 X + `missingRefs`). `refs.<id>` = 줄 마지막 Spec rest와 시안을 ±6px 안 가장 잘 겹친 위치의 실루엣 `iou`·다른 픽셀 `diff`·머리 영역 `headDiff`(아톰). `out/` 안에만 쓴다 |
 | `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.
 - **경로 안전**: 경로를 받는 명령(palette, apply, ref, palette import)은 `resolveInside(base, path)`로 정규화하고 기준 폴더 밖(`../`, 절대 경로)이면 `ForgeError("io.path-escape")`.

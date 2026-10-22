@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { alphaBinary, boundsCanvas, colorBudget, paletteConformance } from './checks/integrity.js';
 import { cleanupBanding, cleanupOrphans } from './checks/cleanup.js';
 import { formDetailMin, formFaceClear, formHeadClearance, formSignature, readContrast, readRoleColor } from './checks/readability.js';
-import { animFlicker, baselineStable } from './checks/anim.js';
+import { animFlicker, animPoseDistinct, baselineStable } from './checks/anim.js';
 import { crossChecks, silhouetteIoU, type Silhouette } from './checks/cross.js';
 import { runChecks } from './run.js';
 import { CLEAN, ctx, frame, palette } from './test-fixture.js';
@@ -82,12 +82,14 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     expect(formHeadClearance([ok]).pass).toBe(true);
   });
 
-  it('form.signature: rest에서 signature 파츠가 불투명 픽셀의 25% 이상이면 통과, signature 없으면 통과', () => {
+  it('form.signature: rest에서 signature 파츠 면적이 15~40% 안이면 통과(밖이면 경고), signature 없으면 통과', () => {
     // CLEAN 6×6 안쪽 4×4 = 16px, 파츠 2가 위 1줄(4px) = 25%
     const part = Uint16Array.from(CLEAN.join('').split('').map((ch, k) => (ch === '.' ? 0 : k < 12 ? 2 : 1)));
     expect(formSignature([frame(CLEAN, { part })], ctx({ signature: { name: 'ears', parts: new Set([2]) } }))).toMatchObject({ pass: true, value: 0.25 });
     expect(formSignature([frame(CLEAN, { part })], ctx({ signature: { name: 'ears', parts: new Set([3]) } })).pass).toBe(false);
     expect(formSignature([frame(CLEAN, { part })], ctx()).pass).toBe(true);
+    // 과장(전부 특징)은 상한 밖 → 경고
+    expect(formSignature([frame(CLEAN, { part })], ctx({ signature: { name: 'ears', parts: new Set([1, 2]) } }))).toMatchObject({ pass: false, value: 1 });
   });
 
   it('1px 대각선 획은 8-연결로 한 조각', () => {
@@ -112,6 +114,16 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     const a = frame(CLEAN, { part }), b = frame(['......', '.2232.', '.2222.', '.2222.', '.2222.', '......'], { part, stillParts: new Set([1]) });
     expect(animFlicker([a, b], ctx()).pass).toBe(false);
     expect(animFlicker([a, { ...b, stillParts: new Set() }], ctx()).pass).toBe(true);
+  });
+
+  it('attack 연속 키 프레임이 같은 그림 → anim.pose-distinct, 사이 프레임은 빼고, frames 모드 death 통째 회전 > 30° 금지', () => {
+    const tall = ['..2...', '..2...', '..2...', '..2...', '..2...', '......'];
+    const lying = ['......', '......', '......', '22222.', '......', '......'];
+    const k = (rows: string[], anim: string, key = true) => ({ ...frame(rows), anim, key });
+    expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'attack'), k(tall, 'attack')], ctx())).toMatchObject({ pass: false, value: 1 });
+    expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'attack'), k(tall, 'attack', false), k(lying, 'attack')], ctx()).pass).toBe(true);
+    expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'death'), k(lying, 'death')], ctx({ mode: 'frames' }))).toMatchObject({ pass: false });
+    expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'death'), k(lying, 'death')], ctx({ mode: 'atoms' })).pass).toBe(true);
   });
 
   it('필수 검사 실패면 점수와 무관하게 불합격', () => {

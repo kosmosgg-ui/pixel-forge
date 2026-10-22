@@ -95,6 +95,8 @@ interface Layout {
   clipped: number;
   small: Set<number>;
   thin: Set<number>;
+  /** 그리드 아톰(직접 그린) 파츠 id — 자동 내부선 제외 */
+  authored: Set<number>;
   warnings: string[];
 }
 
@@ -114,7 +116,7 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
   const origin: [number, number] = opts.origin ? [opts.origin[0], opts.origin[1]] : [Math.floor(W / 2) - (bones[root]?.x ?? 0), H - 1 - BOTTOM_GAP - maxY];
   const zone = createFrameZone(W, H);
   let clipped = 0;
-  const small = new Set<number>(), thin = new Set<number>();
+  const small = new Set<number>(), thin = new Set<number>(), authoredIds = new Set<number>();
   const warnings: string[] = [];
   const stepsOf = (m: number) => rampsById[m - 1]?.indices.length ?? 1;
   placed.forEach((p, i) => {
@@ -124,6 +126,7 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     if (r.warning) warnings.push(r.warning);
     // 직접 설계한 그리드 아톰은 그린 그대로(정리·얇은 획 규칙 제외), 셰이딩은 범례 단계(고정)
     const authored = r.authored === true;
+    if (authored) authoredIds.add(p.index + 1);
     const held = p.part.held && !p.part.decorative;
     // rule: form.held-min-width — rest 모양으로 한 번만 판정(포즈 회전으로 얇아 보이는 프레임은 판정하지 않는다)
     if (held && !opts.pose && isThinMask(r.mask, r.w, r.h, rules.held.minWidth)) {
@@ -133,7 +136,8 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     const local = partZone(p, r);
     shadeZoneInPlace(local, bible.light, rules.shade, stepsOf, (id) => small.has(id));
     const joint = bones[p.part.bone];
-    if (held && joint && isThinMask(r.mask, r.w, r.h, rules.heldThinShade.maxThickness + 1)) {
+    // 그리드 아톰은 범례 단계가 곧 명암 — held 얇은 날 명암 규칙도 적용하지 않는다
+    if (held && !authored && joint && isThinMask(r.mask, r.w, r.h, rules.heldThinShade.maxThickness + 1)) {
       heldThinShadeInPlace(local, r, [joint.x, joint.y], stepsOf(r.material.find((m) => m > 0) ?? 0), rules.heldThinShade.brightSteps);
     }
     // 손에 든 파츠는 눈처럼 정리 대상에서 뺀다(작은 날·자루가 지워지지 않게)
@@ -143,7 +147,7 @@ function layoutFrame(ctx: RenderContext, opts: RenderOptions, W: number, H: numb
     }
     clipped += writePartInPlace(zone, p, r, origin[0], origin[1], local);
   });
-  return { bones, placed, rasters, origin, zone, clipped, small, thin, warnings };
+  return { bones, placed, rasters, origin, zone, clipped, small, thin, authored: authoredIds, warnings };
 }
 
 /** §6 단계 1~9 (+ 눈, fx, 6.5 색 예산 맞춤) */
@@ -163,7 +167,8 @@ export function renderFrame(ctx: RenderContext, opts: RenderOptions = {}): Rende
   const mode = outlineModeOf(bible, spec.sizeClass);
   // dark(단색 외곽선, 작은 캔버스용)에서는 1px 획도 재질색 그대로 두고 양옆에 외곽선 — 뼈 팔다리처럼 읽힌다(rule form.outline-thin은 selout 전용)
   const strokes = mode === 'selout' ? thin : new Set<number>();
-  if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, strokes);
+  // 그리드 아톰끼리의 경계선은 그린 사람 몫(@outline) — 자동 내부선이 그린 픽셀을 바꾸지 않게
+  if (rules.outline.innerLines) innerLinesInPlace(raster, zone, rampsById, protect, new Set([...strokes, ...L.authored]));
   outerOutlineInPlace(raster, zone, rampsById, { mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect, strokes);
   thinStrokesInPlace(raster, zone, rampsById, strokes, protect);
   const gridEyes = applySpecialsInPlace(raster, zone, palette.outlineIndex, protect);

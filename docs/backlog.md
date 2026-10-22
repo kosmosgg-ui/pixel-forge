@@ -26,3 +26,5 @@
 - [P6.5 시각] 스켈레톤 frames판 무기 3px 토막·팔이 갈비에 붙음 — 그리드 폭 18로 넓혀 뼈 곤봉 4px+, 팔 1칸 바깥으로
 - [P6.5 시각] 프레임 모드 death 마지막(rot90) 프레임에서 무기가 손에서 떨어져 서 있음 — 눕힌 그리드에서 무기 칸 재배치
 - [P6.5] forge compare의 quality-ref 칸은 PNG 시안 → 팔레트 인덱스 변환 미구현(지금은 X 자리 표시)
+- [P6.5] 빌드 캐시 키(.forge-cache)에 엔진 코드 버전이 없어 렌더·QA 코드를 바꿔도 이전 결과를 돌려줌 — 패키지 dist 해시를 키에 포함 검토
+- [P6.5] sample-shape(도형판 goblin·skeleton)은 humanoid-small-v1 비율 조정(시안 맞춤) 후 bounds·held-visible 불합격 — 보존용 비교 자료라 그대로 둠. 다시 쓰려면 Spec 재조정

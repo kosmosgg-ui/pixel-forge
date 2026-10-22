@@ -38,17 +38,54 @@ function renderRef(p: Project, grid: z.infer<typeof frameGridSchema>): IndexedRa
   return renderProject({ ...p, bible, spec: { ...p.spec, mode: 'frames', parts: [], grid, frames: {}, loop: [] } }, []).rest.raster;
 }
 
-const diffCount = (a: IndexedRaster, b: IndexedRaster): number => {
-  if (a.w !== b.w || a.h !== b.h) return Math.max(a.px.length, b.px.length);
-  let n = 0;
-  for (let i = 0; i < a.px.length; i++) if (a.px[i] !== b.px[i]) n++;
-  return n;
-};
+const SHIFT = 6;
+
+/** b를 (dx, dy) 옮겨 a와 겹쳤을 때 실루엣 IoU·다른 픽셀 수(region이 있으면 그 안만) */
+function overlay(a: IndexedRaster, b: IndexedRaster, dx: number, dy: number, region?: Uint8Array): { iou: number; diff: number } {
+  let inter = 0, union = 0, diff = 0;
+  for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
+    const k = y * a.w + x, X = x - dx, Y = y - dy;
+    const pa = a.px[k] ?? 0, pb = X >= 0 && Y >= 0 && X < b.w && Y < b.h ? b.px[Y * b.w + X] ?? 0 : 0;
+    if (pa && pb) inter++;
+    if (pa || pb) union++;
+    if ((!region || region[k]) && pa !== pb) diff++;
+  }
+  return { iou: union ? inter / union : 1, diff };
+}
+
+/** 머리 뼈 파츠 픽셀 + 둘레 1px(외곽선) — 아톰 모드의 "머리 영역 diff 0" 판정 범위 */
+function headRegion(r: Rendered): Uint8Array | undefined {
+  const ids = new Set(r.project.spec.parts.flatMap((q, i) => (q.bone === 'head' ? [i + 1] : [])));
+  const part = r.rest.meta.layers.part, { w, h } = r.rest.raster;
+  if (!ids.size) return undefined;
+  const out = new Uint8Array(w * h);
+  for (let k = 0; k < part.length; k++) {
+    if (!ids.has(part[k] ?? 0)) continue;
+    const x = k % w, y = Math.floor(k / w);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (x + dx >= 0 && y + dy >= 0 && x + dx < w && y + dy < h) out[(y + dy) * w + x + dx] = 1;
+  }
+  return out;
+}
+
+/** 시안 렌더를 ±SHIFT 안에서 옮겨 IoU가 가장 큰 위치에서 비교(아톰 모드는 원점 계산이 달라 몇 px 어긋날 수 있다) */
+function matchRef(r: Rendered, ref: IndexedRaster) {
+  const a = r.rest.raster;
+  let best = { iou: -1, dx: 0, dy: 0 };
+  for (let dy = -SHIFT; dy <= SHIFT; dy++) for (let dx = -SHIFT; dx <= SHIFT; dx++) {
+    const { iou } = overlay(a, ref, dx, dy);
+    if (iou > best.iou) best = { iou, dx, dy };
+  }
+  const head = headRegion(r);
+  return {
+    iou: Math.round(best.iou * 1000) / 1000, diff: overlay(a, ref, best.dx, best.dy).diff,
+    headDiff: head ? overlay(a, ref, best.dx, best.dy, head).diff : null, shift: [best.dx, best.dy],
+  };
+}
 
 /**
  * 모드 비교 시트: 줄마다 Spec 묶음(쉼표 구분, rest + attack)을 같은 배경·배율로 나란히, 끝 칸은 시안.
  * 시안 = docs/quality-ref/target-grids.json의 <줄 마지막 Spec id> 그리드를 엔진으로 렌더한 rest(예산 무제한). 없으면 X 자리 표시 + missingRefs.
- * refDiff = 줄 마지막 Spec rest와 시안 렌더의 다른 픽셀 수(외곽선·예산 병합 포함, 0이면 일치).
+ * refs[id] = 줄 마지막 Spec rest와 시안 렌더를 가장 잘 겹친 위치의 실루엣 IoU·다른 픽셀 수(외곽선·예산 병합 포함)·머리 영역 diff(아톰 모드).
  */
 export function compareCommand(outPath: string, rows: readonly string[], cwd: string, scale?: number) {
   if (!rows.length) throw new ForgeError('cli.no-specs', '비교할 Spec 줄이 없습니다: forge compare <out.png> <a.spec.json,b.spec.json> ...');
@@ -63,14 +100,14 @@ export function compareCommand(outPath: string, rows: readonly string[], cwd: st
   const first = rendered[0]?.[0];
   if (!first) throw new ForgeError('cli.no-specs', '렌더 결과가 없습니다');
   const missingRefs: string[] = [];
-  const refDiff: Record<string, number> = {};
+  const refMatch: Record<string, ReturnType<typeof matchRef>> = {};
   const chars = rendered.map((rs, i) => {
     const groups = rs.map(columnOf);
     const last = lines[i]?.at(-1), lastR = rs.at(-1);
     const ref = last ? refs[last.spec.id] : undefined;
     if (last && lastR && ref) {
       const r = renderRef(last, ref);
-      refDiff[last.spec.id] = diffCount(r, lastR.rest.raster);
+      refMatch[last.spec.id] = matchRef(lastR, r);
       groups.push([r]);
     } else {
       missingRefs.push(`${REF_GRIDS}#${last?.spec.id ?? ''}`);
@@ -85,6 +122,6 @@ export function compareCommand(outPath: string, rows: readonly string[], cwd: st
   writeFileEnsured(out, encodePng({ w: sheet.raster.w, h: sheet.raster.h, rgba: toRGBA(sheet.raster, sheet.palette) }));
   return {
     ok: true as const, cmd: 'compare', rows: lines.map((ps) => ps.map((p) => p.spec.id)),
-    refDiff, missingRefs, size: [sheet.raster.w, sheet.raster.h], scale: k, out: relative(cwd, out),
+    refs: refMatch, missingRefs, size: [sheet.raster.w, sheet.raster.h], scale: k, out: relative(cwd, out),
   };
 }

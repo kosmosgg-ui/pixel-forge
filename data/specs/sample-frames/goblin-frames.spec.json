@@ -1,0 +1,537 @@
+{
+ "id": "goblin-frames",
+ "kind": "character",
+ "bible": "sample-v0",
+ "sizeClass": "smallMonster",
+ "sizeClassLock": true,
+ "mode": "frames",
+ "signature": "ears",
+ "grid": {
+  "rows": [
+   "LH..............HL...",
+   "HLHH..........HHLH...",
+   ".HHLHo..HLLH.oHLH....",
+   "...HHHHLLLLLHHH......",
+   "....HHyLLLLyHH.......",
+   "....HHkHLLHkHG.......",
+   "....GHHHHHHHHG.......",
+   ".....GwGwGwGG........",
+   "......GGGGGG.........",
+   ".....occcccco........",
+   "....HocdddcocH.....NM",
+   "...HGoccccccoGH...NM.",
+   "...Go.ccrrcc.oGo.NM..",
+   "...G...cddc...HHNM...",
+   "...HH...cc....oH.....",
+   ".......cddc..........",
+   ".......ccccc.........",
+   "......GG...GG........",
+   "......HG...HG........",
+   ".....oGG...GGo.......",
+   ".....HHG...HHH......."
+  ],
+  "legend": {
+   "G": "goblin_skin:0",
+   "H": "goblin_skin:1",
+   "L": "goblin_skin:2",
+   "M": "metal:2",
+   "N": "metal:3",
+   "c": "leather:1",
+   "d": "leather:2",
+   "k": "@eye",
+   "o": "@outline",
+   "r": "metal_rust:0",
+   "w": "bone:2",
+   "y": "@eye:gold:2"
+  },
+  "signature": [
+   "##..............##...",
+   "####..........####...",
+   ".#####.......####....",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   ".....................",
+   "....................."
+  ]
+ },
+ "frames": {
+  "idle": [
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~~..............~~",
+      "LH~~..........~~HL",
+      "HL.H...........HLH"
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      6,
+      4
+     ],
+     "rows": [
+      "H....H",
+      "H....H"
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~~..............~~",
+      "LH~~..........~~HL",
+      "HL.H...........HLH"
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   }
+  ],
+  "attack": [
+   {
+    "ms": 120,
+    "patch": {
+     "at": [
+      13,
+      8
+     ],
+     "rows": [
+      "H.....NM",
+      "GH...NM.",
+      "oGo.NM~~",
+      "~.HNM~~.",
+      "~oH.~~..",
+      ".~~~~...",
+      ".~~....."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 100,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~LH.............~HL..",
+      "~HL.H.........~.HLH..",
+      ".~.HLHo.~H.LH~oHLH...",
+      "...~...H....L..H.....",
+      "....~.Hy...Ly.H......",
+      "....~.HkH.LHkHG......",
+      "....~G.......HG......",
+      ".....~GwGwGw.G.......",
+      "......~.....G........",
+      ".....~o.....co.......",
+      "....~Hoc..dco~.cH..~~",
+      "...~HGo.....c~~oGH~~.",
+      "...~Go~.c.r.c~~~oGo.N",
+      "...~G..~c.dc..~~~HHNM",
+      "...~.H..~.c...~~.oH..",
+      ".......~c.dc.........",
+      ".......~....c........"
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 80,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~LH.............~HL..",
+      "~HL.H.........~.HLH..",
+      ".~.HLHo.~H.LH~oHLH...",
+      "...~...H....L..H.....",
+      "....~.Hy...Ly.H......",
+      "....~.HkH.LHkHG......",
+      "....~G.......HG......",
+      ".....~GwGwGw.G.......",
+      "......~.....G........",
+      ".....~o.....co.......",
+      "....~Hoc..dco~.....~~",
+      "...~HGo.....c~~...~~.",
+      "...~Go~.c.r.c~cH.~~..",
+      "...~G..~c.dc..oGH~..N",
+      "...~.H..~.c...~oGo.NM",
+      ".......~c.dc....HHNM.",
+      ".......~....c...oH..."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 140,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   }
+  ],
+  "hit": [
+   {
+    "ms": 60,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    },
+    "fx": "flash"
+   },
+   {
+    "ms": 120,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "H~.............HL~...",
+      "LH.~.........H.LH~...",
+      "H.LHo~.HL.H~oHLH~....",
+      "..H...L....H..~......",
+      "...H.yL...yH.~.......",
+      "...H.kHL.HkHG~.......",
+      "...GH.......G~.......",
+      "....GwGwGwG.~........",
+      ".....G.....~.........",
+      "....oc.....o~........",
+      "...Hocd..cocH~....NM~",
+      "..HGoc.....oGH~..NM~.",
+      "..Go~c.r.c.~oGo~NM~..",
+      "..G~..cd.c~..H.NM~...",
+      "..H.~..c.~...oH~.....",
+      "......cd.c~..........",
+      "......c....~........."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   }
+  ],
+  "death": [
+   {
+    "ms": 120,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "H~.............HL~...",
+      "LH.~.........H.LH~...",
+      "H.LHo~.HL.H~oHLH~....",
+      "..H...L....H..~......",
+      "...H..L...HH.~.......",
+      "...H..HL.H.HG~.......",
+      "...GH.......G~.......",
+      "....GwGwGwG.~........",
+      ".....G.....~.........",
+      "....oc.....o~........",
+      "...Hocd..cocH~....NM~",
+      "..HGoc.....oGH~..NM~.",
+      "..Go~c.r.c.~oGo~NM~..",
+      "..G~..cd.c~..H.NM~...",
+      "..H.~..c.~...oH~.....",
+      "......cd.c~..........",
+      "......c....~........."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 140,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~~..............~~...",
+      "~~~~..........~~~~...",
+      "L.~~~~..~~~~.~~~.L...",
+      "HLH.~~~~~~~~~~.HLH...",
+      ".HHL.o~~H..H~oHLH....",
+      "...H..HL..LL.HH......",
+      "....H..LLLL..H.......",
+      "....HHHHLLHHHG.......",
+      "....GHHHHHHHHG.......",
+      ".....GwGwGwGG........",
+      "....~~GGGGGG~~.....~~",
+      "...~~........~~...~~.",
+      "...~Ho.ddd.ocH~~.~~NM",
+      "...HGoc.cc.coG.~~~NM.",
+      "...Go.ccrrcc.oGo.NM..",
+      "...G..........HHNM...",
+      "...HH..~..~~..oH.....",
+      ".......cddc..........",
+      ".......ccccc........."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   },
+   {
+    "ms": 400,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "~~..............~~...",
+      "~~~~..........~~~~...",
+      ".~~~~~..~~~~.~~~~....",
+      "...~~~~~~~~~~~~......",
+      "....~~~~~~~~~~.......",
+      "H...~~~~~~~~~~.HL....",
+      "LHH.~~~~~~~~~HHLH....",
+      "HHLHo~~HLLH~oHLH.....",
+      "..HHHHLLLLLHHH.......",
+      "...HHHLLLLHHH........",
+      ".....HHHLLHHHG.....~~",
+      "...~.HHHHHHHH.~...~~.",
+      "...~~GwGwGwGG~~~.~~..",
+      "...~..GGGGGG..~~~~...",
+      "...~~occ..cco.~~.....",
+      "....Hocd...ocH.....NM",
+      "...HGoc.....oGH...NM.",
+      "...Go.ccrrcc.oGo.NM..",
+      "...G...cddc...HHNM...",
+      "...HH...cc....oH.....",
+      ".......cddc.........."
+     ],
+     "legend": {
+      "G": "goblin_skin:0",
+      "H": "goblin_skin:1",
+      "L": "goblin_skin:2",
+      "M": "metal:2",
+      "N": "metal:3",
+      "c": "leather:1",
+      "d": "leather:2",
+      "k": "@eye",
+      "o": "@outline",
+      "r": "metal_rust:0",
+      "w": "bone:2",
+      "y": "@eye:gold:2"
+     }
+    }
+   }
+  ]
+ },
+ "loop": [
+  "idle"
+ ],
+ "seed": 1
+}

@@ -24,6 +24,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 - 리그에 없는 동작(활 쏘기, 시전 등)은 새 애니를 만들지 않고 `attack`을 재사용, `docs/backlog.md`에 한 줄 기록.
 
 ## 2. Spec 작성
+0. **모드**(사용자 승인 P6.5): 리그로 움직이는 생물 = `atoms`(시안 그리드가 있으면 pixel-studio 스킬로 아톰 분할), 아이템·이펙트·리그 없는 생물 = `frames`, `shapes` = 시안·자리표시용(시안이 없을 때의 초안).
 1. 같은 sizeClass의 기존 Spec 1개를 템플릿으로 복사한다: `data/specs/<project>/*.spec.json`. 같은 sizeClass가 없으면 가장 비슷한 체형의 Spec.
 2. 새 파일 `data/specs/<project>/<id>.spec.json`(id는 `^[a-z0-9][a-z0-9_-]*$`)에서 고친다:
    - `id`, `sizeClass`, `role`, `parts`, `eyes`, `overrides`(필요한 키만).
@@ -35,7 +36,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
    - 무기 조각(날·날밑·손잡이)은 `weapon` 뼈에 같은 축으로, `orient: "world"`, `anchor: "joint"`. 손잡이가 손을 지나가게.
    - 눈: `eyes.pos`를 얼굴 재질 위에. 눈 둘레 3×2가 얼굴 재질이어야 한다(투구·두건이 덮지 않게).
    - **smallMonster는 축소한 사람이 아니라 별도 설계**: 기본 리그 `humanoid-small-v1`(키 20, 머리 45%, 짧은 팔다리, 손 2×2 — Spec에 `rig`를 쓰지 않으면 크기 등급 기본 리그). 외곽선은 등급 설정의 단색(dark), 색 예산 9(외곽선 1색 포함).
-     - Spec `"signature": "<특징 하나>"`(예: ears, skull)를 적고 그 파츠에 `"signature": true`. 특징 파츠가 rest 실루엣의 25% 이상(QA `form.signature`)이 되게 과장한다.
+     - Spec `"signature": "<특징 하나>"`(예: ears, skull)를 적고 그 파츠에 `"signature": true`. 면적은 15~40% 밖일 때만 경고(QA `form.signature`, 선택). 수치 기준을 맞추려고 디자인을 과장하지 않는다 — 시안·레퍼런스와의 비교가 우선, 특징 판정은 pixel-reviewer "역할 원형 판독".
      - 얼굴·특징처럼 형태가 중요한 파츠는 mask 파츠(§7.3)를 먼저 쓴다. dark 외곽선 등급에서는 mask 안의 1px 빈칸(눈구멍·이빨 틈·갈비 틈)이 외곽선색(검정)으로 채워진다.
      - dark 등급에서 1px 획(뼈 팔다리 등)은 재질색 그대로 양옆에 외곽선이 붙는다. 1px held는 안 되고 `decorative: true`만.
 4. `pnpm -s forge validate <spec>`로 스키마부터 확인.

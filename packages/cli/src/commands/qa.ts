@@ -33,6 +33,7 @@ export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult
     background: parseHex(p.bible.background), rules: p.rules.qa, rampOf,
     ...(roleRamp ? { roleIndices: new Set([...roleRamp.indices, roleRamp.outline]) } : {}),
     held: heldInfo(p, rest?.meta.layers.part),
+    mode: p.spec.mode,
     ...(p.spec.signature ? { signature: { name: p.spec.signature, parts: p.spec.mode === 'frames' ? new Set([GRID_SIGNATURE_PART]) : new Set(p.spec.parts.flatMap((q, i) => (q.signature ? [i + 1] : []))) } } : {}),
     lineIndices: new Set([...Object.values(palette.ramps).map((r) => r.outline), palette.outlineIndex]),
   };
@@ -68,8 +69,8 @@ export function renderProject(p: Project, ids: readonly string[] = p.spec.mode =
   return { palette, rest: result.rest, frames: result.frames.filter((f) => want.has(f.anim)), project, sizeClass: fit };
 }
 
-const qaFrame = (name: string, raster: IndexedRaster, meta: RenderMeta, rootFixed: boolean, stillParts?: Set<number>): QaFrame =>
-  ({ name, raster, ...meta.layers, face: meta.face, rootFixed, ...(stillParts ? { stillParts } : {}) });
+const qaFrame = (name: string, raster: IndexedRaster, meta: RenderMeta, rootFixed: boolean, stillParts?: Set<number>, anim = 'rest', key = true): QaFrame =>
+  ({ name, raster, ...meta.layers, face: meta.face, rootFixed, ...(stillParts ? { stillParts } : {}), anim, key });
 
 /** 애니별 행. 같은 애니 안에서 앞 프레임과 변환이 같은 파츠를 stillParts로 넘긴다(anim.flicker) */
 export function qaRows(r: Rendered): QaFrame[][] {
@@ -84,7 +85,7 @@ export function qaRows(r: Rendered): QaFrame[][] {
         if (q && q[0] === t[0] && q[1] === t[1] && q[2] === t[2]) still.add(i + 1);
       });
     }
-    rows[rows.length - 1]?.push(qaFrame(`${f.anim}_r_${f.index}`, f.raster, f.meta, f.rootFixed, f.index > 0 ? still : undefined));
+    rows[rows.length - 1]?.push(qaFrame(`${f.anim}_r_${f.index}`, f.raster, f.meta, f.rootFixed, f.index > 0 ? still : undefined, f.anim, !f.inbetween));
   }
   return rows;
 }

@@ -1,7 +1,7 @@
 import { alphaBinary, boundsCanvas, colorBudget, paletteConformance } from './checks/integrity.js';
 import { cleanupBanding, cleanupOrphans } from './checks/cleanup.js';
 import { formDetailMin, formFaceClear, formHeadClearance, formSignature, readContrast, readRoleColor } from './checks/readability.js';
-import { animFlicker, baselineStable } from './checks/anim.js';
+import { animFlicker, animPoseDistinct, baselineStable } from './checks/anim.js';
 import { formHeldVisible } from './checks/held.js';
 import type { Check, QaContext, QaFrame, Report } from './types.js';
 
@@ -9,7 +9,7 @@ import type { Check, QaContext, QaFrame, Report } from './types.js';
 export function runChecks(frames: readonly QaFrame[], ctx: QaContext, extra: readonly Check[] = []): Report {
   const checks: Check[] = [
     paletteConformance(frames, ctx), alphaBinary(frames, ctx), colorBudget(frames, ctx), boundsCanvas(frames),
-    baselineStable(frames), animFlicker(frames, ctx), formHeldVisible(frames, ctx),
+    baselineStable(frames), animFlicker(frames, ctx), animPoseDistinct(frames, ctx), formHeldVisible(frames, ctx),
     cleanupOrphans(frames, ctx), cleanupBanding(frames, ctx),
     readContrast(frames, ctx), readRoleColor(frames, ctx), formFaceClear(frames, ctx), formHeadClearance(frames), formSignature(frames, ctx), formDetailMin(frames, ctx),
     ...extra,

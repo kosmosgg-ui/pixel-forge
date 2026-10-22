@@ -44,6 +44,9 @@ export interface QaFrame {
   rootFixed?: boolean;
   /** 앞 프레임과 변환이 같은 파츠 id (깜빡임 검사 대상) */
   stillParts?: ReadonlySet<number>;
+  /** 애니 이름(rest 프레임은 'rest')과 키 프레임 여부(사이 프레임은 false) — anim.pose-distinct */
+  anim?: string;
+  key?: boolean;
 }
 
 export interface RampStep {
@@ -66,6 +69,8 @@ export interface QaContext {
   held?: readonly HeldInfo[];
   /** Spec signature 이름과 그 파츠 id들(form.signature). 없으면 검사 통과 */
   signature?: { name: string; parts: ReadonlySet<number> };
+  /** Spec mode — frames 모드 death 전체 회전 검사(anim.pose-distinct) */
+  mode?: string;
   /** 외곽선 톤·전역 외곽선색 인덱스 — 이 색으로만 칠해진 픽셀은 보이는 것으로 치지 않는다 */
   lineIndices?: ReadonlySet<number>;
 }
