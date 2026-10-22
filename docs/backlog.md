@@ -46,3 +46,7 @@
 - [P7 마감] forge apply 검수 게이트가 review-score 점수(/24) 기반 — art-judge 등급(보정 세트 v2) 기반으로 바꿀지 검토
 - [P7 리뷰] 프리렌더 패스 캐시 키에 Blender(bpy) 버전 미포함 — bpy 업그레이드 시 .forge-cache/prerender 수동 삭제 필요
 - [P8 보류] 동영상 입력(docs/integrated/P8/ADDENDUM_video.md): mp4 → ffmpeg 프레임 추출 → 체크무늬 배경 제거·프레임별 줌 보정·fx 분리·키프레임 제안 — 사용자 지시로 영상 입력 보류
+- [P8 art-judge] sera import 1배에서 갑옷·치마 중간톤 얼룩 노이즈 — import 감색 단계 축소(재질별 3~4단)·고립 픽셀 정리, 외곽선 끊김·눈 하이라이트 고정(수치 변경은 사용자 승인)
+- [P8] import.clipped 정의: sera_gpt_raw 기대 3 vs 측정 2(#19·#20만 가장자리 접촉) — 기대값 근거 확인 필요
+- [P8] 보정 A 재현 실패(ref_tall 64px vs A 차이 97%, A bbox 32×59 vs 결과 48×64) — A의 원본·파라미터 확인 필요
+- [P8] anim.temporal-noise(P7 5)가 qa에 아직 없음 — 생기면 import에도 적용
