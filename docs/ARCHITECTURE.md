@@ -197,6 +197,14 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 - `forge render <spec> --sheet 8` → `out/<id>/studio.png`(rest + 전 프레임, 게임 배경, 8배) — pixel-studio 루프용.
 ### §7.4 Rules (`data/rules/default.rules.json`) — 수치와 근거 id를 함께 보관. 렌더러는 rule id를 로그로 남긴다.
 
+### §7.3.2 프리렌더 모드 (P7-alt 실험, 사용자 승인) — 3D 모델 → 도트
+- Spec: `"mode": "prerender"`, `"model": "data/models/<id>/<파일>"`(glb·fbx), `"actions": { "<애니>": "<모델 액션>" }`, `"frames": { "<애니>": [원본 프레임 번호…] }`(키 포즈 중심, 연속 키 실루엣 IoU ≤ 0.9 — anim.pose-distinct), `"directions": 8 | 4 | 1`, `"height"`(목표 키 px), `"camera": "iso"(30°) | "side"(10°)`, `"hide": [숨길 오브젝트]`, `"loop"`.
+- 모델 폴더: 모델 파일(저장소 제외, .gitignore) + `source.json`(출처·라이선스 필수) + `materials.json`(모델 재질 → 바이블 재질 | `@eye` | `@eye:<재질>:<단계>` | `@outline` | `@palette`; `palette` = 팔레트형 텍스처의 견본 색 표, 알베도와 OKLab 최근접). 넣는 법: `data/models/README.md`.
+- 흐름: `packages/render3d`(Blender 실행 래퍼, `.venv-bpy`의 bpy 5.2.2 / Python 3.13, `FORGE_BPY_PYTHON`) → `blender/render_passes.py`가 2배 해상도로 재질·오브젝트 번호(Raw)·카메라 공간 법선(Raw)·알베도(Standard) 패스, 카메라는 **전 애니·전 프레임·8방향 범위**로 한 번 맞춤(쓰러짐 잘림 방지), 결과는 `.forge-cache/prerender/<해시>`에 캐시 → `render/prerender.ts`(순수): 2×2 다수결(눈 칸 우선) → 바이블 재질 + 3단계 툰(`rules.prerender.toon`, 광원 = bible.light) → 기존 정리(작은 음영 섬)·외곽선·눈·공동 색 예산.
+- 4방향 기본값: 8방향 rest를 먼저 렌더해 눈 픽셀이 보이는 방향만(많이 보이는 순 최대 4). 방향별 프레임은 반전하지 않는다(`AnimFrame.dir`, 프레임 이름 `<anim>_<dir>_<n>`, manifest `facing: "dirs"`, `directions`).
+- 한계: 스키닝 메시는 오브젝트 행렬로 정지 판정을 못 해 anim.flicker가 사실상 비교 대상이 없다(보조 지표는 보고서). rest만 발밑 고정 검사.
+
+
 ## §8 리그와 애니메이션 (packages/rig)
 ### §8.1 Rig (`humanoid-side-v1`, `humanoid-34-v1`)
 뼈: `root(골반) → spine → chest → neck → head`, `chest → upperArmF → lowerArmF → handF → weapon`, `chest → upperArmB → lowerArmB → handB`, `root → thighF → shinF → footF`, `root → thighB → shinB → footB`.
@@ -243,6 +251,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `scale.consistency` |  | 같은 sizeClass 캐릭터 키 차이 ≤ ±15% |
 | `form.face-clear` |  | 프레임마다(공격 프레임 포함) 가장 나쁜 프레임으로: 머리 뼈(`spec.eyes.bone`) 파츠 면적 중 다른 뼈 파츠에 가려진 비율 ≤ `faceCoverMax`, 머리 위 held 파츠 픽셀 0, 눈 둘레 창(눈 픽셀 박스, 최소 3×2)이 전부 얼굴 재질(머리 뼈 첫 파츠 재질) — 같은 뼈의 투구·두건 등 다른 재질로 덮여도 가림 |
 | `form.head-clearance` |  | 머리 밖 2px 안에 다른 뼈의 held·decorative 파츠 픽셀 0(무기 끝·화살 깃이 머리 윤곽에 붙어 실루엣이 뭉치지 않게). 가장 나쁜 프레임 |
+| `form.face-visible` |  | 경고: 방향별 프레임(프리렌더)에서 방향마다 첫 프레임에 눈 픽셀이 있는지 — 뒤통수 방향 섞임 방지 |
 | `form.signature` |  | 경고: rest 프레임에서 Spec signature 파츠 픽셀 ÷ 불투명 픽셀이 `signatureRange`(0.15~0.40) 밖. signature 없으면 통과 |
 | `form.detail-min` |  | 같은 재질 8-연결 영역 중 `detailMinPx` 미만 조각 수 ≤ `detailMaxCount` (외곽선·눈 제외) |
 | `read.role-color` |  | roleColorKey 재질(램프+외곽선 톤) 픽셀 ≥ 불투명 픽셀의 `roleColorMin` |
@@ -278,6 +287,7 @@ export interface ZoneBuffer { w: number; h: number; material: Uint8Array; shade:
 | `forge ref compare <spec> <ref.json>` | Spec rest 프레임을 같은 측정기로 재서 차이 표 → `out/<id>/ref-<refid>.json` (규칙·Spec 조정 근거) |
 | `forge apply <spec> --target <adapter> [--out <dir>]` | build(캐시·QA) 통과 + 검수 통과(`out/<id>/review.json`, 지금 입력 해시로 채점한 점수 ≥ 18/24, `--skip-review`로만 생략) 시 어댑터로 복사. 미달·기록 없음은 복사하지 않고 exit 2. 기본 어댑터 `dir`: `<out>/<id>/`에 pack 3파일. `--out`은 작업 폴더 기준(`resolveInside`) 또는 `@<이름>`(허용 목록 `.forge/targets.local.json`의 절대 경로, 사람이 직접 작성·gitignore), 없으면 바이블 `apply.out`. forge가 쓴 파일은 `<out>/<id>/.forge-files.json`에 해시로 기록, 기록에 없거나 바뀐 같은 이름 파일이 있으면 아무것도 쓰지 않고 `apply.foreign-file`(exit 1). 어댑터는 `Adapter { id, apply(artifacts, options) }` 파일 하나로 추가 |
 | `forge review-score <spec> --score <0~24> --obs '<기준별 관찰 JSON>' [--note 문장] [--sheet 4]` | pixel-reviewer가 `out/<id>/review.json`에 점수·12기준 관찰·`sheetHash`(검수한 `out/<id>/studio.png`의 SHA-256, `forge render --sheet`로 생성)·입력 해시를 기록. QA 통과(`review.no-build`), 관찰 12개(`review.observations`), 시트 = 지금 렌더(`review.stale-sheet`) 필수. apply는 지금 렌더로 같은 시트를 만들어 sheetHash와 다르면 exit 2 |
+| `forge scene <data/scenes/<이름>.scene.json> [--sheet 2]` | 게임 화면 목업(검토용): `items`(spec·anim·dir·index·발밑 위치 at)를 바이블 배경 위에 발밑 y 순으로 → `out/scenes/<이름>.png`. 같은 Spec은 한 번 렌더 |
 | `forge compare <out/….png> <a.spec.json,b.spec.json> ... [--sheet 8]` | 모드 비교 시트: 줄마다 Spec 묶음(rest + attack)을 나란히, 끝 칸은 `docs/quality-ref/target-grids.json`의 `<줄 마지막 id>` 시안을 엔진으로 렌더(색 예산 무제한, 없으면 X + `missingRefs`). `refs.<id>` = 줄 마지막 Spec rest와 시안을 ±6px 안 가장 잘 겹친 위치의 실루엣 `iou`·다른 픽셀 `diff`·머리 영역 `headDiff`(아톰). `out/` 안에만 쓴다 |
 | `forge watch <project> [--target dir --out <dir>]` | Spec·바이블·리그·애니·규칙 변경(chokidar) 시 그 파일을 입력으로 쓰는 캐릭터만 build(→ `--out`이 있으면 apply). 결과는 한 줄 JSON씩 |
 - **캐시**: 키 = SHA-256(spec + bible + rig + anims + rules + 엔진 버전). 적중 시 렌더 생략, `"cached": true`.

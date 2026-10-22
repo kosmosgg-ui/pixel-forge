@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { alphaBinary, boundsCanvas, colorBudget, paletteConformance } from './checks/integrity.js';
 import { cleanupBanding, cleanupOrphans } from './checks/cleanup.js';
-import { formDetailMin, formFaceClear, formHeadClearance, formSignature, readContrast, readRoleColor } from './checks/readability.js';
+import { formDetailMin, formFaceClear, formFaceVisible, formHeadClearance, formSignature, readContrast, readRoleColor } from './checks/readability.js';
 import { animFlicker, animPoseDistinct, baselineStable } from './checks/anim.js';
 import { crossChecks, silhouetteIoU, type Silhouette } from './checks/cross.js';
 import { runChecks } from './run.js';
@@ -124,6 +124,13 @@ describe('규칙을 어긴 래스터마다 해당 검사가 실패한다', () =>
     expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'attack'), k(tall, 'attack', false), k(lying, 'attack')], ctx()).pass).toBe(true);
     expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'death'), k(lying, 'death')], ctx({ mode: 'frames' }))).toMatchObject({ pass: false });
     expect(animPoseDistinct([k(tall, 'rest'), k(tall, 'death'), k(lying, 'death')], ctx({ mode: 'atoms' })).pass).toBe(true);
+  });
+
+  it('form.face-visible: 방향마다 첫 프레임에 눈이 있어야(경고), 방향 정보 없으면 통과', () => {
+    const f = (dir: string, eyes: number) => ({ ...frame(CLEAN), dir, eyes });
+    expect(formFaceVisible([frame(CLEAN), f('s', 2), f('s', 0), f('e', 1)]).pass).toBe(true);
+    expect(formFaceVisible([frame(CLEAN), f('s', 2), f('n', 0)])).toMatchObject({ pass: false, required: false, note: expect.stringContaining('n') });
+    expect(formFaceVisible([frame(CLEAN)]).pass).toBe(true);
   });
 
   it('필수 검사 실패면 점수와 무관하게 불합격', () => {
