@@ -43,6 +43,8 @@ export interface PassJob {
   /** 숨길 오브젝트 이름(소품 고르기) */
   hide: string[];
   yaws: Record<string, number>;
+  /** 바이블 pixelsPerUnit(있으면 목표 키 대신 이 배율) */
+  pxPerUnit?: number;
   /** 프레이밍 범위를 잡을 방향(없으면 yaws) */
   yawsAll?: Record<string, number>;
 }

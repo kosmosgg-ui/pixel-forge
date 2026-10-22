@@ -5,6 +5,9 @@
 현재 단계: **P7**
 
 ## 로그
+- [P7] 진행 중(1번 수락 판정에서 멈춤) | 0 완료(생물 기본 prerender, se 1방향 + mirror). 1 구현: POC 툰(밝음 +1 규칙 삭제)·원본 명도 순위 → 램프 단계, 외곽선 = 등급 설정 없으면 dark(가장자리 140/140 외곽선색), se = yaw −35°, 소품 가시성(held, 방향별 경고), 바이블 pixelsPerUnit 17.72(기사 44px·해골 40px), forge lineup
+  - 막힘: art-judge 보정 확인 2회 무효(판정자 순서 C<D<A−≈B, C<A−<D<B — 손 도트 2장을 프리렌더 위로 둠). 가설: ① 판정자는 "게임 스프라이트 완성도"(얼굴·역할색·외곽선)로 보고 기준 세트는 "프리렌더 방식의 잠재력"을 매김 ② A− 이미지가 회색 단색·얼굴 가림이라 판정 축(역할색·얼굴)에서 불리 ③ 기준이 무엇을 재는지(축) 지시가 art-judge에 없음
+
 - [P7-alt] 실험 완료(판정 보고) | 3D 프리렌더 → 도트: packages/render3d(Blender 래퍼, bpy 5.2.2 venv) + render/prerender.ts(재질·색 표 매핑, 2×2 다수결·눈 우선, 3단계 툰) → 기존 정리·외곽선·QA·pack. 모델 KayKit Knight·Skeleton_Minion(CC0, 저장소 제외, source.json). forge scene 추가
   | 캐릭터 | 방향 | 키 | QA | reviewer | 비고 |
   | kaykit-knight | s·se·e·sw | 45px(96 캔버스) | 통과 | 18/24 | 로봇 POC와 비슷, s·se에서 칼 가려짐, death 4~6 잡티 |

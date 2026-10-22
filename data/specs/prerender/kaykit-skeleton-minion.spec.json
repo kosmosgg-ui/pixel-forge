@@ -4,7 +4,6 @@
  "bible": "sample-v0",
  "sizeClass": "boss",
  "mode": "prerender",
- "height": 48,
  "camera": "iso",
  "actions": {
   "idle": "Idle",

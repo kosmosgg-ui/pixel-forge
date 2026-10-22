@@ -164,7 +164,8 @@ for anim, fs in frame_all.items():
       e = extent()
       box = [min(box[0], e[0]), max(box[1], e[1]), min(box[2], e[2]), max(box[3], e[3])]
 margin, gap = job["margin"], job["bottomGap"]
-ppu = min(job["height"] / (r0[3] - r0[2]), (W - 2 * margin) / (box[1] - box[0]), (H - margin - gap - 1) / (box[3] - box[2]))
+# 바이블 공통 배율이 있으면 그대로(모델 간 키 차이 보존, 넘치면 bounds.canvas가 알린다), 없으면 목표 키·캔버스에 맞춤
+ppu = job.get("pxPerUnit") or min(job["height"] / (r0[3] - r0[2]), (W - 2 * margin) / (box[1] - box[0]), (H - margin - gap - 1) / (box[3] - box[2]))
 cx = (box[0] + box[1]) / 2
 cy = box[2] + (H / 2 - 1 - gap) / ppu
 cam_data.ortho_scale = max(W, H) / ppu
@@ -198,6 +199,6 @@ for anim, d, i, f in plan:
 
 json.dump({
     "materials": names, "objects": [{"name": ob.name, "skinned": s} for ob, s in zip(meshes, skinned)],
-    "fps": sc.render.fps / sc.render.fps_base, "pxPerUnit": ppu, "frames": frames,
+    "fps": sc.render.fps / sc.render.fps_base, "pxPerUnit": ppu, "restHeight": r0[3] - r0[2], "frames": frames,
 }, open(os.path.join(out, "passes.json"), "w"), ensure_ascii=False, indent=1)
 print("FORGE_PASSES_DONE", len(frames))

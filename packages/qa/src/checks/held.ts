@@ -9,6 +9,7 @@ import { check, type Check, type HeldInfo, type QaContext, type QaFrame } from '
  */
 export function formHeldVisible(frames: readonly QaFrame[], ctx: QaContext): Check {
   const min = ctx.rules.heldVisibleMin;
+  if (ctx.props) return propVisible(frames, ctx.props, min);
   if (!ctx.held?.length) return check('form.held-visible', true, true, null, min, { note: 'held 파츠 없음' });
   let worst = Infinity, failFrame = -1;
   let failNote = '';
@@ -56,4 +57,33 @@ function reachFromHand(part: Uint16Array, w: number, h: number, info: HeldInfo):
     }
   }
   return seen;
+}
+
+/**
+ * 프리렌더 소품 가시성(경고, 사용자 승인 P7): 방향마다 첫 프레임의 소품 픽셀 수 ÷ rest 소품 픽셀 수 ≥ heldVisibleMin.
+ * 3D 모델은 손과 소품이 같은 뼈에 붙어 있어 "손에서 떨어짐"은 생기지 않고, 몸에 가려지는 방향만 문제다.
+ */
+function propVisible(frames: readonly QaFrame[], props: readonly { name: string; part: number }[], min: number): Check {
+  const count = (f: QaFrame, id: number) => {
+    let n = 0;
+    if (f.part) for (const v of f.part) if (v === id) n++;
+    return n;
+  };
+  const rest = frames[0];
+  if (!rest || !props.length) return check('form.held-visible', false, true, null, min, { note: '소품 없음' });
+  const first = new Map<string, QaFrame>();
+  for (const f of frames) if (f.dir && !first.has(f.dir)) first.set(f.dir, f);
+  let worst = Infinity;
+  const bad: string[] = [];
+  for (const p of props) {
+    const base = count(rest, p.part);
+    if (!base) continue;
+    for (const [dir, f] of first) {
+      const ratio = count(f, p.part) / base;
+      worst = Math.min(worst, ratio);
+      if (ratio < min) bad.push(`${p.name}@${dir} ${Math.round(ratio * 100)}%`);
+    }
+  }
+  const value = worst === Infinity ? null : Math.round(worst * 1000) / 1000;
+  return check('form.held-visible', false, bad.length === 0, value, min, bad.length ? { note: `소품이 가려진 방향: ${bad.join(', ')}` } : {});
 }

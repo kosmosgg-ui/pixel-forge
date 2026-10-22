@@ -50,6 +50,7 @@ export function prerenderLoader(spec: Spec, bible: Bible, rules: Rules, cwd: str
     const { map, palette } = readJson(join(dir, 'materials.json'), materialsSchema);
     const size = bible.sizeClasses[spec.sizeClass];
     if (!size) throw new ForgeError('spec.refs', `바이블에 없는 sizeClass: ${spec.sizeClass}`);
+    if (!bible.pixelsPerUnit && !spec.height) throw new ForgeError('spec.refs', '프리렌더 배율이 없습니다: 바이블 pixelsPerUnit 또는 Spec height(목표 키 px)');
     const all = sampleFramesOf(spec);
     const { supersample, margin, toon } = rules.prerender;
     const blender = { python: bpyPython(cwd, process.env), cacheRoot: join(cwd, '.forge-cache', 'prerender') };
@@ -57,7 +58,7 @@ export function prerenderLoader(spec: Spec, bible: Bible, rules: Rules, cwd: str
       // 프레이밍은 늘 전 애니·전 프레임 기준(방향 고르기용 1장 렌더도 같은 배율·위치가 되게)
       const passDir = renderPasses({
         model, size: [size[0], size[1]], supersample, height: spec.height ?? size[1], elevation: ELEVATION[spec.camera], margin, bottomGap: BOTTOM_GAP,
-        actions: spec.actions ?? {}, frames, frameAll: all, yaws, yawsAll: { ...DIRECTIONS[8] }, hide: spec.hide,
+        actions: spec.actions ?? {}, frames, frameAll: all, yaws, yawsAll: { ...DIRECTIONS[8] }, hide: spec.hide, ...(bible.pixelsPerUnit ? { pxPerUnit: bible.pixelsPerUnit } : {}),
       }, blender);
       return readPasses(passDir, size, supersample, frames);
     };

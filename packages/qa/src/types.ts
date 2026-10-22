@@ -70,6 +70,8 @@ export interface QaContext {
   roleIndices?: ReadonlySet<number>;
   /** 손에 든 파츠(form.held-visible). 없으면 검사 통과 */
   held?: readonly HeldInfo[];
+  /** 프리렌더 소품(손에 든 무기·방패): 오브젝트 이름과 파츠 레이어 id(= 오브젝트 번호) — form.held-visible를 방향별 경고로 */
+  props?: readonly { name: string; part: number }[];
   /** Spec signature 이름과 그 파츠 id들(form.signature). 없으면 검사 통과 */
   signature?: { name: string; parts: ReadonlySet<number> };
   /** Spec mode — frames 모드 death 전체 회전 검사(anim.pose-distinct) */

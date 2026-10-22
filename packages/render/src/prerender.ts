@@ -4,7 +4,7 @@ import { fitBudgetInPlace } from './budget-fit.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
 import { outerOutlineInPlace } from './outline.js';
 import type { AnimFrame, AnimRender } from './render-anim.js';
-import { applySpecialsInPlace, noFit, outlineModeOf, rampsOf, type RenderContext, type RenderMeta, type RenderResult } from './render-frame.js';
+import { applySpecialsInPlace, noFit, rampsOf, type RenderContext, type RenderMeta, type RenderResult } from './render-frame.js';
 import { resolveZone } from './resolve.js';
 
 /** Blender 패스 1장(render3d가 PNG에서 읽어 준다). 해상도 = 캔버스 × supersample */
@@ -30,6 +30,8 @@ export interface PrerenderPasses {
   supersample: number;
   /** 모델 재질 이름(번호 n = materials[n-1]) */
   materials: string[];
+  /** 오브젝트 이름(번호 n = objects[n-1] — 파츠 레이어 id) */
+  objects: string[];
   frames: PassFrame[];
 }
 
@@ -42,16 +44,14 @@ export interface PrerenderOptions {
   toon: readonly [number, number];
 }
 
-interface Target { mat: number; special: number; step?: number }
+/** base = 이 색의 기준 램프 단계(같은 바이블 재질로 묶인 원본 색의 명도 순위), 없으면 램프 가운데 */
+interface Target { mat: number; special: number; step?: number; base?: number }
 
 /**
- * 3단계 툰 → 램프 단계: 어둠 = 0, 기본 = 가운데, 밝음 = 가운데 + 1. 밝음을 램프 맨 끝으로 하면 밝은 재질(흰 갑옷)이
- * 하이라이트 띠로 날아가 입체가 사라진다(P7-alt 검수) — 맨 끝 단계는 쓰지 않는다(3단계 램프는 그대로 0·1·2)
+ * rule: prerender.toon — POC와 같은 3단계 툰(사용자 승인 P7): n·L > 0.45 밝음, > −0.1 중간, 나머지 어둠.
+ * 기준 단계(원본 명도 순위) 위에서 어둠 −1 · 중간 0 · 밝음 +1, 램프 범위로 자른다.
  */
-const toonStep = (level: number, steps: number): number => {
-  const mid = Math.floor((steps - 1) / 2);
-  return level === 0 ? 0 : level === 1 ? mid : Math.min(steps - 1, mid + 1);
-};
+const toonStep = (level: number, base: number, steps: number): number => Math.max(0, Math.min(steps - 1, base + level - 1));
 
 /** "metal" | "@eye" | "@eye:gold:3" | "@outline" → zone 값. "@eye"(검은 눈)·"@outline"(틈·구멍)의 재질은 실루엣용 아무 재질(색은 외곽선색으로 덮는다) */
 function parseTarget(t: string, names: readonly string[], where: string): Target {
@@ -66,15 +66,33 @@ function parseTarget(t: string, names: readonly string[], where: string): Target
 /** 모델 재질 번호 + 알베도 → 대상. 팔레트 표는 색마다 한 번만 계산(Map) */
 interface Classifier { at: (mi: number, r: number, g: number, b: number) => Target | null; eyeStep: Map<number, number> }
 
+/**
+ * 명도 순서 보존(사용자 승인 P7): 같은 바이블 재질로 가는 견본 색들을 OKLab 명도 순으로 램프 단계에 고르게 배치
+ * (가장 어두운 견본 = 0, 가장 밝은 = 맨 끝). 견본이 하나면 가운데.
+ */
+function rankBasesInPlace(entries: readonly { lab: Lab; t: Target }[], stepsOf: (m: number) => number): void {
+  const byMat = new Map<number, { lab: Lab; t: Target }[]>();
+  for (const e of entries) if (!e.t.special) byMat.set(e.t.mat, [...(byMat.get(e.t.mat) ?? []), e]);
+  for (const [m, list] of byMat) {
+    const n = stepsOf(m);
+    const sorted = [...list].sort((a, b) => a.lab.L - b.lab.L);
+    sorted.forEach((e, i) => { e.t.base = sorted.length === 1 ? Math.floor((n - 1) / 2) : Math.round((i * (n - 1)) / (sorted.length - 1)); });
+  }
+}
+
 function classifier(ctx: RenderContext, passes: PrerenderPasses, o: PrerenderOptions): Classifier {
   const names = Object.keys(ctx.bible.materials).sort();
+  const ramps = rampsOf(ctx.bible, ctx.palette);
+  const stepsOf = (m: number) => ramps[m - 1]?.indices.length ?? 1;
   const fixed: (Target | null)[] = [null];
   const tables: ({ lab: Lab; t: Target }[] | null)[] = [null];
   for (const m of passes.materials) {
     const v = o.materialMap[m];
     const table = v === '@palette' || (v === undefined && o.palette?.[m]) ? o.palette?.[m] : undefined;
     if (table) {
-      tables.push(table.map((e) => { const [r, g, b] = parseHex(e.hex); return { lab: srgbToOklab(r, g, b), t: parseTarget(e.to, names, `palette.${m}`) }; }));
+      const entries = table.map((e) => { const [r, g, b] = parseHex(e.hex); return { lab: srgbToOklab(r, g, b), t: parseTarget(e.to, names, `palette.${m}`) }; });
+      rankBasesInPlace(entries, stepsOf);
+      tables.push(entries);
       fixed.push(null);
     } else {
       tables.push(null);
@@ -108,8 +126,8 @@ const sizeOf = (ctx: RenderContext): [number, number] => {
   return size;
 };
 
-/** key = ((재질 × 4 + 특수) × 4 + 툰) × 256 + 오브젝트 */
-const pack = (t: Target, level: number, obj: number) => ((t.mat * 4 + t.special) * 4 + level) * 256 + obj;
+/** key = (((재질 × 16 + 기준 단계 + 1) × 4 + 특수) × 4 + 툰) × 256 + 오브젝트 — 기준 단계 없음 = 0 */
+const pack = (t: Target, level: number, obj: number) => ((((t.mat * 16 + (t.base ?? -1) + 1) * 4 + t.special) * 4 + level) * 256) + obj;
 
 /**
  * supersample 블록 다수결로 1배 zone: 블록 안 불투명 칸이 절반 이상일 때만 칠하고, (재질, 특수, 툰, 오브젝트)가 가장 많은 값.
@@ -136,10 +154,12 @@ function downscale(ctx: RenderContext, f: PassFrame, s: number, classify: Classi
     if (opaque * 2 < s * s && eye < 0) continue;
     let best = eye, bestN = 0;
     if (best < 0) for (const [key, n] of counts) if (n > bestN || (n === bestN && key < best)) { best = key; bestN = n; }
-    const q = y * W + x, obj = best % 256, level = Math.floor(best / 256) % 4, special = Math.floor(best / 1024) % 4, m = Math.floor(best / 4096);
+    const q = y * W + x, obj = best % 256, level = Math.floor(best / 256) % 4, special = Math.floor(best / 1024) % 4;
+    const base = (Math.floor(best / 4096) % 16) - 1, m = Math.floor(best / 65536);
     z.material[q] = m;
     z.special[q] = special;
-    const step = special === SPECIAL_EYE_COLOR ? classify.eyeStep.get(m) ?? 0 : toonStep(level, stepsOf(m));
+    const n = stepsOf(m);
+    const step = special === SPECIAL_EYE_COLOR ? classify.eyeStep.get(m) ?? 0 : toonStep(level, base >= 0 ? base : Math.floor((n - 1) / 2), n);
     z.shade[q] = z.fixed[q] = Math.min(step, stepsOf(m) - 1);
     z.part[q] = obj;
     z.depth[q] = 1;
@@ -156,7 +176,9 @@ function finish(ctx: RenderContext, z: FrameZone, transforms: readonly number[])
   mergeSmallClustersInPlace(z, rules.cleanup.minCluster);
   const raster: IndexedRaster = resolveZone(z, ramps);
   const protect = new Uint8Array(z.w * z.h);
-  outerOutlineInPlace(raster, z, ramps, { mode: outlineModeOf(bible, spec.sizeClass), globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect);
+  // 크기 등급에 외곽선 설정이 있으면 그것, 없으면 POC와 같은 1px 어두운 단색(selout의 밝은 쪽 0단계는 3D 축소 경계에서 외곽선이 없는 듯 보인다)
+  const mode = bible.sizeClassOptions[spec.sizeClass]?.outline ?? 'dark';
+  outerOutlineInPlace(raster, z, ramps, { mode, globalIndex: palette.outlineIndex, litThreshold: rules.outline.seloutLitThreshold }, protect);
   const eyes = applySpecialsInPlace(raster, z, palette.outlineIndex, protect);
   const exclude = [...new Set([...ramps.map((r) => r.outline), palette.outlineIndex, ...palette.fxIndices])];
   const meta: RenderMeta = {

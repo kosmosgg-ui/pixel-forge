@@ -87,6 +87,8 @@ export const specSchema = z
     height: z.number().int().min(8).optional(),
     /** 프리렌더: 숨길 모델 오브젝트(소품 고르기, 예: 기사의 다른 무기·방패) */
     hide: z.array(z.string().min(1)).default([]),
+    /** 프리렌더: 손에 든 소품 오브젝트(무기·방패) — 방향별 가시성 경고(form.held-visible) */
+    held: z.array(z.string().min(1)).default([]),
     /** iso = 내려다보는 30°, side = 측면 3/4(10°) */
     camera: z.enum(['iso', 'side']).default('iso'),
     /** 프레임 모드: 반복 재생할 애니 */
@@ -123,7 +125,6 @@ export const specSchema = z
       });
     } else if (s.mode === 'prerender') {
       if (!s.model) issue(['model'], '프리렌더 모드는 model이 필요합니다');
-      if (!s.height) issue(['height'], '프리렌더 모드는 height(목표 키 px)가 필요합니다');
       if (!s.actions || !Object.keys(s.actions).length) issue(['actions'], '프리렌더 모드는 actions가 필요합니다');
       for (const [a, list] of Object.entries(s.frames ?? {})) {
         if (!s.actions?.[a]) issue(['frames', a], `actions에 없는 애니: ${a}`);

@@ -31,6 +31,8 @@ export const bibleSchema = z.preprocess(splitSizeClasses, z
   .object({
     id: z.string().min(1),
     internalResolution: sizePx.optional(),
+    /** 프리렌더: 월드 1단위당 px(모든 모델 공통 — 모델 간 실제 키 차이 보존). 없으면 Spec height로 맞춤 */
+    pixelsPerUnit: z.number().positive().optional(),
     view: z.enum(['side', 'topdown', 'iso']),
     directions: z.union([z.literal(1), z.literal(4), z.literal(8)]),
     sizeClasses: z.record(z.string().min(1), sizePx),

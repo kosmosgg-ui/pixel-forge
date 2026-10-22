@@ -11,6 +11,7 @@ import { reviewScoreCommand } from './commands/review-gate.js';
 import { reviewCommand } from './commands/review.js';
 import { compareCommand } from './commands/compare.js';
 import { sceneCommand } from './commands/scene.js';
+import { lineupCommand } from './commands/lineup.js';
 import { validateCommand } from './commands/validate.js';
 import { watchCommand } from './commands/watch.js';
 
@@ -68,6 +69,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b] [--sheet 8]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : [], input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'crowd') return crowdCommand(need('<프로젝트 이름> [--count 50] [--seed 1]'), input.cwd, intOption('count', input.count, 50), intOption('seed', input.seed, 1));
+  if (cmd === 'lineup') return lineupCommand(need('<out/….png> <a.png|b.spec.json[#anim_dir_n]> ... [--sheet 4]'), input.positionals.slice(2), input.cwd, input.sheet === undefined ? 4 : Number(input.sheet));
   if (cmd === 'scene') return sceneCommand(need('<data/scenes/<이름>.scene.json> [--sheet 2]'), input.cwd, input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'compare') return compareCommand(need('<out/….png> <a.spec.json,b.spec.json> ... [--sheet 8]'), input.positionals.slice(2), input.cwd, input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'review') return reviewCommand(need('<프로젝트 이름>'), input.cwd);

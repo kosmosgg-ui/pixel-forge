@@ -57,5 +57,5 @@ export function readPasses(dir: string, size: readonly [number, number], supersa
     const transforms = f.objects.map((h, i) => (file.objects[i]?.skinned ? --unique : keys.get(h) ?? (keys.set(h, keys.size + 1), keys.size)));
     return { anim: f.anim, dir: f.dir, index: f.index, ms: msOf[f.anim]?.[f.index] ?? 100, mat, obj, normal, albedo, transforms };
   });
-  return { supersample, materials: file.materials, frames: out, file };
+  return { supersample, materials: file.materials, objects: file.objects.map((o) => o.name), frames: out, file };
 }

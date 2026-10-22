@@ -25,7 +25,7 @@ export function heldInfo(p: Project, restPart?: Uint16Array): HeldInfo[] {
   });
 }
 
-export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult): QaContext {
+export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult, objects?: readonly string[]): QaContext {
   const rampOf = new Map<number, { ramp: string; step: number }>();
   for (const r of Object.values(palette.ramps)) r.indices.forEach((idx, step) => { if (!rampOf.has(idx)) rampOf.set(idx, { ramp: r.id, step }); });
   const roleMat = p.spec.role === undefined ? undefined : p.bible.roleColorKey[p.spec.role];
@@ -35,6 +35,7 @@ export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult
     background: parseHex(p.bible.background), rules: p.rules.qa, rampOf,
     ...(roleRamp ? { roleIndices: new Set([...roleRamp.indices, roleRamp.outline]) } : {}),
     held: heldInfo(p, rest?.meta.layers.part),
+    ...(p.spec.mode === 'prerender' && objects ? { props: p.spec.held.map((name) => ({ name, part: objects.indexOf(name) + 1 })).filter((q) => q.part > 0) } : {}),
     mode: p.spec.mode,
     ...(p.spec.signature ? { signature: { name: p.spec.signature, parts: p.spec.mode === 'frames' ? new Set([GRID_SIGNATURE_PART]) : new Set(p.spec.parts.flatMap((q, i) => (q.signature ? [i + 1] : []))) } } : {}),
     lineIndices: new Set([...Object.values(palette.ramps).map((r) => r.outline), palette.outlineIndex]),
@@ -48,6 +49,8 @@ export interface Rendered {
   /** 실제로 렌더한 프로젝트(크기 등급을 맞춘 Spec) — QA·pack은 이것을 쓴다 */
   project: Project;
   sizeClass: SizeFit;
+  /** 프리렌더: 오브젝트 이름(파츠 레이어 id = 번호) */
+  objects?: string[];
 }
 
 /**
@@ -62,9 +65,10 @@ export function renderProject(p: Project, ids: readonly string[] = defaultAnims(
     if (!p.prerender) throw new ForgeError('render3d.no-model', '프리렌더 입력이 없습니다');
     const input = p.prerender();
     const ctx = { ...p, palette };
-    const res = renderPrerender(ctx, input.render(p.spec.directions === 4 ? pickDirections(ctx, input) : input.yaws), input.options);
+    const passes = input.render(p.spec.directions === 4 ? pickDirections(ctx, input) : input.yaws);
+    const res = renderPrerender(ctx, passes, input.options);
     const want = new Set(ids);
-    return { palette, rest: res.rest, frames: res.frames.filter((f) => want.has(f.anim)), project: p, sizeClass: { requested: p.spec.sizeClass, used: p.spec.sizeClass, reason: 'fits' } };
+    return { palette, rest: res.rest, frames: res.frames.filter((f) => want.has(f.anim)), project: p, objects: passes.objects, sizeClass: { requested: p.spec.sizeClass, used: p.spec.sizeClass, reason: 'fits' } };
   }
   const anims = p.anims;
   // 프레임 모드는 Spec frames의 애니(공용 애니 파일·리그 포즈를 쓰지 않는다)
@@ -147,7 +151,7 @@ export function runQaRendered(p: Project, cwd: string, extra: readonly Check[] =
   const rows = qaRows(r);
   const warnings = [...new Set([r.rest, ...r.frames].flatMap((f) => f.meta.warnings))].sort();
   const report: Report = {
-    ...runChecks(rows.flat(), qaContext(r.project, r.palette, r.rest), extra), budget: r.rest.meta.budget, sizeClass: r.sizeClass,
+    ...runChecks(rows.flat(), qaContext(r.project, r.palette, r.rest, r.objects), extra), budget: r.rest.meta.budget, sizeClass: r.sizeClass,
     ...(warnings.length ? { warnings } : {}),
   };
   const dir = join(cwd, 'out', p.spec.id);

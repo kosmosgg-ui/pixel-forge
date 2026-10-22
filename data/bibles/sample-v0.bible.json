@@ -2,6 +2,8 @@
   "$comment": "예시 아트 바이블(판타지 횡스크롤). 바이블은 게임마다 하나씩 만들고, 툴 코드는 어떤 바이블에도 의존하지 않는다.",
   "id": "sample-v0",
   "internalResolution": [320, 180],
+  "pixelsPerUnit": 17.72,
+  "pixelsPerUnitSource": "사용자 승인(P7): 프리렌더 모델 공통 배율 — KayKit 기사 rest 키 45px 기준(boss 캔버스에서 측정한 17.72px/단위)",
   "view": "side",
   "directions": 1,
   "sizeClasses": {
