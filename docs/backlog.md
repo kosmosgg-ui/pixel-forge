@@ -38,3 +38,9 @@
 - [P7-alt] 눈·투구 틈 보호를 2×2 한 칸이 아니라 주변 영역으로(얼굴 디테일 보존), death 후반 1~2px 조각 병합
 - [P7-alt] 스키닝 메시 깜빡임 검사: 오브젝트 행렬 대신 정점 이동량(뼈별)으로 정지 영역 판정
 - [P7-alt] frames 자동 선택(연속 키 실루엣 IoU ≤ 0.85 탐욕 선택 — 실험 중 scratch 스크립트로 해골 frames를 골랐다)
+- [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 2: 해골 가독성(Skeleton_Warrior·Rogue 모델, 가장 어두운 색 → @outline, 따뜻한 bone 유지)
+- [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 3: forge scene 업그레이드(docs/integrated/scene-ref/target-scene.py — 바닥 타일·비네트·그림자·적 방향 반전·피격 플래시·피해 숫자·보석·HP/경험치 바)
+- [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 5: anim.temporal-noise(객체 ID·양자화 노멀이 같은 픽셀 중 색이 바뀐 비율, idle·walk ≤ 3%) + 직전 프레임 색 유지 안정화
+- [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 6: KayKit 생산(주인공 Knight·Rogue_Hooded·Mage·Barbarian, 적 Skeleton 4종 × 색 변형 3단계) + 장면
+- [prerender 트랙 — 3D 모델 쓰는 프로젝트에서 재개] P7 4 나머지: 서브에이전트 prerender-worker·asset-scout·pixel-designer, 스킬 /batch-prerender·/best-of
+- [P7 마감] forge apply 검수 게이트가 review-score 점수(/24) 기반 — art-judge 등급(보정 세트 v2) 기반으로 바꿀지 검토

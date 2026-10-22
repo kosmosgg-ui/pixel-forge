@@ -48,6 +48,8 @@ export const bibleSchema = z.preprocess(splitSizeClasses, z
     roleColorKey: z.record(z.string().min(1), z.string().min(1)).default({}),
     /** Spec이 rig를 생략하면 쓰는 리그 id */
     defaultRig: z.string().min(1).optional(),
+    /** 생물(캐릭터·적)의 기본 모드(사용자 승인 P7 마감) — import(외부 AI 도트) · prerender(3D 모델) · atoms/frames · shapes */
+    defaultCreatureMode: z.enum(['import', 'prerender', 'atoms', 'frames', 'shapes']).default('atoms'),
     /** 엔진용 절차 애니 힌트 기본값 (manifest motion) */
     motion: motionSchema.default({ bob: { px: 1, ms: 400 }, squash: { x: 1.1, y: 0.9, ms: 80 }, hitFlash: { ms: 60 } }),
     /** forge apply 기본값(게임 프로젝트 폴더, 작업 폴더 기준 상대 경로) */

@@ -2,7 +2,7 @@
 
 CODEX_HANDOFF_seonggeom.md는 게임 저장소(Codex)용이다. 클로드 코드는 읽기만 하고 게임 저장소를 수정하지 않는다(candidates 폴더 쓰기 제외).
 
-P7 진행 중이면 P7을 먼저 끝낸다. 이 작업은 P7과 파일이 겹치지 않는다(packages/import 신규).
+(P7close로 P7 마감 — 그대로 P8 진행.) 이 작업은 P7과 파일이 겹치지 않는다(packages/import 신규).
 참고: samples/sera_gpt_raw.png(사용자가 GPT로 만든 원본, 640×240, 3줄×10칸), samples/sera_clean_preview_2x.png(기획 세션 시제품 결과).
 원본 이미지는 저장소에 커밋하지 않는다(data/import/ 는 .gitignore). 테스트는 코드로 만든 합성 이미지로 한다.
 
@@ -58,7 +58,7 @@ GPT 등 이미지 AI가 만든 "도트풍" 시트는 그림 수준은 높지만 
 ## 6. 수락
 - 합성 테스트: 격자 어긋남, 반투명 테두리, 가장자리 잘림, 중복 프레임, 흰 배경 각각 1케이스.
 - 사용자 원본으로 `--probe` → 결과가 "스프라이트 30, 줄 3, 잘림 3, 고유 프레임 21"과 일치.
-- 원본 import 결과 시트를 samples/sera_clean_preview_2x.png와 나란히 비교한 시트 1장 → art-judge 등급 B 이상.
+- (P7close 3번 보정) samples/sera_gpt_raw.png(첫 GPT 시트) import 결과가 보정 세트 v2 기준 `B–A` 이상(art-judge). walk 원본(sera_walk_gpt_raw.png)은 A 기준 이미지의 출처라 판정에 쓰지 않는다(순환 판정 금지) — 대신 import 결과 첫 프레임이 calibration-v2/A_gpt-import-sera.png와 픽셀 차이 ≤ 5%인지 재현성 검사로만 쓴다.
 - 보고 문서에 비교 시트 경로와 경고 목록.
 
 ## 7. 첫 적용 게임: 「성검의 맹세」(seonggeom) — 사용자 결정 (2026-10-22)

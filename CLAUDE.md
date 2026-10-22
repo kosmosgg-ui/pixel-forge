@@ -29,7 +29,7 @@ AI가 CLI로 캐릭터 설계(JSON)를 렌더링·검수·패킹해 게임에 �
 ## 3. 작업·보고
 - 탐색은 Glob/Grep으로 대상만. 이미 읽은 파일은 다시 읽지 말고 수정 지점만 Edit.
 - 편집 시 관련 테스트는 훅이 자동 실행. 전체 테스트는 test-runner 서브에이전트로만.
-- 이미지는 메인에서 Read하지 않는다 → pixel-reviewer. 개선 루프 1회당 시트 1장.
+- 이미지는 메인에서 Read하지 않는다 → art-judge. 개선 루프 1회당 시트 1장.
 - CLI 출력은 한 줄 JSON 요약, 상세는 파일로 쓰고 경로만.
 - 같은 문제로 2회 수정 실패 → 마지막 커밋으로 되돌리고, 원인 가설 3줄을 progress에 적은 뒤 사용자에게 /clear 후 재시작을 요청한다.
 - 통과·완료 주장에는 실행한 명령과 결과 요약 줄(예: `Tests 145 passed`)을 반드시 첨부한다.
@@ -44,8 +44,8 @@ pnpm forge <cmd>    # CLI (packages/cli)
 ## 5. 지도
 - docs: ARCHITECTURE.md(절 번호로 참조), phases/P0~P10.md, references.md(기준작 측정 목표), progress.md(단계당 10줄), backlog.md
 - data: rules/default.rules.json(규칙 수치·근거), bibles/*.bible.json(프로젝트별 아트 바이블), models/<id>/(3D 모델 출처·재질 매핑, 모델 파일은 저장소 제외)
-- 모드(사용자 승인 P7): 생물(캐릭터·적) = prerender(3D 모델이 있을 때, 기본 "se" 1방향 + 엔진 좌우 반전) · atoms/frames = 아이콘·얼굴 템플릿·이펙트·리그 없는 생물 · shapes = 시안용
-- 서브에이전트: test-runner(전체 빌드·테스트), pixel-reviewer(시각 검수), code-reviewer(Phase 종료 전 독립 검토)
+- 모드: 생물 기본 모드는 프로젝트 바이블의 defaultCreatureMode로 정한다 — import(외부 AI 도트, P8) · prerender(3D 모델) · atoms/frames(아이콘·얼굴 템플릿·이펙트·리그 없는 생물) · shapes(시안용)
+- 서브에이전트: test-runner(전체 빌드·테스트), art-judge(시각 판정 — 보정 세트 v2, 축 "1배 게임 화면 SD 스프라이트 완성도"), code-reviewer(Phase 종료 전 독립 검토)
 - 스킬: /phase-done(Phase 마무리), /tool-scan(외부 도구 조사), report-doc(보고 문서 형식), external-tools(외부 도구 원칙)
 - 습관: Phase 시작은 플랜 모드, 작업 단위가 끝나면 /compact, Phase가 바뀌면 새 세션.
 
