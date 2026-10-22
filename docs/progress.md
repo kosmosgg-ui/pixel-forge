@@ -5,6 +5,13 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P10/G2 승인 기록] 6건 결정 완료 / 구현 반영 BLOCKED | 사용자 직접 응답을 proposals/P10_G2_CODEX_APPROVALS.md·G2 DECISIONS에 기록.
+  - 승인: fxPalette 13키 / metal_blade #c8d4dc·3단·metal / cellGrow 확대 규격.
+  - 유지·선택: 세라32색·적24색 / PRO-01 고정 피난민 마차 / GDD §8.3 전직 실루엣 후보 제작.
+  - 미승인 유지: 정식 승격·기존 PR 병합·전투 수치·신규 view/kind. ART_HOLD / Gate C PENDING.
+  - 바이블 $history·실행 소스·기존 후보·게임 코드·17JSON 미변경; 승인 기록과 구현 완료 분리.
+  - 규칙 검사·문서 링크·보호 해시 확인; pnpm build/test는 설치 차단 상태로 PASS 근거 없음.
+  - 다음: 환경 복구 후 설치·전체 검사 → 승인 6건 적용·관련 검사. 이미지 생성 API 호출 없음.
 - [P9-M Codex 인계] 파일 준비 완료 / 환경 BLOCKED | main 기준 35c4b79·G1 기준 4c6afe6 전체 트리 해시 복원·검증.
   - 인계 AGENTS.md·docs/HANDOFF_CODEX.md·scripts/check-rules.mjs는 사용자 ZIP과 바이트 동일.
   - node --check scripts/check-rules.mjs / node scripts/check-rules.mjs: exit 0(변경 TS 0, 관련 테스트 미호출).
@@ -14,7 +21,7 @@
   - pxl 2e72b9ad 런타임 54파일을 저장소 밖 복원·Git blob SHA 확인, node /workspace/tools/pxl/bin/pxl.js --help exit 0(전체 clone 아님).
   - seonggeom 별도 복제본 Godot 4.7.2 headless: G1-MANIFEST 11/0, G1-STATE 27/0; GUI·전체 데모·미술 검수 아님.
   - 바이블·rules·후보·정식 경로·.claude/·CLAUDE.md·전투·17JSON 불변; 인계 파일만 main 제출, 기존 PR 병합 없음.
-  - 다음: 네트워크/의존성 복구 후 pnpm install && pnpm build && pnpm test 재개, 미결정 6건 사용자 답 대기. ART_HOLD / Gate C PENDING.
+  - 다음: 네트워크/의존성 복구 후 pnpm install && pnpm build && pnpm test 재개, 미결정 6건 질문 발행(후속 승인 기록 참조). ART_HOLD / Gate C PENDING.
 - [P8] 마감(P8fix, 사용자 승인) | 기준 A 교체(6등신 세라 47×64), 재현성 = 발 정렬 실루엣 IoU + ΔE(silhouetteMatch, Spec outline none), 잘림 정의 고정(알파 ≥ 128 픽셀이 바깥 1px — 골든 sera_gpt_raw 1개 #19 오른쪽), 바이블 display 1280×720·2배·스냅 2(640×360 취소), 초록·마젠타 배경 테스트, colorBudget 32 승인
   - 수락: pnpm test → Tests 264 passed(test-runner, 원본 골든 2개 실행), 재현성 IoU 0.9985·ΔE 0.0445, art-judge v2 보정 유효(새 A), sera import B–A
   - code-reviewer: 높음·중간 0, 낮음 3 → 2 수정(ΔE 색 캐시·잘림 1회 계산), 1 backlog(골든 원본 위치)
