@@ -5,7 +5,13 @@
 현재 단계: **P7**
 
 ## 로그
-- [P7-alt] 막힘 | 3D 프리렌더 → 도트 실험(사용자 승인). 컨테이너에 Blender 없음(`which blender` 없음, `python3 -c "import bpy"` 실패, pip bpy 배포판 없음) → 지시대로 설치 방법만 보고하고 멈춤. P6.5 미결 2건은 커밋 404e119 상태로 보류
+- [P7-alt] 실험 완료(판정 보고) | 3D 프리렌더 → 도트: packages/render3d(Blender 래퍼, bpy 5.2.2 venv) + render/prerender.ts(재질·색 표 매핑, 2×2 다수결·눈 우선, 3단계 툰) → 기존 정리·외곽선·QA·pack. 모델 KayKit Knight·Skeleton_Minion(CC0, 저장소 제외, source.json). forge scene 추가
+  | 캐릭터 | 방향 | 키 | QA | reviewer | 비고 |
+  | kaykit-knight | s·se·e·sw | 45px(96 캔버스) | 통과 | 18/24 | 로봇 POC와 비슷, s·se에서 칼 가려짐, death 4~6 잡티 |
+  | kaykit-skeleton-minion | s·se·sw(옆은 눈 안 보임) | 45px | 통과 | 17/24 | 정면 눈구멍 보임, 뼈 밝은 면 cloth_white, 무기 없음(모델에 없음) |
+  - 렌더 시간: 프로브 + 본 렌더 각 ~25초(129·103프레임 × 3패스, 캐시). 깜빡임: anim.flicker 0(스키닝 메시라 비교 대상 없음 — 보조 지표 shade 변화 평균 104·86px/프레임쌍, idle 25px)
+  - 시트: out/kaykit-knight/studio.png, out/kaykit-skeleton-minion/studio.png, out/prerender/review.png, out/scenes/kaykit-skirmish.png
+  - 미제공: docs/prerender-poc/result-kaykit-knight.png(같은 zip 재업로드) → 로봇 결과와 비교
 
 - [P6.5] 완료 | 그리드 파츠(재질:단계·@eye·@outline), frames 모드(base+patch), atoms 모드(관절 원점 아톰·각도 변형·upright), 시안 docs/quality-ref/target-grids.json, forge compare(시안 열·iou·diff·headDiff), review.json v2(sheetHash·12기준 관찰), shoot(당김 5px·−8°·시위 화살). 사용자 승인: 기본 모드(생물 = atoms, 아이템·리그 없는 생물 = frames, shapes = 시안용), humanoid-small-v1 비율, signature 15~40% 경고, 새 필수 QA anim.pose-distinct
   | 캐릭터 | 모드 | reviewer | 시안 대비 |
