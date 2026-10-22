@@ -46,7 +46,8 @@ describe('P9-M 요청 문구', () => {
     const text = (k: string) => promptText(kit, list.find((r) => r.key === k) ?? list[0]!);
     expect(text('walk_side')).toContain('Draw exactly 6 frames of the walk cycle animation, side view facing right');
     expect(text('walk_side')).not.toMatch(/\{\{/);
-    expect(text('walk_side')).toMatch(/three-quarter top-down view[\s\S]*exactly the same size as in the attached size reference[\s\S]*No slash trails/);
+    expect(text('walk_side')).toMatch(/three-quarter top-down view[\s\S]*No slash trails/);
+    expect(text('walk_side')).toMatch(/exactly the same size as in the attached size reference/);
     expect(text('walk_side')).not.toMatch(/blue cape|long cape/);
     expect({ turnaround: promptSha(text('turnaround_all')).slice(0, 16), walk: promptSha(text('walk_side')).slice(0, 16), back: promptSha(text('idle_back')).slice(0, 16) }).toMatchSnapshot();
   });
@@ -58,6 +59,23 @@ describe('P9-M 요청 문구', () => {
     expect(selectFixes({ ...base, sprites: 5 }).frameCount).toBe(true);
     expect(selectFixes({ ...base, backgroundOk: false, judge: '보폭이 작다' }).ids).toEqual(['background', 'legs']);
     expect(selectFixes({ ...base, view: 'back', judge: '얼굴이 보인다' }).ids).toEqual(['backface']);
+  });
+});
+
+describe('G2 U2 적 요청 문구', () => {
+  it('적: 턴어라운드 없음, 참조 = 원화 + 세라 size_ref, 캐릭터 전용 동작(고블린 walk ≠ 오크 walk), 대장 7동작·패턴 시간 ms', () => {
+    const g = loadKit('enemy_goblin', root), o = loadKit('enemy_orc', root), c = loadKit('enemy_orc_captain', root);
+    const gl = requestList(g);
+    expect(gl.map((r) => r.key)).toEqual(['walk_side', 'attack_side', 'hit_side', 'death_side']);
+    expect(gl[0]?.references).toEqual(['enemy_goblin__ref.png', 'hero_sera__size_ref.png']);
+    expect(g.actions.walk?.poses[0]).not.toEqual(o.actions.walk?.poses[0]);
+    expect(requestList(c)).toHaveLength(7);
+    expect(c.actions.cleave).toMatchObject({ frames: 6, ms: [300, 300, 300, 120, 400, 400], phases: { telegraph: [0, 1, 2], active: [3], recovery: [4, 5] }, hold: 2 });
+    const text = promptText(g, gl[1]!);
+    expect(text).toMatch(/clean weapons, no blood/);
+    expect(text).toMatch(/0\.7 times the height of the girl/);
+    expect(text).toMatch(/magenta #FF00FF/);
+    expect(promptText(loadKit('enemy_wolf', root), requestList(loadKit('enemy_wolf', root))[0]!)).toMatch(/green #00FF00/);
   });
 });
 

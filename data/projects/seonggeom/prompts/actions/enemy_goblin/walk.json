@@ -1,0 +1,14 @@
+{
+  "id": "walk",
+  "title": "scurrying walk",
+  "frames": 4,
+  "fps": 10,
+  "loop": true,
+  "poses": [
+    "frame 1: right foot forward, hunched, dagger low",
+    "frame 2: passing, body bobs up",
+    "frame 3: left foot forward",
+    "frame 4: passing, body bobs up"
+  ],
+  "viewExtra": {}
+}

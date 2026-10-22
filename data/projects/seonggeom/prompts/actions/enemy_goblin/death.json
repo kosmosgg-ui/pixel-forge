@@ -1,0 +1,14 @@
+{
+  "id": "death",
+  "title": "death fall",
+  "frames": 4,
+  "fps": 8,
+  "loop": false,
+  "poses": [
+    "frame 1: struck, stumbling backward",
+    "frame 2: falling backward",
+    "frame 3: hitting the ground on the back",
+    "frame 4: lying still, dagger dropped"
+  ],
+  "viewExtra": {}
+}

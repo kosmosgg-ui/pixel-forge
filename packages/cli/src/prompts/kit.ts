@@ -22,6 +22,10 @@ export function loadKit(actorId: string, cwd: string): Kit {
   const dir = join(projects, project, 'prompts');
   const actor = readJson(join(dir, 'actors', `${actorId}.json`), promptActorSchema);
   const actions: Record<string, PromptAction> = {};
-  for (const id of new Set(actor.produce.map((p) => p.action))) actions[id] = readJson(join(dir, 'actions', `${id}.json`), promptActionSchema);
+  // 캐릭터 전용 동작(actions/<actorId>/<id>.json)이 있으면 그것, 없으면 공용(actions/<id>.json) — 고블린 walk와 오크 walk는 포즈가 다르다
+  for (const id of new Set(actor.produce.map((p) => p.action))) {
+    const own = join(dir, 'actions', actorId, `${id}.json`);
+    actions[id] = readJson(existsSync(own) ? own : join(dir, 'actions', `${id}.json`), promptActionSchema);
+  }
   return { project, base: readJson(join(dir, 'base.json'), promptBaseSchema), actor, actions, fixes: readJson(join(dir, 'fixes.json'), promptFixesSchema) };
 }

@@ -21,6 +21,14 @@ function shape(v: unknown, path = ''): unknown {
 const cell = (k: number) => { const r = createIndexed(4, 5); r.px.fill(k); return r; };
 const PROV: Provenance = { assetId: 'sera', creator: 'u', sourceUrl: '', license: 'owned', aiUsed: true, promptRecord: '', editedBy: 'pixel-forge', sourceFile: 'a.png', exportFile: 'sera_sheet.png', rightsReviewed: false, creditText: '' };
 
+describe('rowsheet frame_ms·phases(G2 U2)', () => {
+  it('동작 메타의 frame_ms·phases·hold가 레이아웃에 실린다', async () => {
+    const { rowSheetLayout } = await import('./rowsheet.js');
+    const l = rowSheetLayout([{ name: 'right_side', dir: 'e' }], [{ name: 'cleave', fps: 8, frame_ms: [300, 300, 300, 120, 400, 400], phases: { telegraph: [0, 1, 2] }, hold: 2 }], [{ anim: 'cleave', dir: 'e', count: 6 }]);
+    expect(l.animations.cleave).toMatchObject({ frames: 6, frame_ms: [300, 300, 300, 120, 400, 400], phases: { telegraph: [0, 1, 2] }, hold: 2 });
+  });
+});
+
 describe('godot-rowsheet', () => {
   const s = rowSheet({
     cell: { w: 4, h: 5 }, rows: [{ name: 'front', dir: 's' }, { name: 'back', dir: 'n' }, { name: 'right_side', dir: 'e' }],

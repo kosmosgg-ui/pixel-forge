@@ -15,6 +15,11 @@ export interface RowAnimMeta {
   loop?: boolean;
   /** 걷기 한 걸음 길이(1배 px) — 게임이 이동 속도에 재생 속도를 맞춘다(G1 3.3b) */
   stride_px?: number;
+  /** 프레임별 표시 시간(ms) — 게임 패턴 시간(예고·발동·회복)에 맞춘 동작(G2 U2 오크 대장) */
+  frame_ms?: number[];
+  /** 구간 → 프레임 번호. 예고 마지막 프레임은 남은 예고 시간 동안 유지(hold) */
+  phases?: Record<string, number[]>;
+  hold?: number;
 }
 
 export interface RowSheetInput {
@@ -25,7 +30,7 @@ export interface RowSheetInput {
   frames: readonly RowAnim[];
 }
 
-export interface RowAnimEntry { start_column: number; frames: number; fps: number; loop?: boolean; stride_px?: number; rowNames: string[] }
+export interface RowAnimEntry { start_column: number; frames: number; fps: number; loop?: boolean; stride_px?: number; frame_ms?: number[]; phases?: Record<string, number[]>; hold?: number; rowNames: string[] }
 
 export interface RowLayout {
   columns: number;
@@ -48,7 +53,7 @@ export function rowSheetLayout(rows: RowSheetInput['rows'], anims: readonly RowA
     const n = Math.max(0, ...mine.map((f) => f.count));
     if (!n) continue;
     const rowNames = used.filter((r) => mine.some((f) => f.dir === r.dir)).map((r) => r.name);
-    animations[a.name] = { start_column: col, frames: n, fps: a.fps, ...(a.loop !== undefined ? { loop: a.loop } : {}), ...(a.stride_px !== undefined ? { stride_px: a.stride_px } : {}), rowNames };
+    animations[a.name] = { start_column: col, frames: n, fps: a.fps, ...(a.loop !== undefined ? { loop: a.loop } : {}), ...(a.stride_px !== undefined ? { stride_px: a.stride_px } : {}), ...(a.frame_ms ? { frame_ms: a.frame_ms } : {}), ...(a.phases ? { phases: a.phases } : {}), ...(a.hold !== undefined ? { hold: a.hold } : {}), rowNames };
     col += n;
   }
   return { columns: col, rows: used, animations };
@@ -130,7 +135,7 @@ export function godotRowManifest(m: RowManifestInput) {
   const { directions, rows, mirror } = directionMaps(m);
   const animations = Object.fromEntries(Object.entries(m.sheet.animations).map(([name, a]) => {
     const only = a.rowNames.length < m.sheet.rows.length ? Object.entries(rows).filter(([, r]) => a.rowNames.includes(m.sheet.rows[r] ?? '')).map(([d]) => d) : [];
-    return [name, { start_column: a.start_column, frames: a.frames, fps: a.fps, loop: a.loop ?? false, ...(a.stride_px !== undefined ? { stride_px: a.stride_px } : {}), ...(only.length ? { rows_only: only } : {}) }];
+    return [name, { start_column: a.start_column, frames: a.frames, fps: a.fps, loop: a.loop ?? false, ...(a.stride_px !== undefined ? { stride_px: a.stride_px } : {}), ...(a.frame_ms ? { frame_ms: a.frame_ms } : {}), ...(a.phases ? { phases: a.phases } : {}), ...(a.hold !== undefined ? { hold: a.hold } : {}), ...(only.length ? { rows_only: only } : {}) }];
   }));
   return {
     assetId: m.assetId, version: m.version, quality: 'candidate' as const, source: m.source,

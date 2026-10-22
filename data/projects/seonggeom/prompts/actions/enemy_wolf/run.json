@@ -1,0 +1,14 @@
+{
+  "id": "run",
+  "title": "running gallop",
+  "frames": 4,
+  "fps": 12,
+  "loop": true,
+  "poses": [
+    "frame 1: front legs reaching forward",
+    "frame 2: legs gathered under the body",
+    "frame 3: hind legs pushing off",
+    "frame 4: all legs extended"
+  ],
+  "viewExtra": {}
+}

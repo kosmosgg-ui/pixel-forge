@@ -1,0 +1,14 @@
+{
+  "id": "attack",
+  "title": "lunging stab",
+  "frames": 4,
+  "fps": 12,
+  "loop": false,
+  "poses": [
+    "frame 1: crouching low, dagger pulled back",
+    "frame 2: springing forward",
+    "frame 3: full lunge, dagger stabbing forward",
+    "frame 4: pulling back to a crouch"
+  ],
+  "viewExtra": {}
+}

@@ -1,0 +1,63 @@
+{
+  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_orc_captain__ref.png + 세라 크기 기준 hero_sera__size_ref.png",
+  "id": "enemy_orc_captain",
+  "bible": "seonggeom",
+  "sizeClass": "boss",
+  "description": "The orc captain boss: a huge orc with horned helmet, heavy armor, a great two-handed axe, exactly as in the attached orc captain reference.",
+  "references": [
+    "enemy_orc_captain__ref.png"
+  ],
+  "turnaround": false,
+  "sizeRefFile": "hero_sera__size_ref.png",
+  "mustKeep": [
+    "Draw the orc captain about 1.6 times the height of the girl in the attached size reference (she stands 48 units tall, the captain 78)",
+    "clean weapons, no blood",
+    "No slash trails, no motion effects, no glow — the character only"
+  ],
+  "paletteMax": 24,
+  "altBackground": true,
+  "produce": [
+    {
+      "action": "idle",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "walk",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "cleave",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "dash",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "siege",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "hit",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "death",
+      "views": [
+        "side"
+      ]
+    }
+  ]
+}

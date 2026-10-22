@@ -1,0 +1,39 @@
+{
+  "id": "siege",
+  "title": "siege smash",
+  "frames": 6,
+  "fps": 6,
+  "loop": false,
+  "poses": [
+    "frame 1: lifting the axe over the head with both hands",
+    "frame 2: leaning back, axe high",
+    "frame 3: fully arched back, holding the pose",
+    "frame 4: smashing the axe down into the ground",
+    "frame 5: axe stuck in the ground",
+    "frame 6: pulling the axe free"
+  ],
+  "viewExtra": {},
+  "ms": [
+    450,
+    450,
+    500,
+    150,
+    600,
+    600
+  ],
+  "phases": {
+    "telegraph": [
+      0,
+      1,
+      2
+    ],
+    "active": [
+      3
+    ],
+    "recovery": [
+      4,
+      5
+    ]
+  },
+  "hold": 2
+}

@@ -1,0 +1,33 @@
+{
+  "$comment": "G2 U2 수락: 적 원화 1장을 크기 등급 기준으로 변환(비교 시트용, 생산 아님). 입력은 gitignore · 원화는 도끼가 바닥에 닿아 발 띠 앵커가 옆으로 치우친다 — 비교용이라 셀만 넓힘(게임 셀 96×96은 동작 원본으로)",
+  "id": "enemy-orc-captain-ref",
+  "kind": "character",
+  "bible": "seonggeom",
+  "sizeClass": "boss",
+  "mode": "import",
+  "source": {
+    "path": "docs/integrated/G2/inputs/enemies/enemy_orc_captain__ref.png",
+    "origin": "chatgpt-manual",
+    "createdAt": "2026-10-23"
+  },
+  "layout": {
+    "rows": [
+      {
+        "anim": "idle",
+        "dir": "e"
+      }
+    ]
+  },
+  "palette": {
+    "max": 24
+  },
+  "cleanup": true,
+  "cell": {
+    "w": 160,
+    "h": 96,
+    "anchor": [
+      80,
+      94
+    ]
+  }
+}

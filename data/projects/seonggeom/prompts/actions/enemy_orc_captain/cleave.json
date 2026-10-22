@@ -1,0 +1,39 @@
+{
+  "id": "cleave",
+  "title": "cleave",
+  "frames": 6,
+  "fps": 8,
+  "loop": false,
+  "poses": [
+    "frame 1: pulling the axe back to the side, body twisting",
+    "frame 2: twisted further, axe far behind",
+    "frame 3: fully wound up, holding the pose",
+    "frame 4: huge horizontal diagonal swing, axe in front",
+    "frame 5: dragging the axe back",
+    "frame 6: returning to the stance"
+  ],
+  "viewExtra": {},
+  "ms": [
+    300,
+    300,
+    300,
+    120,
+    400,
+    400
+  ],
+  "phases": {
+    "telegraph": [
+      0,
+      1,
+      2
+    ],
+    "active": [
+      3
+    ],
+    "recovery": [
+      4,
+      5
+    ]
+  },
+  "hold": 2
+}

@@ -1,0 +1,14 @@
+{
+  "id": "attack",
+  "title": "overhead chop",
+  "frames": 4,
+  "fps": 10,
+  "loop": false,
+  "poses": [
+    "frame 1: cleaver raised high over the head",
+    "frame 2: starting the downward chop",
+    "frame 3: cleaver smashed down in front",
+    "frame 4: lifting the cleaver back up"
+  ],
+  "viewExtra": {}
+}

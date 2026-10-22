@@ -1,0 +1,45 @@
+{
+  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_goblin__ref.png + 세라 크기 기준 hero_sera__size_ref.png",
+  "id": "enemy_goblin",
+  "bible": "seonggeom",
+  "sizeClass": "enemy_small",
+  "description": "A small goblin raider: green skin, pointed ears, ragged brown leather, a short rusty dagger, hunched and wiry, exactly as in the attached goblin reference.",
+  "references": [
+    "enemy_goblin__ref.png"
+  ],
+  "turnaround": false,
+  "sizeRefFile": "hero_sera__size_ref.png",
+  "mustKeep": [
+    "Draw the goblin at about 0.7 times the height of the girl in the attached size reference (she stands 48 units tall, the goblin 34)",
+    "clean weapons, no blood",
+    "No slash trails, no motion effects, no glow — the character only"
+  ],
+  "paletteMax": 24,
+  "altBackground": true,
+  "produce": [
+    {
+      "action": "walk",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "attack",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "hit",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "death",
+      "views": [
+        "side"
+      ]
+    }
+  ]
+}

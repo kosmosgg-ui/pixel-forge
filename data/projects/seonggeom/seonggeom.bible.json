@@ -24,7 +24,7 @@
       ],
       "height": 48
     },
-    "enemy": {
+    "enemy_small": {
       "size": [
         48,
         48
@@ -33,7 +33,29 @@
         24,
         46
       ],
-      "height": 38
+      "height": 34
+    },
+    "beast": {
+      "size": [
+        64,
+        48
+      ],
+      "anchor": [
+        32,
+        46
+      ],
+      "height": 27
+    },
+    "elite": {
+      "size": [
+        64,
+        64
+      ],
+      "anchor": [
+        32,
+        62
+      ],
+      "height": 52
     },
     "boss": {
       "size": [
@@ -44,10 +66,10 @@
         48,
         94
       ],
-      "height": 76
+      "height": 78
     }
   },
-  "sizeClassesSource": "주인공 키 48(셀 48×64, 발 24,62), 일반 적 36~40(셀 48×48, 발 24,46 — 종류별 Spec targetHeight, 기본 38), 보스 72~80(셀 96×96, 발 48,94 — 기본 76). 사용자 결정 G2 DECISIONS(2026-10-22 23:47), 화면에서는 2배",
+  "sizeClassesSource": "G2 U2(사용자 승인 2026-10-23 07:32): 세라 48(48×64·24,62) / 고블린 enemy_small 34(48×48·24,46) / 늑대 beast 몸길이 52 기준 → 키 27(원화 비율, '약 29'는 근사 — 키 29면 몸길이 56으로 기획 lineup 50×26과 ±2px 밖)(64×48·32,46) / 오크 elite 52 정예급(64×64·32,62, 사용자 결정) / 오크 대장 boss 77~80(96×96·48,94, 기본 78). 화면 2배",
   "defaultCreatureMode": "import",
   "defaultCreatureModeSource": "사실 비례(약 6등신) 애니풍 도트 — GPT 깔끔한 애니 일러스트(흰/초록 단색 배경) → forge import(사용자 승인 P8)",
   "defaultRig": "humanoid-34-v1",
@@ -82,10 +104,12 @@
   },
   "colorBudget": {
     "hero": 32,
-    "enemy": 32,
-    "boss": 32
+    "enemy_small": 24,
+    "beast": 24,
+    "elite": 24,
+    "boss": 24
   },
-  "colorBudgetSource": "import 팔레트 기본 max 32와 같게(사용자 승인 P8fix 5, Gate C에서 재조정)",
+  "colorBudgetSource": "세라 32(사용자 승인 P8fix 5), 적 24(G2 U2 — 기획 세션 무리 모형에서 확인)",
   "materials": {
     "skin": {
       "base": "#d9a07a",
@@ -139,6 +163,52 @@
       "date": "2026-10-23",
       "change": "characterCanon.hero_sera 추가: 망토 없음·갈색 눈(사용자 정사 변경, G2 U1 0절)",
       "previous": "기획서 기준 파란 망토·푸른 눈(바이블에는 기록 없었음)"
+    },
+    {
+      "date": "2026-10-23",
+      "change": "G2 U2: 적 크기 등급 enemy 1종 → enemy_small·beast·elite·boss(78), 적 colorBudget 24",
+      "previous": {
+        "sizeClasses": {
+          "hero": {
+            "size": [
+              48,
+              64
+            ],
+            "anchor": [
+              24,
+              62
+            ],
+            "height": 48
+          },
+          "enemy": {
+            "size": [
+              48,
+              48
+            ],
+            "anchor": [
+              24,
+              46
+            ],
+            "height": 38
+          },
+          "boss": {
+            "size": [
+              96,
+              96
+            ],
+            "anchor": [
+              48,
+              94
+            ],
+            "height": 76
+          }
+        },
+        "colorBudget": {
+          "hero": 32,
+          "enemy": 32,
+          "boss": 32
+        }
+      }
     }
   ],
   "outlineSource": "P10 1절(사용자 승인 G2): 게임 출력은 1px 선택 외곽선 — 바깥 경계를 같은 계열 어두운 색으로(48px 실루엣 분리). 재현성 검사 Spec은 outline none 유지",

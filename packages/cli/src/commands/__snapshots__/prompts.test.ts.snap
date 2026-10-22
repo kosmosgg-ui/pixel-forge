@@ -2,8 +2,8 @@
 
 exports[`P9-M 요청 문구 > 조립 골든(문자열 sha256 — 데이터·틀이 바뀌면 의도한 변경인지 확인) 1`] = `
 {
-  "back": "f3ff566152e57c81",
-  "turnaround": "4680bf1ea7825aea",
-  "walk": "3b5a0f5a37a89cfd",
+  "back": "b0189c5d9753defe",
+  "turnaround": "ea3aeafb40c910a6",
+  "walk": "46e73dd02c065953",
 }
 `;

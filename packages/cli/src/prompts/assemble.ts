@@ -35,10 +35,10 @@ export const turnaroundFile = (kit: Kit) => kit.actor.turnaroundFile ?? `${kit.a
 /** 생산 순서: 턴어라운드 → actor.produce 순서(동작마다 방향들) */
 export function requestList(kit: Kit): PromptRequest[] {
   const id = kit.actor.id, turnFile = turnaroundFile(kit);
-  const list: PromptRequest[] = [{ order: 1, key: TURNAROUND, action: 'turnaround', view: 'all', file: turnFile, references: [...kit.actor.references], promptFile: `out/prompts/${id}/${TURNAROUND}.txt` }];
+  const list: PromptRequest[] = kit.actor.turnaround ? [{ order: 1, key: TURNAROUND, action: 'turnaround', view: 'all', file: turnFile, references: [...kit.actor.references], promptFile: `out/prompts/${id}/${TURNAROUND}.txt` }] : [];
   for (const p of kit.actor.produce) for (const view of p.views) {
     const key = `${p.action}_${view}`;
-    list.push({ order: list.length + 1, key, action: p.action, view, file: requestFile(id, key), references: [...kit.actor.references, turnFile, ...(kit.actor.sizeRefFile ? [kit.actor.sizeRefFile] : [])], promptFile: `out/prompts/${id}/${key}.txt` });
+    list.push({ order: list.length + 1, key, action: p.action, view, file: requestFile(id, key), references: [...kit.actor.references, ...(kit.actor.turnaround ? [turnFile] : []), ...(kit.actor.sizeRefFile ? [kit.actor.sizeRefFile] : [])], promptFile: `out/prompts/${id}/${key}.txt` });
   }
   return list;
 }

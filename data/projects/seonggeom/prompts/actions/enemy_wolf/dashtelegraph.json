@@ -1,0 +1,13 @@
+{
+  "id": "dashtelegraph",
+  "title": "dash wind-up",
+  "frames": 2,
+  "fps": 6,
+  "loop": false,
+  "poses": [
+    "frame 1: body lowered, head down, growling",
+    "frame 2: crouched lower, ready to spring"
+  ],
+  "viewExtra": {},
+  "hold": 1
+}

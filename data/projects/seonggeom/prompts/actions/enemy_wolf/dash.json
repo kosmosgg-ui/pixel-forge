@@ -1,0 +1,13 @@
+{
+  "id": "dash",
+  "title": "leaping dash",
+  "frames": 3,
+  "fps": 12,
+  "loop": false,
+  "poses": [
+    "frame 1: springing forward, body stretched",
+    "frame 2: fully extended in the air",
+    "frame 3: landing, front paws down"
+  ],
+  "viewExtra": {}
+}

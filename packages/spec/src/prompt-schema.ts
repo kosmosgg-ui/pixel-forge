@@ -29,6 +29,12 @@ export const promptActionSchema = z.object({
   frames: z.number().int().min(1).max(16),
   fps: z.number().positive(),
   loop: z.boolean(),
+  /** 프레임별 표시 시간(ms, 길이 = frames) — 게임 패턴 시간에 맞출 때(G2 U2 오크 대장) */
+  ms: z.array(z.number().int().positive()).optional(),
+  /** 구간(telegraph·active·recovery) → 프레임 번호 */
+  phases: z.record(z.string().min(1), z.array(z.number().int().min(0))).optional(),
+  /** 예고 유지 프레임(남은 예고 시간 동안 보여 준다) */
+  hold: z.number().int().min(0).optional(),
   /** 크기 보정 기준 프레임(서 있는 프레임 번호 — G2 U1 scaleAnchor). 원본마다 그려진 크기가 다를 때 */
   scaleAnchorFrame: z.number().int().min(0).optional(),
   /** 걷기 한 걸음 길이(1배 px, 게임 3.3b) */
@@ -37,7 +43,8 @@ export const promptActionSchema = z.object({
   poses: z.array(z.string().min(1)),
   /** 방향별로 덧붙이는 문장 */
   viewExtra: z.record(promptViewSchema, z.string()).default({}),
-}).refine((a) => a.poses.length === a.frames, { message: 'poses 수는 frames와 같아야 합니다', path: ['poses'] });
+}).refine((a) => a.poses.length === a.frames, { message: 'poses 수는 frames와 같아야 합니다', path: ['poses'] })
+  .refine((a) => !a.ms || a.ms.length === a.frames, { message: 'ms 수는 frames와 같아야 합니다', path: ['ms'] });
 
 export const promptActorSchema = z.object({
   id: z.string().regex(/^[a-z][a-z0-9_]*$/, '소문자·숫자·_ 만(파일명 <actorId>__<action>_<dir>.png)'),
@@ -53,6 +60,10 @@ export const promptActorSchema = z.object({
   sizeRefFile: z.string().regex(/^[a-z][a-z0-9_]*__[a-z0-9_]+\.png$/).optional(),
   /** 디자인 기준에서 반드시 지킬 것(모든 요청 Rules 끝에 붙는다 — 예: 망토) */
   mustKeep: z.array(z.string().min(1)).default([]),
+  /** 턴어라운드 요청을 낼지(적은 원화 1장이 기준이라 false — G2 U2) */
+  turnaround: z.boolean().default(true),
+  /** 변환 팔레트 색 수(바이블 colorBudget과 같게 — 적 24) */
+  paletteMax: z.number().int().min(2).max(64).optional(),
   /** 초록 옷 캐릭터면 마젠타 배경 */
   altBackground: z.boolean().default(false),
   /** 생산 순서대로: 동작 → 방향들 */

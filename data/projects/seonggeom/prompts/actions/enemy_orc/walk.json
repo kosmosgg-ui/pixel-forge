@@ -1,0 +1,14 @@
+{
+  "id": "walk",
+  "title": "heavy walk",
+  "frames": 4,
+  "fps": 8,
+  "loop": true,
+  "poses": [
+    "frame 1: heavy step with the right foot",
+    "frame 2: weight down, body sways",
+    "frame 3: heavy step with the left foot",
+    "frame 4: weight down, body sways"
+  ],
+  "viewExtra": {}
+}

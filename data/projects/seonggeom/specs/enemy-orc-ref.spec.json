@@ -1,0 +1,25 @@
+{
+  "$comment": "G2 U2 수락: 적 원화 1장을 크기 등급 기준으로 변환(비교 시트용, 생산 아님). 입력은 gitignore",
+  "id": "enemy-orc-ref",
+  "kind": "character",
+  "bible": "seonggeom",
+  "sizeClass": "elite",
+  "mode": "import",
+  "source": {
+    "path": "docs/integrated/G2/inputs/enemies/enemy_orc__ref.png",
+    "origin": "chatgpt-manual",
+    "createdAt": "2026-10-23"
+  },
+  "layout": {
+    "rows": [
+      {
+        "anim": "idle",
+        "dir": "e"
+      }
+    ]
+  },
+  "palette": {
+    "max": 24
+  },
+  "cleanup": true
+}

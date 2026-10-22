@@ -1,0 +1,45 @@
+{
+  "id": "dash",
+  "title": "charge",
+  "frames": 8,
+  "fps": 6,
+  "loop": false,
+  "poses": [
+    "frame 1: head lowered, horns forward",
+    "frame 2: scraping the ground with a foot",
+    "frame 3: crouched, ready to charge, holding the pose",
+    "frame 4: low charging run, left foot forward",
+    "frame 5: low charging run, passing",
+    "frame 6: low charging run, right foot forward",
+    "frame 7: skidding to a stop",
+    "frame 8: panting, straightening up"
+  ],
+  "viewExtra": {},
+  "ms": [
+    400,
+    400,
+    400,
+    167,
+    167,
+    167,
+    500,
+    500
+  ],
+  "phases": {
+    "telegraph": [
+      0,
+      1,
+      2
+    ],
+    "active": [
+      3,
+      4,
+      5
+    ],
+    "recovery": [
+      6,
+      7
+    ]
+  },
+  "hold": 2
+}

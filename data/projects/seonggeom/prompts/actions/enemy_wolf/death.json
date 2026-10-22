@@ -1,0 +1,14 @@
+{
+  "id": "death",
+  "title": "death",
+  "frames": 4,
+  "fps": 8,
+  "loop": false,
+  "poses": [
+    "frame 1: struck, legs buckle",
+    "frame 2: collapsing on the side",
+    "frame 3: lying on the side",
+    "frame 4: still"
+  ],
+  "viewExtra": {}
+}

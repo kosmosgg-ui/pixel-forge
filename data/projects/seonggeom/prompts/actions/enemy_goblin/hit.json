@@ -1,0 +1,12 @@
+{
+  "id": "hit",
+  "title": "flinch",
+  "frames": 2,
+  "fps": 12,
+  "loop": false,
+  "poses": [
+    "frame 1: knocked back, head snaps back",
+    "frame 2: recovering, still hunched"
+  ],
+  "viewExtra": {}
+}

@@ -1,0 +1,45 @@
+{
+  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_orc__ref.png + 세라 크기 기준 hero_sera__size_ref.png",
+  "id": "enemy_orc",
+  "bible": "seonggeom",
+  "sizeClass": "elite",
+  "description": "A heavy orc warrior: green skin, tusks, crude iron and leather armor, a big cleaver, broad and strong, exactly as in the attached orc reference.",
+  "references": [
+    "enemy_orc__ref.png"
+  ],
+  "turnaround": false,
+  "sizeRefFile": "hero_sera__size_ref.png",
+  "mustKeep": [
+    "Draw the orc slightly taller than the girl in the attached size reference, about 1.08 times her height (she stands 48 units tall, the orc 52)",
+    "clean weapons, no blood",
+    "No slash trails, no motion effects, no glow — the character only"
+  ],
+  "paletteMax": 24,
+  "altBackground": true,
+  "produce": [
+    {
+      "action": "walk",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "attack",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "hit",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "death",
+      "views": [
+        "side"
+      ]
+    }
+  ]
+}

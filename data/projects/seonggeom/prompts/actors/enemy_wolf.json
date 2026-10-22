@@ -1,0 +1,51 @@
+{
+  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_wolf__ref.png + 세라 크기 기준 hero_sera__size_ref.png",
+  "id": "enemy_wolf",
+  "bible": "seonggeom",
+  "sizeClass": "beast",
+  "description": "A grey forest wolf: lean body, dark grey fur with a lighter belly, yellow eyes, exactly as in the attached wolf reference.",
+  "references": [
+    "enemy_wolf__ref.png"
+  ],
+  "turnaround": false,
+  "sizeRefFile": "hero_sera__size_ref.png",
+  "mustKeep": [
+    "Draw the wolf with a body length about 1.1 times the height of the girl in the attached size reference and a shoulder height about 0.6 of hers (she stands 48 units tall; the wolf is 52 long, 29 tall)",
+    "clean weapons, no blood",
+    "No slash trails, no motion effects, no glow — the character only"
+  ],
+  "paletteMax": 24,
+  "altBackground": false,
+  "produce": [
+    {
+      "action": "run",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "dashtelegraph",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "dash",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "hit",
+      "views": [
+        "side"
+      ]
+    },
+    {
+      "action": "death",
+      "views": [
+        "side"
+      ]
+    }
+  ]
+}

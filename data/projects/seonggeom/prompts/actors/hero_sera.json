@@ -9,7 +9,9 @@
   ],
   "turnaroundFile": "hero_sera__turnaround.png",
   "sizeRefFile": "hero_sera__size_ref.png",
-  "mustKeep": [],
+  "mustKeep": [
+    "The character must be exactly the same size as in the attached size reference (the standing idle frame): same head size and same height when standing upright"
+  ],
   "altBackground": false,
   "produce": [
     {

@@ -35,6 +35,7 @@ function writeSpec(kit: Kit, key: string, action: string, view: PromptView, png:
     layout: { rows: [{ anim: action, dir: kit.base.importDirs[view] ?? view, frames: [...Array(a.frames).keys()], fps: a.fps }] },
     loop: a.loop ? [action] : [],
     cleanup: true,
+    ...(kit.actor.paletteMax !== undefined ? { palette: { max: kit.actor.paletteMax } } : {}),
     ...(a.scaleAnchorFrame !== undefined ? { scaleAnchorFrame: a.scaleAnchorFrame } : {}),
   };
   const p = makeSpecPath(kit.actor.id, key);

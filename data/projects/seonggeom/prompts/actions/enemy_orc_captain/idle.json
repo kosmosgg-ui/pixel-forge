@@ -1,0 +1,20 @@
+{
+  "id": "idle",
+  "title": "idle",
+  "frames": 4,
+  "fps": 4,
+  "loop": true,
+  "poses": [
+    "frame 1: standing, axe resting on the shoulder",
+    "frame 2: shoulders rise with a breath",
+    "frame 3: highest point of the breath",
+    "frame 4: settling down"
+  ],
+  "viewExtra": {},
+  "ms": [
+    250,
+    250,
+    250,
+    250
+  ]
+}

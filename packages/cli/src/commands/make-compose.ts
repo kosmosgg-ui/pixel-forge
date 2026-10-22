@@ -38,7 +38,7 @@ function passedParts(kit: Kit, cwd: string): Part[] {
 const animMetas = (kit: Kit, measured: Readonly<Record<string, number>>): RowAnimMeta[] => [...new Set(kit.actor.produce.map((p) => p.action))].flatMap((id) => {
   const a = kit.actions[id];
   const stride = measured[id] ?? a?.stride_px;
-  return a ? [{ name: id, fps: a.fps, loop: a.loop, ...(stride !== undefined ? { stride_px: stride } : {}) }] : [];
+  return a ? [{ name: id, fps: a.fps, loop: a.loop, ...(stride !== undefined ? { stride_px: stride } : {}), ...(a.ms ? { frame_ms: a.ms } : {}), ...(a.phases ? { phases: a.phases } : {}), ...(a.hold !== undefined ? { hold: a.hold } : {}) }] : [];
 });
 
 /** 걷기 접지 프레임(키트 포즈 1·4번 = 원래 순서 0·3)의 앞뒤 발 간격 평균(옆 방향 걷기만) */
