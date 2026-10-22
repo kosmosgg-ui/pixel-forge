@@ -5,7 +5,7 @@ import { ForgeError } from '@pixel-forge/core';
 import { writeFileEnsured } from '../io/files.js';
 import { resolveInside } from '../io/paths.js';
 import { decodePng } from '../io/png.js';
-import { FILE_RULE, promptText, requestList, type PromptRequest } from '../prompts/assemble.js';
+import { FILE_RULE, promptText, requestList, TURNAROUND, turnaroundFile, type PromptRequest } from '../prompts/assemble.js';
 import { loadKit } from '../prompts/kit.js';
 import { readState, writeState } from '../prompts/state.js';
 import { promptSha } from './prompts.js';
@@ -56,20 +56,15 @@ const stampOf = (iso: string, sha: string) => `${iso.replace(/[-:]/g, '').replac
  * → data/import/<actorId>/<key>/<stamp>.png + <stamp>.intake.json(gitignore). 이전 원본은 지우지 않는다(make는 최신본).
  * 입력은 작업 폴더 안만(resolveInside) — 채팅 첨부는 data/import/inbox/ 등 작업 폴더 안으로 먼저 복사한다.
  */
-export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string } = {}) {
+export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string; kind?: string; temp?: string } = {}) {
+  if (o.kind === 'reference') return intakeReference(file, cwd, o);
+  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference: ${o.kind}`);
   const src = resolveInside(cwd, file);
   const { actorId, key } = target(file, o.as);
   const kit = loadKit(actorId, cwd);
   const req: PromptRequest | undefined = requestList(kit).find((r) => r.key === key);
   if (!req) throw new ForgeError('intake.key', `${actorId}의 요청 목록에 없는 항목: ${key} (forge prompts ${actorId}의 CHECKLIST 참고)`);
-  const bytes = readFileSync(src);
-  const fmt = formatOf(bytes);
-  if (fmt !== 'png') throw new ForgeError('intake.format', fmt ? `${fmt.toUpperCase()}는 아직 읽지 못합니다(디코더가 의존성 허용 목록 밖) — PNG로 저장해 다시 주세요` : `PNG/JPEG/WebP가 아닙니다: ${basename(file)}`);
-  const img = decodePng(bytes);
-  const warnings = Math.max(img.w, img.h) < MIN_LONG_SIDE ? [`긴 변 ${Math.max(img.w, img.h)}px < ${MIN_LONG_SIDE}px — 테두리가 거칠 수 있다(더 큰 해상도로 다시 저장 권장)`] : [];
-  const sha = createHash('sha256').update(bytes).digest('hex');
-  const createdAt = o.at ?? statSync(src).mtime.toISOString();
-  const stamp = stampOf(createdAt, sha);
+  const { bytes, img, warnings, sha, createdAt, stamp } = readSource(src, file, o.at);
   const dir = join(cwd, 'data', 'import', actorId, key);
   const text = promptText(kit, req);
   const meta: IntakeMeta = {
@@ -79,9 +74,50 @@ export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: 
   writeFileEnsured(join(dir, `${stamp}.png`), bytes);
   writeFileSync(join(dir, `${stamp}.intake.json`), JSON.stringify(meta, null, 2) + '\n');
   const state = readState(cwd, actorId);
-  state.items[key] = { status: '등록', fails: state.items[key]?.fails ?? 0, latest: stamp };
+  // --temp: 받아서 make는 할 수 있지만 기준과 달라 다시 받아야 하는 원본(예: 망토 없는 걷기 — G2 DECISIONS)
+  state.items[key] = { status: o.temp ? '재요청' : '등록', fails: state.items[key]?.fails ?? 0, latest: stamp, ...(o.temp ? { note: o.temp } : {}) };
   writeState(cwd, actorId, state);
-  return { ok: true as const, cmd: 'intake', actor: actorId, key, stamp, size: [img.w, img.h], warnings, out: relative(cwd, join(dir, `${stamp}.png`)) };
+  return { ok: true as const, cmd: 'intake', actor: actorId, key, stamp, size: [img.w, img.h], warnings, ...(o.temp ? { status: '재요청', note: o.temp } : {}), out: relative(cwd, join(dir, `${stamp}.png`)) };
+}
+
+/** 파일 읽기 + 형식(PNG만)·크기 경고·해시·받은 시각 */
+function readSource(src: string, file: string, at?: string) {
+  const bytes = readFileSync(src);
+  const fmt = formatOf(bytes);
+  if (fmt !== 'png') throw new ForgeError('intake.format', fmt ? `${fmt.toUpperCase()}는 아직 읽지 못합니다(디코더가 의존성 허용 목록 밖) — PNG로 저장해 다시 주세요` : `PNG/JPEG/WebP가 아닙니다: ${basename(file)}`);
+  const img = decodePng(bytes);
+  const warnings = Math.max(img.w, img.h) < MIN_LONG_SIDE ? [`긴 변 ${Math.max(img.w, img.h)}px < ${MIN_LONG_SIDE}px — 테두리가 거칠 수 있다(더 큰 해상도로 다시 저장 권장)`] : [];
+  const sha = createHash('sha256').update(bytes).digest('hex');
+  const createdAt = at ?? statSync(src).mtime.toISOString();
+  return { bytes, img, warnings, sha, createdAt, stamp: stampOf(createdAt, sha) };
+}
+
+/**
+ * --kind reference: 디자인 기준 이미지(참조 원본·턴어라운드) 등록 → data/import/<actorId>/references/<name>/.
+ * 이름은 --as <actorId>/<name> 또는 파일 이름 <actorId>__<name>.png. 턴어라운드 파일이면 CHECKLIST 턴어라운드 항목을 '등록'으로.
+ */
+function intakeReference(file: string, cwd: string, o: { as?: string; at?: string }) {
+  const src = resolveInside(cwd, file);
+  const m = o.as ? /^([a-z][a-z0-9_]*)\/([a-z][a-z0-9_]*)$/.exec(o.as) : /^([a-z][a-z0-9_]*?)__([a-z][a-z0-9_]*)\.png$/.exec(basename(file));
+  if (!m?.[1] || !m[2]) throw new ForgeError('intake.name', `참조 이미지 이름: <actorId>__<name>.png 또는 --as <actorId>/<name>: ${basename(file)}`);
+  const actorId = m[1], name = m[2];
+  const kit = loadKit(actorId, cwd);
+  const isTurn = basename(file) === turnaroundFile(kit) || `${actorId}__${name}.png` === turnaroundFile(kit);
+  const req = isTurn ? requestList(kit).find((r) => r.key === TURNAROUND) : undefined;
+  const { bytes, img, warnings, sha, createdAt, stamp } = readSource(src, file, o.at);
+  const dir = join(cwd, 'data', 'import', actorId, 'references', name);
+  const meta: IntakeMeta = {
+    origin: 'chatgpt-manual', model: 'ChatGPT 이미지 생성(사용자 실행, 모델명 미확인)', createdAt, promptFile: req?.promptFile ?? '', promptSha256: req ? promptSha(promptText(kit, req)) : '',
+    references: req?.references ?? [], receivedFrom: 'user', sourceName: basename(file), sha256: sha, size: [img.w, img.h], warnings,
+  };
+  writeFileEnsured(join(dir, `${stamp}.png`), bytes);
+  writeFileSync(join(dir, `${stamp}.intake.json`), JSON.stringify(meta, null, 2) + '\n');
+  if (isTurn) {
+    const state = readState(cwd, actorId);
+    state.items[TURNAROUND] = { status: '등록', fails: 0, latest: stamp };
+    writeState(cwd, actorId, state);
+  }
+  return { ok: true as const, cmd: 'intake', kind: 'reference', actor: actorId, name, turnaround: isTurn, stamp, size: [img.w, img.h], warnings, out: relative(cwd, join(dir, `${stamp}.png`)) };
 }
 
 /** 등록된 원본: --pick 지정 또는 최신(stamp 사전순 마지막) */

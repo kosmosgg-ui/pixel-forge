@@ -6,7 +6,7 @@ import { writeFileEnsured } from '../io/files.js';
 /** 요청 상태(CHECKLIST 상태 열): 대기 → 등록(intake) → 합격 | 재요청(make) */
 export const STATUS = ['대기', '등록', '합격', '재요청'] as const;
 const stateSchema = z.object({
-  items: z.record(z.string(), z.object({ status: z.enum(STATUS), fails: z.number().int().min(0).default(0), latest: z.string().optional() })).default({}),
+  items: z.record(z.string(), z.object({ status: z.enum(STATUS), fails: z.number().int().min(0).default(0), latest: z.string().optional(), note: z.string().optional() })).default({}),
 });
 export type ActorState = z.infer<typeof stateSchema>;
 
@@ -22,4 +22,10 @@ export function writeState(cwd: string, actorId: string, s: ActorState): void {
   const f = stateFile(cwd, actorId);
   if (!existsSync(f)) writeFileEnsured(f, Buffer.from('{}'));
   writeFileSync(f, JSON.stringify(s, null, 2) + '\n');
+}
+
+/** 다음에 사용자에게 낼 요청 순서: 재요청 먼저, 그다음 대기(목록 순서). 등록·합격은 낼 것이 없다 */
+export function nextRequests<T extends { key: string }>(list: readonly T[], s: ActorState, n = 3): T[] {
+  const st = (k: string) => s.items[k]?.status ?? '대기';
+  return [...list.filter((r) => st(r.key) === '재요청'), ...list.filter((r) => st(r.key) === '대기')].slice(0, n);
 }

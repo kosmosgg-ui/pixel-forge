@@ -37,14 +37,16 @@ describe('P9-M 요청 문구', () => {
   it('요청 18개: 턴어라운드 → 옆 7 → 정면·뒷면 5×2, 파일 이름 규칙(소문자·숫자·_, 한글·공백 없음)', () => {
     expect(list).toHaveLength(18);
     expect(list.slice(0, 4).map((r) => r.key)).toEqual(['turnaround_all', 'idle_side', 'walk_side', 'attack_side']);
+    expect(list[0]?.file).toBe('hero_sera__turnaround.png');
     expect(list.filter((r) => r.action === 'death' || r.action === 'ultimate').map((r) => r.view)).toEqual(['side', 'side']);
-    for (const r of list) expect(r.file).toMatch(FILE_RULE);
-    expect(list[2]?.references).toEqual(['sera_ref.png', 'hero_sera__turnaround_all.png']);
+    for (const r of list.slice(1)) expect(r.file).toMatch(FILE_RULE);
+    expect(list[2]?.references).toEqual(['hero_sera__ref.png', 'hero_sera__turnaround.png']);
   });
   it('조립 골든(문자열 sha256 — 데이터·틀이 바뀌면 의도한 변경인지 확인)', () => {
     const text = (k: string) => promptText(kit, list.find((r) => r.key === k) ?? list[0]!);
     expect(text('walk_side')).toContain('Draw exactly 6 frames of the walk cycle animation, side view facing right');
     expect(text('walk_side')).not.toMatch(/\{\{/);
+    expect(text('walk_side')).toMatch(/three-quarter top-down view.*\n[\s\S]*long blue cape from the reference images is visible in every frame/);
     expect({ turnaround: promptSha(text('turnaround_all')).slice(0, 16), walk: promptSha(text('walk_side')).slice(0, 16), back: promptSha(text('idle_back')).slice(0, 16) }).toMatchSnapshot();
   });
   it('고치기 문구 고르기: 잘림·identity(프레임 번호)·프레임 수·배경·다리·뒷면 얼굴', () => {
@@ -60,7 +62,7 @@ describe('P9-M 요청 문구', () => {
 
 describe('forge prompts / intake / make', () => {
   it('prompts → CHECKLIST·문구 파일, intake 기록(출처만 — 계정·경로·키 없음), 작은 원본 경고, PNG 외·이름 규칙 오류', () => {
-    expect(promptsCommand('hero_sera', work)).toMatchObject({ requests: 18, remaining: 18, next: ['hero_sera__turnaround_all.png', 'hero_sera__idle_side.png', 'hero_sera__walk_side.png'] });
+    expect(promptsCommand('hero_sera', work)).toMatchObject({ requests: 18, remaining: 18, next: ['hero_sera__turnaround.png', 'hero_sera__idle_side.png', 'hero_sera__walk_side.png'] });
     const r = intakeCommand(strip('hero_sera__walk_side.png', 6), work, { at: '2026-10-22T12:00:00.000Z' });
     expect(r).toMatchObject({ key: 'walk_side', stamp: expect.stringMatching(/^20261022T120000Z_[0-9a-f]{8}$/), warnings: [expect.stringContaining('1024')] });
     const meta = readFileSync(join(work, r.out.replace('.png', '.intake.json')), 'utf8');
@@ -71,6 +73,16 @@ describe('forge prompts / intake / make', () => {
     expect(() => intakeCommand('inbox/x.png', work, { as: 'hero_sera/walk_side' })).toThrow(expect.objectContaining({ code: 'intake.format' }));
     expect(() => intakeCommand('inbox/x.png', work)).toThrow(expect.objectContaining({ code: 'intake.name' }));
     expect(() => intakeCommand('../x.png', work, { as: 'hero_sera/walk_side' })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
+  });
+  it('참조 이미지(--kind reference) 등록 → 턴어라운드 등록, --temp 원본은 재요청으로 다음 요청 맨 앞', () => {
+    const turn = strip('hero_sera__turnaround.png', 3);
+    expect(intakeCommand(turn, work, { kind: 'reference', at: '2026-10-22T11:00:00.000Z' })).toMatchObject({ kind: 'reference', name: 'turnaround', turnaround: true });
+    expect(intakeCommand(strip('hero_sera__ref.png', 1), work, { kind: 'reference', at: '2026-10-22T11:00:01.000Z' })).toMatchObject({ name: 'ref', turnaround: false });
+    expect(() => intakeCommand(turn, work, { kind: 'cutout' })).toThrow(expect.objectContaining({ code: 'intake.kind' }));
+    expect(intakeCommand(strip('hero_sera__walk_side.png', 6), work, { at: '2026-10-22T11:00:02.000Z', temp: '망토 없음' })).toMatchObject({ status: '재요청', note: '망토 없음' });
+    const r = promptsCommand('hero_sera', work);
+    expect(r.next).toEqual(['hero_sera__walk_side.png', 'hero_sera__idle_side.png', 'hero_sera__attack_side.png']);
+    expect(readFileSync(join(work, 'out/prompts/hero_sera/CHECKLIST.md'), 'utf8')).toMatch(/hero_sera__turnaround\.png.*등록 \|[\s\S]*walk_side\.png.*재요청 \(망토 없음\)/);
   });
   it('make 합격 → 후보 시트·G1 매니페스트(candidate·provenance 사용자 생성물), 불합격 → 고치기 문구(잘림·다른 캐릭터·프레임 수)', () => {
     const ok = makeCommand('hero_sera', work, { action: 'walk', dir: 'side', out: 'game' });

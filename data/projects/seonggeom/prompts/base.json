@@ -1,7 +1,8 @@
 {
-  "$comment": "「세라 GPT 이미지 프롬프트 키트」 공통 스타일(사용자 승인 P9-M, 키트 원문 미수신 — 지시문 요약 기준). 조립은 {{이름}} 치환만",
+  "$comment": "「세라 GPT 이미지 프롬프트 키트」 공통 스타일(사용자 승인 P9-M, 키트 원문 미수신 — 지시문 요약 기준). 조립은 {{이름}} 치환만 · G2: 3/4 탑뷰(약 30°) 시점 추가",
   "style": [
     "clean anime game illustration",
+    "three-quarter top-down view, camera about 30 degrees above the character",
     "bold clean dark lineart",
     "flat cel shading with 2-3 tones",
     "no gradients, no glow, no texture",

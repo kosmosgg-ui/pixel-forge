@@ -29,10 +29,12 @@ export function fill(template: string, vars: Readonly<Record<string, string>>): 
 /** 파일 이름 규칙: <actorId>__<action>_<dir>.png — 소문자·숫자·_ 만 */
 export const FILE_RULE = /^([a-z][a-z0-9_]*?)__([a-z][a-z0-9]*)_([a-z]+)\.png$/;
 export const requestFile = (actorId: string, key: string) => `${actorId}__${key}.png`;
+/** 턴어라운드 저장 파일(참조 이미지로 등록된다) */
+export const turnaroundFile = (kit: Kit) => kit.actor.turnaroundFile ?? `${kit.actor.id}__turnaround.png`;
 
 /** 생산 순서: 턴어라운드 → actor.produce 순서(동작마다 방향들) */
 export function requestList(kit: Kit): PromptRequest[] {
-  const id = kit.actor.id, turnFile = requestFile(id, TURNAROUND);
+  const id = kit.actor.id, turnFile = turnaroundFile(kit);
   const list: PromptRequest[] = [{ order: 1, key: TURNAROUND, action: 'turnaround', view: 'all', file: turnFile, references: [...kit.actor.references], promptFile: `out/prompts/${id}/${TURNAROUND}.txt` }];
   for (const p of kit.actor.produce) for (const view of p.views) {
     const key = `${p.action}_${view}`;
@@ -43,7 +45,7 @@ export function requestList(kit: Kit): PromptRequest[] {
 
 function common(kit: Kit): Record<string, string> {
   return {
-    character: kit.actor.description, style: kit.base.style.join(', '), rules: kit.base.rules.join('; '),
+    character: kit.actor.description, style: kit.base.style.join(', '), rules: [...kit.base.rules, ...kit.actor.mustKeep].join('; '),
     background: kit.actor.altBackground ? kit.base.background.alt : kit.base.background.default,
   };
 }

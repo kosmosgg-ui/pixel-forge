@@ -1,11 +1,15 @@
 {
-  "$comment": "주인공 세라(키트 캐릭터 설명). 참조 이미지는 사용자가 가진 파일 — 턴어라운드 결과(hero_sera__turnaround_all.png)가 이후 요청의 두 번째 참조",
+  "$comment": "주인공 세라. 디자인 기준(G2 DECISIONS): hero_sera__ref.png(3/4 시점, 파란 망토 있음) + hero_sera__turnaround.png — 이후 모든 요청에 두 장을 첨부",
   "id": "hero_sera",
   "bible": "seonggeom",
   "sizeClass": "hero",
-  "description": "Sera, a young female knight: brown hair in a high ponytail tied with a blue ribbon, brown eyes, silver plate armor with gold trim, black gloves, a white and blue tabard with a gold lily emblem, a blue cape, holding a longsword.",
+  "description": "Sera, a young female knight: brown hair in a high ponytail tied with a blue ribbon, brown eyes, silver plate armor with gold trim, black gloves, a white and blue tabard with a gold lily emblem, a long blue cape reaching her knees, holding a longsword.",
   "references": [
-    "sera_ref.png"
+    "hero_sera__ref.png"
+  ],
+  "turnaroundFile": "hero_sera__turnaround.png",
+  "mustKeep": [
+    "the long blue cape from the reference images is visible in every frame"
   ],
   "altBackground": false,
   "produce": [

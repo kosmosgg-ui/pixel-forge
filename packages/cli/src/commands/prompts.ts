@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { writeFileEnsured } from '../io/files.js';
 import { loadKit, type Kit } from '../prompts/kit.js';
 import { promptText, requestList, type PromptRequest } from '../prompts/assemble.js';
-import { readState, type ActorState } from '../prompts/state.js';
+import { nextRequests, readState, type ActorState } from '../prompts/state.js';
 
 /** 요청 문구 sha256(intake 기록 promptSha256 — 어떤 문구로 만든 원본인지) */
 export const promptSha = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -17,7 +17,7 @@ export function checklist(kit: Kit, list: readonly PromptRequest[], state: Actor
     `# ${kit.actor.id} — ChatGPT 이미지 요청 목록`, '',
     `남은 요청 ${left} / ${list.length}. ChatGPT에서 참조 이미지를 첨부하고 요청 문구 파일 내용을 그대로 보낸 뒤, 결과를 **저장 파일명** 그대로 저장해 전달한다.`, '',
     '| 순서 | 저장 파일명 | 첨부할 참조 이미지 | 요청 문구 파일 | 상태 |', '| --- | --- | --- | --- | --- |',
-    ...list.map((r) => `| ${r.order} | \`${r.file}\` | ${r.references.map((f) => `\`${f}\``).join(', ')} | \`${r.promptFile}\` (${r.action} · ${VIEW_KO[r.view] ?? r.view}) | ${state.items[r.key]?.status ?? '대기'} |`),
+    ...list.map((r) => `| ${r.order} | \`${r.file}\` | ${r.references.map((f) => `\`${f}\``).join(', ')} | \`${r.promptFile}\` (${r.action} · ${VIEW_KO[r.view] ?? r.view}) | ${state.items[r.key]?.status ?? '대기'}${state.items[r.key]?.note ? ` (${state.items[r.key]?.note})` : ''} |`),
   ];
   return lines.join('\n') + '\n';
 }
@@ -31,5 +31,5 @@ export function promptsCommand(actorId: string, cwd: string) {
   const out = join(cwd, 'out', 'prompts', actorId, 'CHECKLIST.md');
   writeFileEnsured(out, Buffer.from(checklist(kit, list, state)));
   const left = list.filter((r) => state.items[r.key]?.status !== '합격');
-  return { ok: true as const, cmd: 'prompts', actor: actorId, requests: list.length, remaining: left.length, next: left.slice(0, 3).map((r) => r.file), out: relative(cwd, out) };
+  return { ok: true as const, cmd: 'prompts', actor: actorId, requests: list.length, remaining: left.length, next: nextRequests(list, state).map((r) => r.file), out: relative(cwd, out) };
 }

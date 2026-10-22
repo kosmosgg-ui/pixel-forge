@@ -45,6 +45,10 @@ export const promptActorSchema = z.object({
   description: z.string().min(1),
   /** 사용자가 가진 참조 이미지(모든 요청에 첨부) */
   references: z.array(z.string().min(1)).min(1),
+  /** 턴어라운드 결과 파일 이름(이후 모든 요청의 두 번째 참조). 생략하면 <id>__turnaround.png */
+  turnaroundFile: z.string().regex(/^[a-z][a-z0-9_]*__[a-z0-9_]+\.png$/).optional(),
+  /** 디자인 기준에서 반드시 지킬 것(모든 요청 Rules 끝에 붙는다 — 예: 망토) */
+  mustKeep: z.array(z.string().min(1)).default([]),
   /** 초록 옷 캐릭터면 마젠타 배경 */
   altBackground: z.boolean().default(false),
   /** 생산 순서대로: 동작 → 방향들 */
