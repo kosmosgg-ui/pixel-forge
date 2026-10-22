@@ -5,6 +5,16 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P9-M Codex 인계] 파일 준비 완료 / 환경 BLOCKED | main 기준 35c4b79·G1 기준 4c6afe6 전체 트리 해시 복원·검증.
+  - 인계 AGENTS.md·docs/HANDOFF_CODEX.md·scripts/check-rules.mjs는 사용자 ZIP과 바이트 동일.
+  - node --check scripts/check-rules.mjs / node scripts/check-rules.mjs: exit 0(변경 TS 0, 관련 테스트 미호출).
+  - 환경 Node 24.19.0 / pnpm 11.25.0; 기준 Node 22 / pnpm 10.28.0과 다름. 엔진 최소 >=22는 충족.
+  - pnpm install: 프록시 소켓 EPERM·온라인 META_FETCH_FAIL·오프라인 NO_OFFLINE_META, 의존성 설치 실패.
+  - pnpm build / pnpm test: exit 1, tsc / vitest 없음. Tests N passed 근거 없음; 전체 검사 PASS 아님.
+  - pxl 2e72b9ad 런타임 54파일을 저장소 밖 복원·Git blob SHA 확인, node /workspace/tools/pxl/bin/pxl.js --help exit 0(전체 clone 아님).
+  - seonggeom 별도 복제본 Godot 4.7.2 headless: G1-MANIFEST 11/0, G1-STATE 27/0; GUI·전체 데모·미술 검수 아님.
+  - 바이블·rules·후보·정식 경로·.claude/·CLAUDE.md·전투·17JSON 불변; 인계 파일만 main 제출, 기존 PR 병합 없음.
+  - 다음: 네트워크/의존성 복구 후 pnpm install && pnpm build && pnpm test 재개, 미결정 6건 사용자 답 대기. ART_HOLD / Gate C PENDING.
 - [P8] 마감(P8fix, 사용자 승인) | 기준 A 교체(6등신 세라 47×64), 재현성 = 발 정렬 실루엣 IoU + ΔE(silhouetteMatch, Spec outline none), 잘림 정의 고정(알파 ≥ 128 픽셀이 바깥 1px — 골든 sera_gpt_raw 1개 #19 오른쪽), 바이블 display 1280×720·2배·스냅 2(640×360 취소), 초록·마젠타 배경 테스트, colorBudget 32 승인
   - 수락: pnpm test → Tests 264 passed(test-runner, 원본 골든 2개 실행), 재현성 IoU 0.9985·ΔE 0.0445, art-judge v2 보정 유효(새 A), sera import B–A
   - code-reviewer: 높음·중간 0, 낮음 3 → 2 수정(ΔE 색 캐시·잘림 1회 계산), 1 backlog(골든 원본 위치)
