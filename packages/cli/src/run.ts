@@ -13,6 +13,7 @@ import { compareCommand } from './commands/compare.js';
 import { sceneCommand } from './commands/scene.js';
 import { lineupCommand } from './commands/lineup.js';
 import { importCommand, probeCommand } from './commands/import.js';
+import { fxImportCommand } from './commands/fx-import.js';
 import { promptsCommand } from './commands/prompts.js';
 import { intakeCommand } from './commands/intake.js';
 import { makeCommand } from './commands/make.js';
@@ -101,6 +102,7 @@ export function run(input: RunInput): RunResult {
     if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back>');
     return makeCommand(actor, input.cwd, { action: input.action, dir: input.dir, ...(input.pick ? { pick: input.pick } : {}), ...(input.judge ? { judge: input.judge } : {}), ...(input.out ? { out: input.out } : {}) });
   }
+  if (cmd === 'fx-import') return fxImportCommand(input.cwd, { ...(arg ? { assets: arg } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) });
   if (cmd === 'watch') {

@@ -1,0 +1,18 @@
+{
+  "$comment": "forge fx-import 묶음(P10 2.3): pxl 산출(out/pxl) → 게임 이펙트 시트. dirs 8 = 행 e·se·s·sw·w·nw·n·ne(프레임 이름 + _<방향>, e는 접미사 없음). anim = pxl 가로 스트립, frames = 스프라이트 목록, rows = 이름 붙은 행",
+  "source": "data/projects/seonggeom/fx/sg_fx.px.js",
+  "assets": {
+    "fx_slash_1": { "dirs": 8, "frames": ["fx_slash_1_f0", "fx_slash_1_f1", "fx_slash_1_f2"], "ms": [60, 60, 60], "loop": false, "note": "1타 — 앞 2프레임 0.12초 안에 열림(G1 3.8), 반지름 30px(판정 range 90 환산)" },
+    "fx_slash_2": { "dirs": 8, "frames": ["fx_slash_2_f0", "fx_slash_2_f1", "fx_slash_2_f2"], "ms": [60, 60, 60], "loop": false, "note": "2타 — 반대 방향 궤적" },
+    "fx_slash_3": { "dirs": 8, "frames": ["fx_slash_3_f0", "fx_slash_3_f1", "fx_slash_3_f2"], "ms": [80, 80, 80], "loop": false, "note": "3타 110° — 0.16초에 열림, 금색" },
+    "fx_hit_spark": { "anim": "fx_hit_spark", "loop": false },
+    "fx_dust": { "anim": "fx_dust", "loop": false },
+    "fx_death_puff": { "anim": "fx_death_puff", "loop": false },
+    "fx_xp_gem": { "rows": { "small": "fx_xp_gem_small", "medium": "fx_xp_gem_medium", "large": "fx_xp_gem_large" }, "loop": true, "note": "크기 3단계 = 행 small·medium·large(색 구분)" },
+    "fx_ring": { "frames": ["fx_ring_0", "fx_ring_1", "fx_ring_2", "fx_ring_3", "fx_ring_4", "fx_ring_5", "fx_ring_6", "fx_ring_7", "fx_ring_8"], "ms": [100], "loop": false, "note": "열 = 채움 0~8단계(재생 아님 — 게임이 단계를 고른다)" },
+    "fx_shockwave": { "anim": "fx_shockwave", "loop": false },
+    "fx_proj_seeker": { "dirs": 8, "frames": ["fx_proj_seeker_f0", "fx_proj_seeker_f1"], "ms": [50, 50], "loop": true },
+    "fx_orbit_sword": { "dirs": 8, "frames": ["fx_orbit_sword_f0"], "ms": [100], "loop": false, "note": "회전 대신 각도별 그림(행 = 각도)" },
+    "fx_beam": { "dirs": 8, "frames": ["fx_beam_f0", "fx_beam_f1", "fx_beam_f2"], "ms": [50, 50, 50], "loop": true }
+  }
+}
