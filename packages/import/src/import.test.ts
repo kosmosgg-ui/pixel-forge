@@ -1,0 +1,131 @@
+import { describe, expect, it } from 'vitest';
+import { feetAnchor, placeInCell } from './align.js';
+import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
+import { medianCut } from './palette.js';
+import { importImage, type ImportOptions } from './pipeline.js';
+import { probeImage } from './probe.js';
+import { dedupeRow, rowsByGap } from './rows.js';
+import { boxDownscale } from './scale.js';
+import { segmentSprites } from './segment.js';
+import type { RgbaImage } from './types.js';
+
+/** w×h 캔버스(배경 bg, 기본 투명) */
+function canvas(w: number, h: number, bg: [number, number, number, number] = [0, 0, 0, 0]): RgbaImage {
+  const rgba = new Uint8Array(w * h * 4);
+  for (let k = 0; k < w * h; k++) rgba.set(bg, k * 4);
+  return { w, h, rgba };
+}
+function rect(img: RgbaImage, x0: number, y0: number, x1: number, y1: number, c: [number, number, number, number]): void {
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) img.rgba.set(c, (y * img.w + x) * 4);
+}
+/** 사람 모양 블록: 몸(빨강) + 발(검정 2px) — 발 x 가운데가 앵커 */
+function figure(img: RgbaImage, x: number, y: number, h = 20): void {
+  rect(img, x, y, x + 7, y + h - 3, [200, 40, 40, 255]);
+  rect(img, x + 2, y + h - 2, x + 5, y + h - 1, [20, 20, 20, 255]);
+}
+const OPTS: ImportOptions = { rows: [{ anim: 'idle', dir: 's' }], cell: { w: 32, h: 32, anchor: [16, 30] }, alphaThreshold: 128, dedupe: true, background: 'auto', palette: { max: 8 } };
+
+describe('import (합성 테스트 5종 + 흰 천)', () => {
+  it('격자 어긋남: 칸(16px) 경계를 넘나드는 스프라이트도 연결 성분으로 하나씩, 왼쪽부터', () => {
+    const img = canvas(64, 32);
+    // 16px 칸 경계(16·32·48)를 넘나드는 위치, 서로 5px 이상 떨어짐(팽창 2px로 붙지 않게)
+    figure(img, 3, 4); figure(img, 17, 6); figure(img, 41, 2);
+    const s = segmentSprites(img);
+    expect(s.map((x) => x.x).sort((a, b) => a - b)).toEqual([3, 17, 41]);
+    expect(probeImage(img)).toMatchObject({ sprites: 3, rows: 1, clipped: [] });
+  });
+
+  it('반투명 테두리: 알파 < 기준은 투명, 결과 알파는 0·255만', () => {
+    const img = canvas(16, 16);
+    rect(img, 2, 2, 13, 13, [255, 255, 255, 100]);
+    rect(img, 4, 4, 11, 11, [10, 120, 200, 255]);
+    binarizeAlphaInPlace(img, 128);
+    const alphas = new Set<number>();
+    for (let k = 3; k < img.rgba.length; k += 4) alphas.add(img.rgba[k] ?? 0);
+    expect([...alphas].sort((a, b) => a - b)).toEqual([0, 255]);
+    expect(segmentSprites(img)[0]).toMatchObject({ x: 4, y: 4, w: 8, h: 8 });
+  });
+
+  it('가장자리 잘림: 이미지 끝에 닿은 스프라이트 → clipped, import 경고 import.clipped', () => {
+    const img = canvas(40, 24);
+    figure(img, 2, 2); figure(img, 32, 2);
+    expect(probeImage(img).clipped).toEqual([1]);
+    const r = importImage(img, OPTS);
+    expect(r.warnings).toEqual([expect.objectContaining({ id: 'import.clipped', note: expect.stringContaining('0:1') })]);
+  });
+
+  it('중복 프레임: 같은 줄의 픽셀 완전 동일 프레임은 하나로, 원래 순서는 frameMap', () => {
+    const img = canvas(60, 24);
+    figure(img, 2, 2); figure(img, 22, 2, 18); figure(img, 42, 2);
+    const row = rowsByGap(segmentSprites(img))[0] ?? [];
+    expect(dedupeRow(row)).toMatchObject({ frameMap: [0, 1, 0] });
+    expect(dedupeRow(row).unique).toHaveLength(2);
+    const r = importImage(img, OPTS);
+    expect(r.frames).toHaveLength(2);
+    expect(r.frameMap).toEqual({ idle_s: [0, 1, 0] });
+  });
+
+  it('흰 배경 + 흰 천 내부: 가장자리와 이어진 흰색만 투명, 외곽선 안쪽 흰 천은 남는다', () => {
+    const img = canvas(24, 24, [255, 255, 255, 255]);
+    rect(img, 4, 4, 19, 19, [30, 30, 40, 255]);
+    rect(img, 6, 6, 17, 17, [250, 250, 250, 255]);
+    removeBackgroundInPlace(img);
+    const at = (x: number, y: number) => img.rgba[(y * 24 + x) * 4 + 3];
+    expect([at(0, 0), at(2, 12)]).toEqual([0, 0]);
+    expect([at(10, 10), at(4, 4)]).toEqual([255, 255]);
+    expect(segmentSprites(img)).toHaveLength(1);
+  });
+});
+
+describe('import 처리 단계', () => {
+  it('BOX 축소(알파 사전곱): 불투명 안의 1px 선은 끊기지 않고 색이 섞여 남는다, 투명 칸 색은 섞이지 않는다', () => {
+    const img = canvas(8, 8);
+    rect(img, 0, 0, 7, 7, [200, 200, 200, 255]);
+    rect(img, 3, 0, 3, 7, [0, 0, 0, 255]);
+    const d = boxDownscale(img, 0.5);
+    expect([d.w, d.h]).toEqual([4, 4]);
+    expect(d.rgba[(0 * 4 + 1) * 4]).toBe(100);
+    const t = canvas(4, 4);
+    rect(t, 0, 0, 1, 3, [255, 0, 0, 255]);
+    t.rgba.set([0, 255, 0, 0], (0 * 4 + 2) * 4);
+    const e = boxDownscale(t, 0.5);
+    expect(Array.from(e.rgba.subarray(0, 4))).toEqual([255, 0, 0, 255]);
+  });
+
+  it('공통 배율: 모든 프레임에 가장 큰 프레임 키 → targetHeight 하나의 배율(걷기 중 키가 출렁이지 않게)', () => {
+    const img = canvas(60, 44);
+    figure(img, 2, 2, 40); figure(img, 30, 22, 20);
+    const r = importImage(img, { ...OPTS, cell: { w: 32, h: 32, anchor: [16, 30] }, targetHeight: 20 });
+    expect(r.scale).toBeCloseTo(0.5);
+    const tall = (i: number) => { const f = r.frames[i]?.frame; let n = 0; if (f) for (let y = 0; y < f.h; y++) if ([...f.px.subarray(y * f.w, (y + 1) * f.w)].some(Boolean)) n++; return n; };
+    expect([tall(0), tall(1)]).toEqual([20, 10]);
+  });
+
+  it('발 앵커 정렬 + 셀보다 크면 축소하지 않고 import.oversize', () => {
+    const f = { w: 6, h: 4, px: Uint8Array.from([0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0]) };
+    expect(feetAnchor(f)).toEqual([2, 3]);
+    const p = placeInCell(f, 8, 8, [4, 7]);
+    expect([p.outside, p.frame.px[7 * 8 + 4]]).toEqual([0, 1]);
+    const img = canvas(40, 40);
+    figure(img, 4, 2, 36);
+    expect(() => importImage(img, OPTS)).toThrow(expect.objectContaining({ code: 'import.oversize' }));
+  });
+
+  it('median-cut: max색 이하, 명도 오름차순, 같은 입력 → 같은 팔레트(결정론)', () => {
+    const img = canvas(16, 1);
+    for (let x = 0; x < 16; x++) img.rgba.set([x * 16, 255 - x * 16, 64, 255], x * 4);
+    const a = medianCut([img], 4), b = medianCut([img], 4);
+    expect(a.length).toBeLessThanOrEqual(4);
+    expect(a).toEqual(b);
+  });
+
+  it('외곽선: 둘레가 이미 어둡지 않으면 1px 외곽선 색을 더한다', () => {
+    const img = canvas(24, 24);
+    rect(img, 8, 6, 15, 21, [220, 180, 60, 255]);
+    const r = importImage(img, { ...OPTS, outline: 0x101010 });
+    const f = r.frames[0]?.frame;
+    const oi = r.palette.indexOf(0x101010) + 1;
+    expect(oi).toBeGreaterThan(0);
+    expect([...(f?.px ?? [])].filter((v) => v === oi).length).toBeGreaterThan(20);
+  });
+});
