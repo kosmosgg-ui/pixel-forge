@@ -79,5 +79,6 @@ describe('forge review', () => {
     expect(sha(r.out)).toBe(first);
     const img = decodePng(readFileSync(join(work, r.out)));
     expect([img.w, img.h]).toEqual(r.size);
-  });
+    // 8종 × 전 프레임 2회 렌더 — 병렬 실행 중에는 기본 5초를 넘긴다
+  }, 30000);
 });
