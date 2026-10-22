@@ -46,7 +46,7 @@ export function applyFxInPlace(
   }
 }
 
-/** 리그 축척(proportions.height ÷ baseHeight)에 맞춘 fx — 작은 몬스터에 사람 크기 베기 호가 그려지지 않게 */
+/** 리그 축척(proportions.height ÷ baseHeight)에 맞춘 fx — 작은 몬스터에 사람 크기 베기 호가 그려지지 않게. line의 from은 관절에서 띄우는 px 간격(손 칸 건너뛰기)이라 축척하지 않는다 */
 export function scaleFx(fx: FxDef, scale: number): FxDef {
   if (fx.type === 'arc') return { ...fx, radius: Math.max(1, Math.round(fx.radius * scale)) };
   return fx.type === 'line' ? { ...fx, length: Math.max(1, Math.round(fx.length * scale)) } : fx;

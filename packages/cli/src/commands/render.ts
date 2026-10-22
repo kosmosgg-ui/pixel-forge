@@ -11,13 +11,19 @@ import { qaRows, renderProject, writeFrames, type Rendered } from './qa.js';
  * --anim a,b: rest + 그 애니들(색 예산은 함께 맞춤) → frames/<anim>_r_<n>.png, 좌향 _l_
  * --sheet k: 스튜디오 시트 1장(rest + Spec 애니 전 프레임, 바이블 배경, k배) → out/<id>/studio.png (pixel-studio 루프)
  */
+/** 검수·비교 시트 배율: 1~16 정수(render·compare·review-score 공통) — 파일을 쓰기 전에 검사한다 */
+export function parseSheetScale(k: number): number {
+  if (!Number.isInteger(k) || k < 1 || k > 16) throw new ForgeError('cli.args', `--sheet는 1~16 정수여야 합니다: ${k}`);
+  return k;
+}
+
 export function renderCommand(specPath: string, cwd: string, anims: readonly string[] = [], sheet?: number) {
+  if (sheet !== undefined) parseSheetScale(sheet);
   const p = loadProject(specPath, cwd);
   const r = sheet === undefined ? renderProject(p, anims) : renderProject(p);
   const dir = join(cwd, 'out', p.spec.id);
   const files = writeFrames(dir, r);
   if (sheet !== undefined) {
-    if (!Number.isInteger(sheet) || sheet < 1 || sheet > 16) throw new ForgeError('cli.args', `--sheet는 1~16 정수여야 합니다: ${sheet}`);
     writeFileEnsured(join(dir, 'studio.png'), studioPng(r, p.bible.background, sheet));
     files.push('studio.png');
   }

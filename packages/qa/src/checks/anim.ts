@@ -103,7 +103,8 @@ export function animPoseDistinct(frames: readonly QaFrame[], ctx: QaContext): Ch
     frames.forEach((f, i) => {
       if (f.anim !== 'death') return;
       const d = wholeRotation(rest, f);
-      if (d > deathRotateMax) { worst = Math.max(worst, 1); frame ??= i; note = `${f.name} 통째 회전 ${Math.round(d)}° > ${deathRotateMax}°`; }
+      // 통째 회전은 IoU와 무관한 실패라 값 1로 올리고, 이 실패의 프레임·설명으로 바꾼다(첫 회전 실패만)
+      if (d > deathRotateMax && worst <= max) { worst = 1; frame = i; note = `${f.name} 통째 회전 ${Math.round(d)}° > ${deathRotateMax}°`; }
     });
   }
   return check('anim.pose-distinct', true, worst <= max, Math.round(worst * 1000) / 1000, max, { ...(frame !== undefined ? { frame } : {}), ...(note ? { note } : {}) });

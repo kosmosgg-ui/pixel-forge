@@ -9,6 +9,7 @@ import { encodePng } from '../io/png.js';
 import { readJson, writeFileEnsured } from '../io/files.js';
 import { loadProject, type Project } from '../io/project.js';
 import { renderProject, type Rendered } from './qa.js';
+import { parseSheetScale } from './render.js';
 
 const REF_DIR = 'docs/quality-ref';
 /** 시안 그리드: id → 프레임 모드 rest 그리드(툴 범례, 바깥 외곽선 없음) */
@@ -91,8 +92,10 @@ export function compareCommand(outPath: string, rows: readonly string[], cwd: st
   if (!rows.length) throw new ForgeError('cli.no-specs', '비교할 Spec 줄이 없습니다: forge compare <out.png> <a.spec.json,b.spec.json> ...');
   // 비교 시트는 산출물이 아니라 검토용 — out/ 안에만 쓴다
   const out = resolveInside(join(cwd, 'out'), resolveInside(cwd, outPath));
-  const lines = rows.map((row) => row.split(',').filter(Boolean).map((s) => loadProject(s, cwd)));
+  if (scale !== undefined) parseSheetScale(scale);
+  const lines = rows.map((row) => row.split(',').filter(Boolean).map((s) => loadProject(resolveInside(cwd, s), cwd)));
   const all = lines.flat();
+  const k = parseSheetScale(scale ?? all[0]?.rules.qa.sheetScale ?? 4);
   const bible = all[0]?.bible;
   if (!bible || all.some((p) => p.bible.id !== bible.id)) throw new ForgeError('cli.review-bible', '비교 시트는 바이블 하나를 쓰는 Spec만 만들 수 있습니다');
   const refs = existsSync(join(cwd, REF_GRIDS)) ? readJson(join(cwd, REF_GRIDS), refGridsSchema) : {};
@@ -116,7 +119,6 @@ export function compareCommand(outPath: string, rows: readonly string[], cwd: st
     }
     return groups;
   });
-  const k = scale ?? all[0]?.rules.qa.sheetScale ?? 4;
   const cols = Math.max(...chars.map((gs) => gs.reduce((a, g) => a + g.length, 0)));
   const sheet = reviewSheet(chars, first.palette.palette, { scale: k, background: bible.background, cols });
   writeFileEnsured(out, encodePng({ w: sheet.raster.w, h: sheet.raster.h, rgba: toRGBA(sheet.raster, sheet.palette) }));

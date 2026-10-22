@@ -7,7 +7,7 @@ import { writeFileEnsured } from '../io/files.js';
 import { loadProject, type Project } from '../io/project.js';
 import { projectDeps } from './deps.js';
 import { renderProject } from './qa.js';
-import { studioPng } from './render.js';
+import { parseSheetScale, studioPng } from './render.js';
 
 /** pixel-reviewer 기준표(.claude/agents/pixel-reviewer.md): 12기준 × 2점, 합격선 18 */
 export const REVIEW_MAX = 24;
@@ -54,6 +54,7 @@ function parseObservations(raw: string | undefined): Record<string, string> {
  * QA 통과한 build와, 지금 렌더로 만든 것과 같은 검수 시트(studio.png)가 있어야 한다.
  */
 export function reviewScoreCommand(specPath: string, cwd: string, score: number, obsJson?: string, note?: string, scale = 4) {
+  parseSheetScale(scale);
   if (!Number.isInteger(score) || score < 0 || score > REVIEW_MAX) throw new ForgeError('cli.args', `--score는 0~${REVIEW_MAX} 정수여야 합니다: ${score}`);
   const observations = parseObservations(obsJson);
   const p = loadProject(specPath, cwd);
@@ -80,7 +81,7 @@ export function reviewProblem(specPath: string, p: Project, cwd: string): string
   let rec: Partial<ReviewRecord>;
   try { rec = JSON.parse(readFileSync(path, 'utf8')) as Partial<ReviewRecord>; } catch { return `검수 기록을 읽을 수 없습니다: ${path}`; }
   if (rec.key !== inputKey(specPath, p, cwd)) return '검수 후 입력(Spec·바이블·리그·애니·규칙)이 바뀌었습니다. 다시 검수하세요';
-  if (typeof rec.sheetHash !== 'string' || typeof rec.sheetScale !== 'number') return '검수 기록에 sheetHash가 없습니다. 다시 검수하세요';
+  if (typeof rec.sheetHash !== 'string' || typeof rec.sheetScale !== 'number' || !Number.isInteger(rec.sheetScale) || rec.sheetScale < 1 || rec.sheetScale > 16) return '검수 기록에 sheetHash·sheetScale이 없거나 잘못됐습니다. 다시 검수하세요';
   if (rec.sheetHash !== currentSheetHash(p, rec.sheetScale)) return '지금 렌더 결과가 검수한 시트와 다릅니다(sheetHash 불일치). 다시 검수하세요';
   if (typeof rec.score !== 'number' || rec.score < REVIEW_PASS) return `검수 점수 ${rec.score ?? '?'}/${REVIEW_MAX} < 합격선 ${REVIEW_PASS}`;
   return null;

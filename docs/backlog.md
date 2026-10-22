@@ -28,3 +28,8 @@
 - [P6.5] forge compare의 quality-ref 칸은 PNG 시안 → 팔레트 인덱스 변환 미구현(지금은 X 자리 표시)
 - [P6.5] 빌드 캐시 키(.forge-cache)에 엔진 코드 버전이 없어 렌더·QA 코드를 바꿔도 이전 결과를 돌려줌 — 패키지 dist 해시를 키에 포함 검토
 - [P6.5] sample-shape(도형판 goblin·skeleton)은 humanoid-small-v1 비율 조정(시안 맞춤) 후 bounds·held-visible 불합격 — 보존용 비교 자료라 그대로 둠. 다시 쓰려면 Spec 재조정
+- [P6.5 리뷰] forge compare가 'head' 뼈·'attack' 애니 이름을 CLI에 하드코딩 — 옵션 또는 상수로
+- [P6.5 시각] 궁수 shoot: 시위가 무기 뼈 고정선이라 draw에서 당겨지지 않음, release 궤적이 짧아 aim 화살과 비슷 — 시위 fx(handB 추종)·궤적 길이(크기 등급 넘침 주의) 검토
+- [P6.5 시각] 아톰 고블린·스켈레톤 hit 2에서 머리+척추 회전 합이 15°를 넘어 upright 머리가 RotSprite로 찌그러짐 — hit 오버라이드로 합 ≤ 15° 또는 upright를 누적 각도로
+- [P6.5 시각] 스켈레톤 곤봉이 팔과 같은 뼈색이라 묻힘(자루 bone:0 또는 @outline 한 줄), 공격 2에서 곤봉이 해골과 겹침(weapon rot 30→15)
+- [P6.5] 고블린 색 예산 9에서 시안 대비 30px(머리 19) 병합 손실 — docs/proposals/bible-smallmonster-budget.md(12 제안, 승인 대기)

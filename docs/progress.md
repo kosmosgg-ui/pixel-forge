@@ -2,15 +2,17 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P6.5**
+현재 단계: **P7**
 
 ## 로그
-- [P6.5] 진행 중 | 픽셀 그리드 모드(사용자 승인): grid 파츠(재질:단계·@eye·@outline, 외곽선은 엔진), 프레임 모드(base+patch, 깜빡임은 patch 밖), 아톰 모드(각도 변형 + 남은 각도 RotSprite, 머리 upright, 경고 qa.json), render --sheet 8, manifest motion.shadow, pixel-studio 스킬
-  - goblin(frames) | 반복 2 | QA pass(signature 0.255) | reviewer 22/24 · skeleton(frames) | 반복 2 | QA pass(signature 0.458) | 20/24 · archer(shoot) 19/24
-  - 비교: out/sample/mode-compare.png(도형/프레임/시안 X — docs/quality-ref 없음), out/compare/review.png(rogue atoms 19 vs shapes 17). 미완: quality-ref 대비 판정
-  - 도적 아톰 비교: data/specs/compare/(rogue-atoms·rogue-shapes) → out/compare/review.png. 아톰 QA 필수 통과
-  - 막힘: quality-ref.zip이 컨테이너에 없음(업로드 없음) → 고블린·스켈레톤 프레임 모드 재제작 대기
-  - P6 소형 몬스터 보정(등급별 외곽선·소형 리그·signature)은 이미 반영돼 있어 유지 — 그리드 모드가 등급별 외곽선을 쓴다
+- [P6.5] 완료(조건부 — 미달 2개 사용자 결정 대기) | 그리드 파츠(재질:단계·@eye·@outline), frames 모드(base+patch), atoms 모드(관절 원점 아톰·각도 변형·upright), 시안 docs/quality-ref/target-grids.json, forge compare(시안 열·iou·diff·headDiff), review.json v2(sheetHash·12기준 관찰), shoot(당김 5px·−8°·시위 화살). 사용자 승인: 기본 모드(생물 = atoms, 아이템·리그 없는 생물 = frames, shapes = 시안용), humanoid-small-v1 비율, signature 15~40% 경고, 새 필수 QA anim.pose-distinct
+  | 캐릭터 | 모드 | reviewer | 시안 대비 |
+  | goblin | atoms | 22 | rest 실루엣 IoU 1.0, 색 예산 9 병합으로 30px(머리 19) 차이 → 예산 12 제안(승인 대기, 12면 diff 0) |
+  | skeleton | atoms | 22 | 머리 diff 0, 곤봉(지시: 2×7·혹 3) 때문에 IoU 0.911(곤봉 반영 시안과는 diff 0) |
+  | archer | shoot | 18 | aim 읽힘, draw·release 약함(시위 고정선·궤적 짧음 → backlog) |
+  - 비교: out/sample/mode-compare.png(frames / atoms / 시안, 8배) — 두 몬스터 모두 atoms 우세. out/compare/review.png — 도적 atoms가 도형보다 깔끔(두건·눈·노이즈)
+  - 수락: build-all sample 8/8, Tests 231 passed, code-reviewer 높음 0 · 중간 3 수정
+  - 미달 기준 2개(사용자 결정 필요): 고블린 머리 diff 0(예산), 스켈레톤 IoU ≥ 0.95(곤봉 지시와 충돌)
 
 - [P6] 완료 | /forge 스킬, forge ref analyze·compare, 크기 등급 자동 맞춤(렌더 판정, sizeClassLock), 등급별 외곽선·기본 리그(smallMonster = dark·humanoid-small-v1, 예산 9), signature·form.signature, apply 검수 게이트(review-score, 입력+시트 해시, QA 통과 필수), form.head-clearance, fx 축척. 사용자 승인: 바이블 bone·metal_rust·large·smallMonster 설정, rules signatureMin
   | 캐릭터 | build 횟수 | reviewer 최종 | 비고 |
