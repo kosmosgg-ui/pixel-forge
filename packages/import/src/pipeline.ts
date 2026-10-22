@@ -1,5 +1,5 @@
 import { ForgeError, srgbToOklab } from '@pixel-forge/core';
-import { placeInCell, outlineInPlace, type IndexFrame } from './align.js';
+import { outlineInPlace, placeInCell, ringStats, type IndexFrame } from './align.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { medianCut, quantize } from './palette.js';
 import { alphaOf } from './probe.js';
@@ -10,6 +10,8 @@ import type { ImportWarning, RgbaImage, Sprite } from './types.js';
 
 /** 외곽선으로 칠 만큼 어두운 색의 OKLab 명도 상한 */
 const DARK_L = 0.35;
+/** 둘레의 이 비율 이상이 이미 어두우면 외곽선을 더하지 않는다(INSTRUCTIONS P8 3-7) */
+const OUTLINE_SKIP_RATIO = 0.7;
 
 export interface ImportOptions {
   /** row = 이미지 줄 번호(한 줄에 애니 여러 개일 때). 생략하면 layout 순번 */
@@ -87,28 +89,47 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
     return { ...p, unique: d.unique.map((s) => ({ s, i: p.sprites.find((x) => x.s === s)?.i ?? 0 })) };
   });
   const maxH = Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
-  const scale = o.targetHeight ? o.targetHeight / maxH : 1;
-  const scaled = chosen.map((c) => ({ ...c, imgs: c.unique.map((u) => (scale === 1 ? u.s.img : boxDownscale(u.s.img, scale, o.alphaThreshold))) }));
-  const palette = o.palette.fixed ? [...o.palette.fixed] : medianCut(scaled.flatMap((c) => c.imgs), o.palette.max);
-  return finish(scaled, palette, o, warnings, frameMap, scale);
+  const first = scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap);
+  if (o.outline === undefined || !needsOutline(first)) return first;
+  // 외곽선은 실루엣을 위아래 1px씩 키운다 → 키 targetHeight·발 앵커 y를 지키게 2px 작게 줄이고 1px 위에 놓은 뒤 둘레 전체에(프레임마다 따로 정하면 깜빡인다)
+  const anchor: readonly [number, number] = [o.cell.anchor[0], o.cell.anchor[1] - 1];
+  const r = o.targetHeight ? scaleQuantize(chosen, o, maxH, o.targetHeight - 2, anchor, warnings, frameMap) : scaleQuantize(chosen, o, maxH, undefined, anchor, warnings, frameMap);
+  const palette = [...r.palette];
+  const outlineIndex = palette.indexOf(o.outline) + 1 || palette.push(o.outline);
+  for (const f of r.frames) outlineInPlace(f.frame, outlineIndex);
+  return { ...r, palette };
 }
 
-function finish(scaled: { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[]; imgs: RgbaImage[] }[], palette: number[], o: ImportOptions,
-  warnings: ImportWarning[], frameMap: Record<string, number[]>, scale: number): ImportResult {
-  const pal = [...palette];
-  const outlineIndex = o.outline === undefined ? 0 : (pal.indexOf(o.outline) + 1 || pal.push(o.outline));
-  // 명도 하위 2단계 중 실제로 어두운 색만(팔레트가 작으면 하위 2색이 밝을 수 있다)
-  const darkest = new Set(palette.slice(0, 2).flatMap((c, i) => (srgbToOklab(c >> 16, (c >> 8) & 255, c & 255).L < DARK_L ? [i + 1] : [])));
+type Chosen = { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[] }[];
+
+/** 이미 어두운 테두리가 있는가: 모든 프레임 둘레의 70% 이상이 명도 하위 2단계 중 실제로 어두운 색 */
+function needsOutline(r: ImportResult): boolean {
+  const darkest = new Set(r.palette.slice(0, 2).flatMap((c, i) => (srgbToOklab(c >> 16, (c >> 8) & 255, c & 255).L < DARK_L ? [i + 1] : [])));
+  let ring = 0, dark = 0;
+  for (const f of r.frames) { const s = ringStats(f.frame, darkest); ring += s.ring; dark += s.dark; }
+  return ring > 0 && dark < ring * OUTLINE_SKIP_RATIO;
+}
+
+/** 공통 배율(가장 큰 프레임 키 → height) BOX 축소 → 팔레트 → 셀에 발 앵커 정렬 */
+function scaleQuantize(chosen: Chosen, o: ImportOptions, maxH: number, height: number | undefined, anchor: readonly [number, number],
+  warnings: ImportWarning[], frameMap: Record<string, number[]>): ImportResult {
+  const scale = height ? height / maxH : 1;
+  const scaled = chosen.map((c) => ({ ...c, imgs: c.unique.map((u) => (scale === 1 ? u.s.img : boxDownscale(u.s.img, scale, o.alphaThreshold))) }));
+  const palette = o.palette.fixed ? [...o.palette.fixed] : medianCut(scaled.flatMap((c) => c.imgs), o.palette.max);
+  return place(scaled, palette, o, anchor, warnings, frameMap, scale);
+}
+
+function place(scaled: { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[]; imgs: RgbaImage[] }[], palette: number[], o: ImportOptions,
+  anchor: readonly [number, number], warnings: ImportWarning[], frameMap: Record<string, number[]>, scale: number): ImportResult {
   let delta = 0, count = 0;
   const oversize: string[] = [];
   const frames = scaled.flatMap((c) => c.imgs.map((im, index): ImportedFrame => {
     const q = quantize(im, palette);
     delta += q.delta; count += q.count;
-    const placed = placeInCell({ w: im.w, h: im.h, px: q.px }, o.cell.w, o.cell.h, o.cell.anchor);
+    const placed = placeInCell({ w: im.w, h: im.h, px: q.px }, o.cell.w, o.cell.h, anchor);
     if (placed.outside) oversize.push(`${c.anim}_${c.dir}_${index}(${placed.outside}px)`);
-    if (outlineIndex) outlineInPlace(placed.frame, darkest, outlineIndex);
     return { anim: c.anim, dir: c.dir, index, frame: placed.frame, source: { row: c.row, sprite: c.unique[index]?.i ?? 0 } };
   }));
   if (oversize.length) throw new ForgeError('import.oversize', `셀 ${o.cell.w}×${o.cell.h}보다 큰 프레임 ${oversize.join(', ')} — 축소하지 않는다(targetHeight·셀 크기는 사용자가 정한다)`);
-  return { palette: pal, frames, frameMap, warnings, paletteDelta: count ? delta / count : 0, scale };
+  return { palette: [...palette], frames, frameMap: { ...frameMap }, warnings: [...warnings], paletteDelta: count ? delta / count : 0, scale };
 }

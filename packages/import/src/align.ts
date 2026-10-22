@@ -34,11 +34,8 @@ export function placeInCell(f: IndexFrame, cellW: number, cellH: number, anchor:
   return { frame: { w: cellW, h: cellH, px }, outside };
 }
 
-/**
- * 외곽선 정리(사용자 승인 P8 7단계): 실루엣 바깥 둘레 칸의 70% 이상이 이미 어두운 색(명도 하위 2단계)이면 그대로,
- * 아니면 둘레 바깥 1px(4-이웃)을 외곽선 색으로. 반환 = 외곽선을 더했는지.
- */
-export function outlineInPlace(f: IndexFrame, darkest: ReadonlySet<number>, outlineIndex: number, ratio = 0.7): boolean {
+/** 실루엣 둘레(4-이웃 중 투명이 있는 불투명 칸) 수와 그중 어두운 색(darkest) 수 */
+export function ringStats(f: IndexFrame, darkest: ReadonlySet<number>): { ring: number; dark: number } {
   const { w, h, px } = f;
   const opaque = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && (px[y * w + x] ?? 0) > 0;
   let ring = 0, dark = 0;
@@ -47,12 +44,17 @@ export function outlineInPlace(f: IndexFrame, darkest: ReadonlySet<number>, outl
     ring++;
     if (darkest.has(px[y * w + x] ?? 0)) dark++;
   }
-  if (!ring || dark >= ring * ratio) return false;
+  return { ring, dark };
+}
+
+/** 실루엣 바깥 4-이웃 1px 외곽선(색 outlineIndex) */
+export function outlineInPlace(f: IndexFrame, outlineIndex: number): void {
+  const { w, h, px } = f;
+  const opaque = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && (px[y * w + x] ?? 0) > 0;
   const add: number[] = [];
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     if (opaque(x, y)) continue;
     if (opaque(x - 1, y) || opaque(x + 1, y) || opaque(x, y - 1) || opaque(x, y + 1)) add.push(y * w + x);
   }
   for (const k of add) px[k] = outlineIndex;
-  return true;
 }

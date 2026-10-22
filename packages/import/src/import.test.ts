@@ -129,6 +129,16 @@ describe('import 처리 단계', () => {
     expect(oi).toBeGreaterThan(0);
     expect([...(f?.px ?? [])].filter((v) => v === oi).length).toBeGreaterThan(20);
   });
+
+  it('외곽선을 더해도 키 = targetHeight, 맨 아래 줄 = 발 앵커 y(2px 작게 줄이고 1px 위에 놓는다), 모든 프레임에 같이', () => {
+    const img = canvas(60, 44);
+    rect(img, 4, 2, 15, 41, [220, 180, 60, 255]); rect(img, 34, 12, 45, 41, [220, 180, 60, 255]);
+    const r = importImage(img, { ...OPTS, rows: [{ anim: 'idle', dir: 's' }], targetHeight: 20, outline: 0x101010 });
+    const rowsOf = (i: number) => { const f = r.frames[i]?.frame; const ys: number[] = []; if (f) for (let y = 0; y < f.h; y++) if ([...f.px.subarray(y * f.w, (y + 1) * f.w)].some(Boolean)) ys.push(y); return ys; };
+    expect([rowsOf(0).length, rowsOf(0).at(-1), rowsOf(1).at(-1)]).toEqual([20, 30, 30]);
+    const oi = r.palette.indexOf(0x101010) + 1;
+    expect(r.frames.every((f) => f.frame.px.includes(oi))).toBe(true);
+  });
 });
 
 describe('import QA', () => {
