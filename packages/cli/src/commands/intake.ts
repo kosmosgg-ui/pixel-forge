@@ -8,6 +8,7 @@ import { decodePng } from '../io/png.js';
 import { FILE_RULE, promptText, requestList, TURNAROUND, turnaroundFile, type PromptRequest } from '../prompts/assemble.js';
 import { loadKit } from '../prompts/kit.js';
 import { readState, writeState } from '../prompts/state.js';
+import { intakeCutin } from './cutin.js';
 import { promptSha } from './prompts.js';
 
 /** 긴 변이 이보다 짧으면 경고(파일럿: 키 210px 원본은 테두리가 거칠었다 — P9-M 4) */
@@ -56,9 +57,10 @@ const stampOf = (iso: string, sha: string) => `${iso.replace(/[-:]/g, '').replac
  * → data/import/<actorId>/<key>/<stamp>.png + <stamp>.intake.json(gitignore). 이전 원본은 지우지 않는다(make는 최신본).
  * 입력은 작업 폴더 안만(resolveInside) — 채팅 첨부는 data/import/inbox/ 등 작업 폴더 안으로 먼저 복사한다.
  */
-export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string; kind?: string; temp?: string } = {}) {
+export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string; kind?: string; temp?: string; out?: string } = {}) {
   if (o.kind === 'reference') return intakeReference(file, cwd, o);
-  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference: ${o.kind}`);
+  if (o.kind === 'cutin') return intakeCutin(file, cwd, o);
+  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference | cutin: ${o.kind}`);
   const src = resolveInside(cwd, file);
   const { actorId, key } = target(file, o.as);
   const kit = loadKit(actorId, cwd);

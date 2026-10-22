@@ -96,7 +96,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> [--target godot-rowsheet --out <dir|@이름>] | --probe <png>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'prompts') return promptsCommand(need('<actorId>'), input.cwd);
-  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference] [--temp 이유] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}) });
+  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'make') {
     const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');
     if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back>');

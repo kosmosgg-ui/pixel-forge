@@ -55,6 +55,10 @@ export const promptActorSchema = z.object({
   produce: z.array(z.object({ action: z.string().min(1), views: z.array(promptViewSchema).min(1) })).min(1),
 });
 
+/** 필살기 컷인 요청 문구(P10 3절) — 프레임 없는 일러스트 1장, {{character}}·{{style}}·{{background}}·{{rules}} 치환 */
+export const promptCutinSchema = z.object({ id: z.literal('cutin'), text: z.string().min(1) });
+export type PromptCutin = z.infer<typeof promptCutinSchema>;
+
 export const FIX_IDS = ['identity', 'legs', 'clipped', 'size', 'background', 'detail', 'text', 'backface'] as const;
 export const promptFixesSchema = z.object({
   /** 프레임 수 불일치: 원래 문구 뒤에 붙인다 */
