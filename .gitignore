@@ -23,3 +23,6 @@ docs/integrated/G1-P9/G1/samples/
 
 # P9-M 생성 원본·intake 기록·상태(원본은 저장소에 넣지 않는다)
 data/import/
+docs/integrated/G2/inputs/
+docs/integrated/G2/samples/
+docs/integrated/G2/deferred/
