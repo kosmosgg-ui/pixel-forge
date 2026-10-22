@@ -16,7 +16,7 @@
 | 품질 진단 | pxl study 수치(외톨이·밴딩·색 단계)를 QA 보조로 기록 |
 | 승인 | 정식 경로 승격·병합·바이블 확정값·전투 수치 = 사용자 승인 |
 
-| 디자인 기준 | inputs/hero_sera/hero_sera__ref.png(3/4 시점, **파란 망토 있음**) + __turnaround.png. 이후 모든 GPT 요청에 이 두 장을 첨부 |
-| 첫 원본 | hero_sera__walk_side.png(망토 없음 — 기준과 불일치, **임시 후보**). Gate C 확인용으로만 쓰고, 망토 있는 걷기로 다시 받는다 |
+| 디자인 기준 | **망토 없음**(U1, 2026-10-23 06:55). inputs/hero_sera/hero_sera__ref.png(보드 기준 원화, 3/4) + __turnaround.png(보드 3방향) + __size_ref.png(보드 대기 1프레임, 크기 기준). 이후 모든 GPT 요청에 세 장 첨부. 이전 망토 있는 ref·turnaround는 superseded |
+| 첫 원본 | 보드에서 자른 idle·walk·death(U1). walk는 보드 것 채택(머리 흔들림 2px), 이전 단독 walk_side는 alt로 보존. death는 size_ref 키에 맞춰 크기 보정(scaleAnchor). 공격·피격·회피·필살기는 다시 받는다 |
 
 deferred/ 폴더는 보류된 설계다. 읽지 마라.
