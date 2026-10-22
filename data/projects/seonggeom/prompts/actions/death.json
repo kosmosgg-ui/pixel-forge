@@ -1,14 +1,18 @@
 {
   "id": "death",
   "title": "defeat",
-  "frames": 4,
+  "frames": 6,
   "fps": 8,
   "loop": false,
   "poses": [
-    "frame 1: struck, body bends forward",
-    "frame 2: falling to the knees, sword drops",
-    "frame 3: falling sideways",
-    "frame 4: lying on the ground, still"
+    "frame 1: struck while standing upright, body jolts",
+    "frame 2: staggering, knees start to bend",
+    "frame 3: falling to the knees, sword drops",
+    "frame 4: collapsing forward onto the hands",
+    "frame 5: falling onto the side",
+    "frame 6: lying on the ground, still"
   ],
-  "viewExtra": {}
+  "viewExtra": {},
+  "scaleAnchorFrame": 0,
+  "$comment": "G2 U1: 보드 death 6프레임(서 있는 1프레임 키를 size_ref 키에 맞춰 보정)"
 }

@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
+import { ForgeError } from '@pixel-forge/core';
 import { join, relative } from 'node:path';
 import { writeFileEnsured } from '../io/files.js';
 import { loadKit, type Kit } from '../prompts/kit.js';
 import { promptText, requestList, type PromptRequest } from '../prompts/assemble.js';
-import { nextRequests, readState, type ActorState } from '../prompts/state.js';
+import { nextRequests, readState, writeState, type ActorState } from '../prompts/state.js';
 
 /** 요청 문구 sha256(intake 기록 promptSha256 — 어떤 문구로 만든 원본인지) */
 export const promptSha = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -23,10 +24,18 @@ export function checklist(kit: Kit, list: readonly PromptRequest[], state: Actor
 }
 
 /** forge prompts <actorId> → out/prompts/<actorId>/{<key>.txt, CHECKLIST.md} + 한 줄 요약 */
-export function promptsCommand(actorId: string, cwd: string) {
+export function promptsCommand(actorId: string, cwd: string, o: { retake?: string; note?: string } = {}) {
   const kit = loadKit(actorId, cwd);
   const list = requestList(kit);
   const state = readState(cwd, actorId);
+  // --retake a,b --note 이유: 사람 결정으로 다시 받을 항목(예: G2 U1 보드 공격·피격 — 크기·궤적 문제)
+  if (o.retake) {
+    for (const key of o.retake.split(',').filter(Boolean)) {
+      if (!list.some((r) => r.key === key)) throw new ForgeError('prompts.key', `${actorId}의 요청 목록에 없는 항목: ${key}`);
+      state.items[key] = { status: '재요청', fails: state.items[key]?.fails ?? 0, ...(o.note ? { note: o.note } : {}) };
+    }
+    writeState(cwd, actorId, state);
+  }
   for (const r of list) writeFileEnsured(join(cwd, r.promptFile), Buffer.from(promptText(kit, r)));
   const out = join(cwd, 'out', 'prompts', actorId, 'CHECKLIST.md');
   writeFileEnsured(out, Buffer.from(checklist(kit, list, state)));

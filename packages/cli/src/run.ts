@@ -59,6 +59,8 @@ export interface RunInput {
   /** intake --kind action|reference, --temp <재요청 이유> */
   kind?: string;
   temp?: string;
+  /** prompts --retake a,b --note 이유 */
+  retake?: string;
   judge?: string;
   /** apply·watch: 검수 확인 생략 */
   skipReview?: boolean;
@@ -95,7 +97,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> [--target godot-rowsheet --out <dir|@이름>] | --probe <png>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
-  if (cmd === 'prompts') return promptsCommand(need('<actorId>'), input.cwd);
+  if (cmd === 'prompts') return promptsCommand(need('<actorId> [--retake a,b --note 이유]'), input.cwd, { ...(input.retake ? { retake: input.retake } : {}), ...(input.note ? { note: input.note } : {}) });
   if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'make') {
     const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');

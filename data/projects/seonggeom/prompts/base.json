@@ -1,5 +1,5 @@
 {
-  "$comment": "「세라 GPT 이미지 프롬프트 키트」 공통 스타일(사용자 승인 P9-M, 키트 원문 미수신 — 지시문 요약 기준). 조립은 {{이름}} 치환만 · G2: 3/4 탑뷰(약 30°) 시점 추가",
+  "$comment": "「세라 GPT 이미지 프롬프트 키트」 공통 스타일(사용자 승인 P9-M, 키트 원문 미수신 — 지시문 요약 기준). 조립은 {{이름}} 치환만 · G2: 3/4 탑뷰(약 30°) 시점 추가 · G2 U1: 크기 기준 문장·이펙트 금지 강조",
   "style": [
     "clean anime game illustration",
     "three-quarter top-down view, camera about 30 degrees above the character",
@@ -14,10 +14,12 @@
   },
   "rules": [
     "no text, no numbers, no labels",
-    "no shadow, no ground, no effects",
+    "no shadow, no ground",
     "at least 40px of empty background around every figure",
     "every figure the same size with the feet on the same baseline",
-    "keep the character design exactly the same in every frame"
+    "keep the character design exactly the same in every frame",
+    "The character must be exactly the same size as in the attached size reference (the standing idle frame): same head size and same height when standing upright",
+    "No slash trails, no motion effects, no glow — the character only"
   ],
   "views": {
     "side": "side view facing right",

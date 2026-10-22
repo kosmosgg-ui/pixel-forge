@@ -100,3 +100,21 @@ export function seloutInPlace(f: IndexFrame, darker: readonly number[]): void {
   }
   for (const k of edge) px[k] = darker[(px[k] ?? 1) - 1] ?? px[k] ?? 0;
 }
+
+/**
+ * 머리 폭(1배 px): 실루엣 위쪽 1/6(머리카락+얼굴 덩어리) 안에서 가장 넓은 줄의 폭. 동작마다 원본 크기가 달라
+ * 머리 크기가 어긋났는지 보는 지표(G2 U1 anim.scale-consistency). 빈 프레임이면 0.
+ */
+export function headWidth(f: IndexFrame): number {
+  let y0 = -1, y1 = -1;
+  for (let k = 0; k < f.px.length; k++) if (f.px[k]) { const y = Math.floor(k / f.w); if (y0 < 0) y0 = y; y1 = y; }
+  if (y0 < 0) return 0;
+  const band = Math.max(1, Math.round((y1 - y0 + 1) / 6));
+  let best = 0;
+  for (let y = y0; y < y0 + band; y++) {
+    let a = -1, b = -1;
+    for (let x = 0; x < f.w; x++) if (f.px[y * f.w + x]) { if (a < 0) a = x; b = x; }
+    if (a >= 0) best = Math.max(best, b - a + 1);
+  }
+  return best;
+}

@@ -29,6 +29,8 @@ export const promptActionSchema = z.object({
   frames: z.number().int().min(1).max(16),
   fps: z.number().positive(),
   loop: z.boolean(),
+  /** 크기 보정 기준 프레임(서 있는 프레임 번호 — G2 U1 scaleAnchor). 원본마다 그려진 크기가 다를 때 */
+  scaleAnchorFrame: z.number().int().min(0).optional(),
   /** 걷기 한 걸음 길이(1배 px, 게임 3.3b) */
   stride_px: z.number().positive().optional(),
   /** 프레임별 포즈 문장 — 길이 = frames */
@@ -47,6 +49,8 @@ export const promptActorSchema = z.object({
   references: z.array(z.string().min(1)).min(1),
   /** 턴어라운드 결과 파일 이름(이후 모든 요청의 두 번째 참조). 생략하면 <id>__turnaround.png */
   turnaroundFile: z.string().regex(/^[a-z][a-z0-9_]*__[a-z0-9_]+\.png$/).optional(),
+  /** 크기 기준 이미지(서 있는 대기 1프레임 — G2 U1). 동작 요청에 턴어라운드 다음으로 첨부 */
+  sizeRefFile: z.string().regex(/^[a-z][a-z0-9_]*__[a-z0-9_]+\.png$/).optional(),
   /** 디자인 기준에서 반드시 지킬 것(모든 요청 Rules 끝에 붙는다 — 예: 망토) */
   mustKeep: z.array(z.string().min(1)).default([]),
   /** 초록 옷 캐릭터면 마젠타 배경 */

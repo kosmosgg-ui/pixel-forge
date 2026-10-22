@@ -35,6 +35,7 @@ function writeSpec(kit: Kit, key: string, action: string, view: PromptView, png:
     layout: { rows: [{ anim: action, dir: kit.base.importDirs[view] ?? view, frames: [...Array(a.frames).keys()], fps: a.fps }] },
     loop: a.loop ? [action] : [],
     cleanup: true,
+    ...(a.scaleAnchorFrame !== undefined ? { scaleAnchorFrame: a.scaleAnchorFrame } : {}),
   };
   const p = makeSpecPath(kit.actor.id, key);
   writeFileEnsured(join(cwd, p), Buffer.from(JSON.stringify(spec, null, 2) + '\n'));

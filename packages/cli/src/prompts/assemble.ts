@@ -38,7 +38,7 @@ export function requestList(kit: Kit): PromptRequest[] {
   const list: PromptRequest[] = [{ order: 1, key: TURNAROUND, action: 'turnaround', view: 'all', file: turnFile, references: [...kit.actor.references], promptFile: `out/prompts/${id}/${TURNAROUND}.txt` }];
   for (const p of kit.actor.produce) for (const view of p.views) {
     const key = `${p.action}_${view}`;
-    list.push({ order: list.length + 1, key, action: p.action, view, file: requestFile(id, key), references: [...kit.actor.references, turnFile], promptFile: `out/prompts/${id}/${key}.txt` });
+    list.push({ order: list.length + 1, key, action: p.action, view, file: requestFile(id, key), references: [...kit.actor.references, turnFile, ...(kit.actor.sizeRefFile ? [kit.actor.sizeRefFile] : [])], promptFile: `out/prompts/${id}/${key}.txt` });
   }
   return list;
 }

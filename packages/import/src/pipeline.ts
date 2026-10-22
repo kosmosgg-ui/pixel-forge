@@ -29,6 +29,11 @@ export interface ImportOptions {
   outlineMode?: 'ring' | 'selout';
   /** 정리 개선(P10 2.4): 배경 색조 잔여 제거·붙은 단계 병합·외톨이 흡수 */
   cleanup?: boolean;
+  /**
+   * 크기 보정(G2 U1 scaleAnchor): 첫 줄의 이 스프라이트(서 있는 프레임)의 키 → targetHeight로 공통 배율을 정한다.
+   * 원본마다 그려진 크기가 달라도(보드 death는 0.67배) 서 있는 키가 같아진다. 생략하면 가장 큰 프레임 키.
+   */
+  scaleAnchorFrame?: number;
 }
 
 export interface ImportedFrame {
@@ -55,7 +60,7 @@ export interface ImportResult {
 }
 
 /** 이미지 줄 수 = layout row 번호 최댓값 + 1 */
-const imageRows = (o: ImportOptions) => 1 + Math.max(...o.rows.map((r, li) => r.row ?? li));
+const imageRows = (o: Pick<ImportOptions, 'rows'>) => 1 + Math.max(...o.rows.map((r, li) => r.row ?? li));
 
 /** 줄 배치대로 스프라이트 고르기 + 잘림 경고(번호 = 줄:스프라이트) */
 function pick(rows: Sprite[][], o: ImportOptions, warnings: ImportWarning[]): { anim: string; dir: string; row: number; sprites: { s: Sprite; i: number }[] }[] {
@@ -93,7 +98,9 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
     frameMap[`${p.anim}_${p.dir}`] = d.frameMap;
     return { ...p, unique: d.unique.map((s) => ({ s, i: p.sprites.find((x) => x.s === s)?.i ?? 0 })) };
   });
-  const maxH = Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
+  const anchorSprite = o.scaleAnchorFrame === undefined ? undefined : picked[0]?.sprites[o.scaleAnchorFrame]?.s;
+  if (o.scaleAnchorFrame !== undefined && !anchorSprite) throw new ForgeError('import.scale-anchor', `크기 기준 프레임이 없습니다: ${o.scaleAnchorFrame}`);
+  const maxH = anchorSprite?.h ?? Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
   const first = withCleanup(scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap), o, bgRgb);
   if (o.outline !== undefined && o.outlineMode === 'selout') {
     // 48px 실루엣 분리(P10 1절): 이미 어두운 선이 있어도 축소로 흐려진 경계를 항상 다시 세운다
@@ -164,4 +171,15 @@ function place(scaled: { anim: string; dir: string; row: number; unique: { s: Sp
   }));
   if (oversize.length) throw new ForgeError('import.oversize', `셀 ${o.cell.w}×${o.cell.h}보다 큰 프레임 ${oversize.join(', ')} — 축소하지 않는다(targetHeight·셀 크기는 사용자가 정한다)`);
   return { palette: [...palette], frames, frameMap: { ...frameMap }, warnings: [...warnings], paletteDelta: count ? delta / count : 0, scale };
+}
+
+/**
+ * 원본 줄의 스프라이트 키(배경 제거·이진화 뒤, 원본 px) — 크기 보정 기록용(qa.scaleAnchor: 크기 기준 이미지 대비 몇 배로 그려졌나).
+ * importImage와 같은 분리 단계를 쓴다.
+ */
+export function sourceHeights(src: RgbaImage, o: Pick<ImportOptions, 'rows' | 'alphaThreshold' | 'background'>): number[][] {
+  const img: RgbaImage = { w: src.w, h: src.h, rgba: src.rgba.slice() };
+  if (o.background === 'auto') removeBackgroundInPlace(img);
+  binarizeAlphaInPlace(img, o.alphaThreshold);
+  return rowsByKmeans(segmentSprites(img), imageRows(o)).map((row) => row.map((s) => s.h));
 }

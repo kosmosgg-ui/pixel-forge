@@ -40,13 +40,14 @@ describe('P9-M 요청 문구', () => {
     expect(list[0]?.file).toBe('hero_sera__turnaround.png');
     expect(list.filter((r) => r.action === 'death' || r.action === 'ultimate').map((r) => r.view)).toEqual(['side', 'side']);
     for (const r of list.slice(1)) expect(r.file).toMatch(FILE_RULE);
-    expect(list[2]?.references).toEqual(['hero_sera__ref.png', 'hero_sera__turnaround.png']);
+    expect(list[2]?.references).toEqual(['hero_sera__ref.png', 'hero_sera__turnaround.png', 'hero_sera__size_ref.png']);
   });
   it('조립 골든(문자열 sha256 — 데이터·틀이 바뀌면 의도한 변경인지 확인)', () => {
     const text = (k: string) => promptText(kit, list.find((r) => r.key === k) ?? list[0]!);
     expect(text('walk_side')).toContain('Draw exactly 6 frames of the walk cycle animation, side view facing right');
     expect(text('walk_side')).not.toMatch(/\{\{/);
-    expect(text('walk_side')).toMatch(/three-quarter top-down view.*\n[\s\S]*long blue cape from the reference images is visible in every frame/);
+    expect(text('walk_side')).toMatch(/three-quarter top-down view[\s\S]*exactly the same size as in the attached size reference[\s\S]*No slash trails/);
+    expect(text('walk_side')).not.toMatch(/blue cape|long cape/);
     expect({ turnaround: promptSha(text('turnaround_all')).slice(0, 16), walk: promptSha(text('walk_side')).slice(0, 16), back: promptSha(text('idle_back')).slice(0, 16) }).toMatchSnapshot();
   });
   it('고치기 문구 고르기: 잘림·identity(프레임 번호)·프레임 수·배경·다리·뒷면 얼굴', () => {
@@ -83,6 +84,14 @@ describe('forge prompts / intake / make', () => {
     const r = promptsCommand('hero_sera', work);
     expect(r.next).toEqual(['hero_sera__walk_side.png', 'hero_sera__idle_side.png', 'hero_sera__attack_side.png']);
     expect(readFileSync(join(work, 'out/prompts/hero_sera/CHECKLIST.md'), 'utf8')).toMatch(/hero_sera__turnaround\.png.*등록 \|[\s\S]*walk_side\.png.*재요청 \(망토 없음\)/);
+  });
+  it('G2 U1: 같은 이름 참조 재등록 → 이전 것 superseded, --retake로 재요청 표시', () => {
+    intakeCommand(strip('hero_sera__ref.png', 1), work, { kind: 'reference', at: '2026-10-22T13:00:00.000Z' });
+    const dir = join(work, 'data/import/hero_sera/references/ref');
+    const metas = readdirSync(dir).filter((f) => f.endsWith('.intake.json')).sort().map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')) as { superseded?: boolean });
+    expect(metas.map((m) => m.superseded === true)).toEqual([...metas.slice(0, -1).map(() => true), false]);
+    expect(promptsCommand('hero_sera', work, { retake: 'attack_side,hit_side', note: '보드 크기·궤적' }).next).toEqual(expect.arrayContaining(['hero_sera__attack_side.png', 'hero_sera__hit_side.png']));
+    expect(() => promptsCommand('hero_sera', work, { retake: 'nope_side' })).toThrow(expect.objectContaining({ code: 'prompts.key' }));
   });
   it('make 합격 → 후보 시트·G1 매니페스트(candidate·provenance 사용자 생성물), 불합격 → 고치기 문구(잘림·다른 캐릭터·프레임 수)', () => {
     const ok = makeCommand('hero_sera', work, { action: 'walk', dir: 'side', out: 'game' });

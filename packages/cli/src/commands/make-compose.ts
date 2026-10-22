@@ -12,6 +12,7 @@ import { readState } from '../prompts/state.js';
 import { qaContextOf, runImport, type Imported } from './import.js';
 import { displayScaleOf, loadTarget, writeRowExport } from './import-target.js';
 import { pickIntake } from './intake.js';
+import { scaleQa } from './make-scale.js';
 
 /** make Spec 경로(out/make/<actorId>/<key>.spec.json) */
 export const makeSpecPath = (actorId: string, key: string) => join('out', 'make', actorId, `${key}.spec.json`);
@@ -97,6 +98,10 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
     },
     qa: { pass: true, warnings: [...new Map(parts.map((p) => [p.key, p.im])).entries()].flatMap(([k, im]) => importChecks(im.result, qaContextOf(im)).filter((c) => !c.pass).map((c) => ({ id: c.id, note: `${k}: ${c.note ?? ''}`.trim() }))) },
   });
+  // G2 U1: 크기 보정 기록 + 동작 사이 머리 크기 일치
+  const sq = scaleQa(cwd, kit.actor.id, parts);
+  Object.assign(manifest.qa, { scaleAnchor: sq.scaleAnchor, heads: sq.heads });
+  manifest.qa.warnings.push(...sq.warnings);
   const png = encodePng({ w: W, h: H, rgba });
   const study = studyOf(cwd, kit.actor.id, png);
   if (study) Object.assign(manifest.qa, { study });

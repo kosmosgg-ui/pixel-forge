@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { feetAnchor, measureStride, placeInCell, seloutInPlace } from './align.js';
+import { feetAnchor, headWidth, measureStride, placeInCell, seloutInPlace } from './align.js';
 import { identityCheck, jitterCheck, paletteDeltaCheck } from './checks.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { silhouetteMatch } from './match.js';
@@ -226,3 +226,19 @@ describe('선택 외곽선(P10 1절)', () => {
   });
 });
 
+
+describe('G2 U1 크기 보정', () => {
+  it('scaleAnchorFrame: 서 있는 프레임(0) 키 → targetHeight, 누운 프레임이 더 길어도 기준은 0번', () => {
+    const img = canvas(80, 44);
+    figure(img, 2, 2, 40); rect(img, 30, 30, 69, 41, [200, 40, 40, 255]);
+    const r = importImage(img, { ...OPTS, cell: { w: 64, h: 32, anchor: [32, 30] }, rows: [{ anim: 'death', dir: 'e' }], targetHeight: 20, scaleAnchorFrame: 0, dedupe: false });
+    expect(r.scale).toBeCloseTo(0.5);
+    expect(() => importImage(img, { ...OPTS, rows: [{ anim: 'death', dir: 'e' }], targetHeight: 20, scaleAnchorFrame: 5 })).toThrow(expect.objectContaining({ code: 'import.scale-anchor' }));
+  });
+  it('headWidth: 위쪽 1/6 띠에서 가장 넓은 줄', () => {
+    const px = new Uint8Array(20 * 24);
+    for (let y = 0; y < 4; y++) for (let x = 6; x < 14; x++) px[y * 20 + x] = 1;
+    for (let y = 4; y < 24; y++) for (let x = 2; x < 18; x++) px[y * 20 + x] = 1;
+    expect(headWidth({ w: 20, h: 24, px })).toBe(8);
+  });
+});

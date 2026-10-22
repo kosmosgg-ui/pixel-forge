@@ -112,6 +112,12 @@ function intakeReference(file: string, cwd: string, o: { as?: string; at?: strin
     origin: 'chatgpt-manual', model: 'ChatGPT 이미지 생성(사용자 실행, 모델명 미확인)', createdAt, promptFile: req?.promptFile ?? '', promptSha256: req ? promptSha(promptText(kit, req)) : '',
     references: req?.references ?? [], receivedFrom: 'user', sourceName: basename(file), sha256: sha, size: [img.w, img.h], warnings,
   };
+  // 같은 이름의 이전 기준 이미지는 지우지 않고 superseded로 표시(G2 U1 — 망토 있는 기준 해제)
+  const olds = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.intake.json') && !f.startsWith(stamp)) : [];
+  for (const old of olds) {
+    const m = JSON.parse(readFileSync(join(dir, old), 'utf8')) as IntakeMeta & { superseded?: boolean };
+    if (!m.superseded) writeFileSync(join(dir, old), JSON.stringify({ ...m, superseded: true }, null, 2) + '\n');
+  }
   writeFileEnsured(join(dir, `${stamp}.png`), bytes);
   writeFileSync(join(dir, `${stamp}.intake.json`), JSON.stringify(meta, null, 2) + '\n');
   if (isTurn) {
