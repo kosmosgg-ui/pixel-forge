@@ -44,11 +44,11 @@ describe('forge import', () => {
     importCommand('imp.spec.json', work);
     files.forEach((b, i) => expect(readFileSync(join(work, 'out/imp-t', ['imp-t.png', 'imp-t.json', 'manifest.json', 'sheet.png', 'frames/run_e_1.png'][i] ?? '')).equals(b)).toBe(true));
   });
-  it('--target godot-rowsheet: 프로젝트 바이블(data/projects) + target.json → <out>/art/candidates/<id>/, quality candidate·aiUsed·rightsReviewed false', () => {
+  it('--target godot-rowsheet: 프로젝트 바이블(data/projects) + target.json → <out>/<target.dir>/<id>/, quality candidate·aiUsed·rightsReviewed false', () => {
     writeFileSync(join(work, 'g.spec.json'), JSON.stringify({ ...spec, id: 'imp-g', bible: 'seonggeom', sizeClass: 'hero', targetHeight: 24, layout: { rows: [{ anim: 'idle', dir: 's' }, { anim: 'run', dir: 'e' }] } }));
     const r = importCommand('g.spec.json', work, { target: 'godot-rowsheet', out: 'game' });
-    expect(r.exported).toMatchObject({ columns: 6, rows: ['front', 'right_side'], dest: 'game/art/candidates/imp-g' });
-    const m = JSON.parse(readFileSync(join(work, 'game/art/candidates/imp-g/imp-g_manifest.json'), 'utf8'));
+    expect(r.exported).toMatchObject({ columns: 6, rows: ['front', 'right_side'], dest: 'game/imp-g' });
+    const m = JSON.parse(readFileSync(join(work, 'game/imp-g/imp-g_manifest.json'), 'utf8'));
     expect(m).toMatchObject({ quality: 'candidate', frame_size: [32, 32], sheet_size: [192, 64], directions: { left: { row: 1, flip_h: true } }, provenance: { assetId: 'imp-g', aiUsed: true, rightsReviewed: false, exportFile: 'imp-g_sheet.png' } });
     expect(m.directions).not.toHaveProperty('up');
     expect(() => importCommand('g.spec.json', work, { target: 'godot-rowsheet', out: '@seonggeom' })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));

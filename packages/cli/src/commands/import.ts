@@ -51,7 +51,7 @@ export function runImport(specPath: string, cwd: string): Imported {
     rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, dedupe: spec.dedupe, background: spec.background,
     palette: { max: spec.palette.max, ...(fixed ? { fixed } : {}) },
     ...(targetHeight !== undefined ? { targetHeight } : {}),
-    ...(bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16) } : {}),
+    ...(spec.outline === 'bible' && bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16) } : {}),
   });
   const palette: Palette = { colors: Uint32Array.from([0, ...result.palette.map((c) => ((c << 8) | 255) >>> 0)]), names: ['transparent', ...result.palette.map((_, i) => `import-${i + 1}`)] };
   return { spec, bible, rules, result, palette, sourceHash: createHash('sha256').update(bytes).digest('hex'), cell };
@@ -123,9 +123,9 @@ export function probeCommand(pngPath: string, cwd: string, alphaThreshold = 128)
     `# probe: ${pngPath}`, '', '| 항목 | 값 |', '| --- | --- |',
     `| 스프라이트 | ${p.sprites} |`, `| 줄 | ${p.rows} (${p.perRow.join(' · ')}) |`,
     `| 키(px) | ${range(p.height)} |`, `| 폭(px) | ${range(p.width)} |`,
-    `| 잘림 | ${p.clipped.length}${p.clipped.length ? ` (#${p.clipped.join(', #')})` : ''} |`,
+    `| 잘림 | ${p.clipped.length}${p.clipped.length ? ` (${p.clipped.map((i) => `#${i} ${(p.clippedEdges[i] ?? []).join('·')}`).join(', ')})` : ''} |`,
     `| 고유 프레임 | ${p.unique} |`, `| 색 수 | ${p.colors} |`, `| 반투명 픽셀 | ${p.semiAlpha} |`,
   ];
   writeFileEnsured(out, Buffer.from(table.join('\n') + '\n'));
-  return { ok: true as const, cmd: 'import-probe', sprites: p.sprites, rows: p.rows, perRow: p.perRow, clipped: p.clipped.length, unique: p.unique, colors: p.colors, out: relative(cwd, out) };
+  return { ok: true as const, cmd: 'import-probe', sprites: p.sprites, rows: p.rows, perRow: p.perRow, clipped: p.clipped.length, clippedAt: p.clippedEdges, unique: p.unique, colors: p.colors, out: relative(cwd, out) };
 }

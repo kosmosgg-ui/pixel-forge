@@ -59,8 +59,6 @@ export interface SegmentOptions {
   refHeight?: number;
   /** 기준 키 대비 이 비율 미만이면 조각(0.4) */
   smallRatio?: number;
-  /** 이진화 전 원본 알파 — 잘림 판정용(이진화로 지워진 옅은 테두리가 가장자리에서 잘린 것도 잡는다) */
-  rawAlpha?: Uint8Array;
 }
 
 /**
@@ -82,8 +80,7 @@ export function segmentSprites(img: RgbaImage, o: SegmentOptions = {}): Sprite[]
   const comps = byLabel.filter((c): c is Comp => c !== undefined && count > 0);
   const heights = comps.map((c) => c.y1 - c.y0 + 1).sort((a, b) => a - b);
   const ref = o.refHeight ?? heights[Math.floor(heights.length / 2)] ?? 0;
-  const r = o.dilate ?? 2;
-  return mergeSmall(comps, ref, o.smallRatio ?? 0.4).map((c) => ({ ...cropComp(img, label, c), clipped: touchesEdge(img, c, r, o.rawAlpha) }));
+  return mergeSmall(comps, ref, o.smallRatio ?? 0.4).map((c) => ({ ...cropComp(img, label, c), clipped: edgesTouched(img, c).length > 0, edges: edgesTouched(img, c) }));
 }
 
 function cropComp(img: RgbaImage, label: Int32Array, c: Comp): Sprite {
@@ -96,13 +93,10 @@ function cropComp(img: RgbaImage, label: Int32Array, c: Comp): Sprite {
   return { x: c.x0, y: c.y0, w: cw, h: ch, img: { w: cw, h: ch, rgba: out }, clipped: false };
 }
 
-/** 성분 bbox(± r)에 걸친 이미지 가장자리 칸 중 불투명(원본 알파 > 0)이 있으면 잘림 */
-function touchesEdge(img: RgbaImage, c: Comp, r: number, raw?: Uint8Array): boolean {
-  if (c.x0 === 0 || c.y0 === 0 || c.x1 === img.w - 1 || c.y1 === img.h - 1) return true;
-  if (!raw) return false;
-  const a = (x: number, y: number) => (raw[y * img.w + x] ?? 0) > 0;
-  const xs = [Math.max(0, c.x0 - r), Math.min(img.w - 1, c.x1 + r)] as const, ys = [Math.max(0, c.y0 - r), Math.min(img.h - 1, c.y1 + r)] as const;
-  for (let x = xs[0]; x <= xs[1]; x++) if ((c.y0 <= r && a(x, 0)) || (c.y1 >= img.h - 1 - r && a(x, img.h - 1))) return true;
-  for (let y = ys[0]; y <= ys[1]; y++) if ((c.x0 <= r && a(0, y)) || (c.x1 >= img.w - 1 - r && a(img.w - 1, y))) return true;
-  return false;
+/**
+ * rule: import.clipped — 잘림 = 알파 ≥ 기준(이진화 후 불투명) 픽셀이 이미지 바깥 1px 행·열에 닿은 스프라이트(사용자 결정 P8fix 2).
+ * 팽창 마스크나 옅은 원본 알파로 재지 않는다(기획 측정 3은 팽창 마스크 값이었다). 닿은 변을 돌려준다.
+ */
+export function edgesTouched(img: RgbaImage, c: { x0: number; y0: number; x1: number; y1: number }): string[] {
+  return [c.y0 === 0 ? 'top' : '', c.y1 === img.h - 1 ? 'bottom' : '', c.x0 === 0 ? 'left' : '', c.x1 === img.w - 1 ? 'right' : ''].filter(Boolean);
 }

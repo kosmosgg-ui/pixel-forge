@@ -1,8 +1,8 @@
 {
-  "$comment": "seonggeom export 타깃 — 게임이 읽는 형식은 samples/seonggeom_sera_manifest.json. 후보 폴더에만 쓴다(게임 규칙: 승인 후에만 asset binding 변경)",
+  "$comment": "seonggeom export 타깃 — 게임이 읽는 형식은 samples/seonggeom_sera_manifest.json. @seonggeom(.forge/targets.local.json)이 이미 <저장소>/outputs/geometry-prototype/art/candidates를 가리키므로 dir은 '.'(→ candidates/<assetId>/). 후보 폴더에만 쓴다(게임 규칙: 승인 후에만 asset binding 변경)",
   "adapter": "godot-rowsheet",
   "out": "@seonggeom",
-  "dir": "art/candidates",
+  "dir": ".",
   "version": "pixel-forge-P8-import",
   "rows": [
     {

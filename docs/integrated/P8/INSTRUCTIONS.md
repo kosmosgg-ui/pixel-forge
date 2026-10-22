@@ -64,7 +64,7 @@ GPT 등 이미지 AI가 만든 "도트풍" 시트는 그림 수준은 높지만 
 ## 7. 첫 적용 게임: 「성검의 맹세」(seonggeom) — 사용자 결정 (2026-10-22)
 범용 툴 원칙 유지: 게임 이름·수치는 코드에 넣지 않고 `data/projects/seonggeom/` 바이블·타깃 설정으로만 둔다.
 - 아트 방향(2026-10-22 18:31 최종): **사실 비례(약 6등신) 애니풍 도트** — 기획서 v1.2 원래 방향. 생산 = GPT가 **깔끔한 애니 일러스트**(굵은 선·평평한 색·명암 2~3단, 흰색/초록 단색 배경)를 그리고 `forge import`가 도트로 변환. 입력이 도트풍이 아니라 일러스트인 경우가 기본이다(1-1 해상도 맞춤의 BOX 축소로 처리, 흰 배경은 1단계 배경 처리). 근거 샘플: samples/sera_ref_tall_gpt.png → 64px 결과가 docs/integrated/P7close/calibration-v2/A_gpt-import-sera.png.
-- 화면: 게임 기준 해상도 640×360, 엔진에서 정수 2배(1280×720)·3배(1920×1080) 확대. 에셋은 **1배 논리 크기**로만 만든다(미리 확대 금지).
+- 화면(P8fix 3에서 변경: 뷰포트 1280×720 그대로, 캐릭터만 정수 2배·짝수 스냅 — 바이블 display): ~~게임 기준 해상도 640×360, 엔진에서 정수 2배(1280×720)·3배(1920×1080) 확대.~~ 에셋은 **1배 논리 크기**로만 만든다(미리 확대 금지).
 - 크기(사용자 승인, Gate C에서 조정 가능): 주인공 키 64px(셀 64×80, 발 앵커 (32,78) — 게임 기존 계약 유지), 일반 적 키 52px(셀 64×64), 보스 키 96px(셀 128×128). 기존 데이터의 표시 키 비율(72:60:110)을 유지한 값.
 - 방향: 주인공·보스 4방향(front, back, side + 좌우 반전), 일반 적 side 1방향 + 반전.
 - 출처 기록: manifest의 출처 필드를 게임의 provenanceFields 이름과 맞춘다 — `assetId, creator, sourceUrl, license, aiUsed, promptRecord, editedBy, sourceFile, exportFile, rightsReviewed, creditText`. import 모드는 `aiUsed: true`, `rightsReviewed: false`(사람만 true로 바꾼다).
@@ -79,7 +79,7 @@ samples/seonggeom_sera_manifest.json이 게임이 읽는 형식이다. 새 expor
 
 ## 9. 첫 생산 시험 (1~8 완료 후)
 세라 1명: idle 4, walk 6, attack 5, hurt 3 × 4방향. GPT 원본은 사용자가 제공한다(samples/sera_walk_gpt_raw.png가 walk-side 원본).
-- 산출: 시트·manifest + 640×360 장면에 1배로 놓고 2배 확대한 미리보기(samples/sd56_gameview_720p.png와 같은 방식) 1장.
+- 산출: 시트·manifest + 1280×720 화면에 2배로 놓은 장면 미리보기 1장(P8fix 3 — 640×360 전환 취소).
 - 사용자에게 Gate C 판단용으로 보고. 게임 저장소에는 candidates 폴더에만 쓴다.
 
 ## 하지 말 것

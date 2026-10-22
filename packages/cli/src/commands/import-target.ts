@@ -60,5 +60,5 @@ export function exportImportTarget(im: Imported, cwd: string, target: string, ou
   dests.push(resolveInside(base, join(t.dir, spec.id)));
   for (const d of dests) { writeFileEnsured(join(d, sheetName), png); writeFileEnsured(join(d, manifestName), json); }
   const dest = dests[1] ?? local;
-  return { target, columns: sheet.columns, rows: sheet.rows, sheetSize: [sheet.sheet.w, sheet.sheet.h], local: relative(cwd, local), dest: out.startsWith('@') ? `${out}/${t.dir}/${spec.id}` : relative(cwd, dest) };
+  return { target, columns: sheet.columns, rows: sheet.rows, sheetSize: [sheet.sheet.w, sheet.sheet.h], local: relative(cwd, local), dest: out.startsWith('@') ? `${out}/${join(t.dir, spec.id)}` : relative(cwd, dest) };
 }

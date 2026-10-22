@@ -37,6 +37,8 @@ export const bibleSchema = z.preprocess(splitSizeClasses, z
   .object({
     id: z.string().min(1),
     internalResolution: sizePx.optional(),
+    /** 게임 화면 표시(엔진이 쓴다): 뷰포트 px, 스프라이트 정수 배율, 위치 스냅 px — 에셋은 1배 논리 크기로만 만든다 */
+    display: z.object({ viewport: sizePx, spriteScale: z.number().int().min(1), snap: z.number().int().min(1) }).optional(),
     /** 프리렌더: 월드 1단위당 px(모든 모델 공통 — 모델 간 실제 키 차이 보존). 없으면 Spec height로 맞춤 */
     pixelsPerUnit: z.number().positive().optional(),
     view: z.enum(['side', 'topdown', 'iso']),

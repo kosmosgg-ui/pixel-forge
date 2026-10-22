@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { feetAnchor, placeInCell } from './align.js';
 import { identityCheck, jitterCheck, paletteDeltaCheck } from './checks.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
+import { silhouetteMatch } from './match.js';
 import { medianCut } from './palette.js';
 import { importImage, type ImportOptions } from './pipeline.js';
 import { probeImage } from './probe.js';
@@ -168,5 +169,29 @@ describe('import layout row', () => {
     figure(img, 2, 2); figure(img, 22, 2, 18); figure(img, 42, 2, 16);
     const r = importImage(img, { ...OPTS, rows: [{ anim: 'idle', dir: 's', row: 0, frames: [0, 1] }, { anim: 'run', dir: 's', row: 0, frames: [2] }] });
     expect(r.frames.map((f) => `${f.anim}_${f.index}:${f.source.sprite}`)).toEqual(['idle_0:0', 'idle_1:1', 'run_0:2']);
+  });
+});
+
+describe('import 배경 #00FF00 (P8fix 4 — GPT 원본 기본 배경)', () => {
+  it('초록 배경 + 가장자리 번진 초록은 투명, 캐릭터 안 연두색은 남는다 / 마젠타 배경도 같은 규칙', () => {
+    for (const bg of [[0, 255, 0, 255], [255, 0, 255, 255]] as [number, number, number, number][]) {
+      const img = canvas(24, 24, bg);
+      rect(img, 3, 3, 20, 20, [bg[0] ? 245 : 10, bg[1] ? 240 : 12, bg[2] ? 238 : 14, 255]); // 배경색에 가까운 번짐 1px 테두리
+      rect(img, 4, 4, 19, 19, [30, 30, 40, 255]);
+      rect(img, 6, 6, 17, 17, [120, 200, 40, 255]);
+      removeBackgroundInPlace(img);
+      const at = (x: number, y: number) => img.rgba[(y * 24 + x) * 4 + 3];
+      expect([at(0, 0), at(12, 0), at(3, 12)]).toEqual([0, 0, 0]);
+      expect([at(10, 10), at(4, 4)]).toEqual([255, 255]);
+    }
+  });
+});
+
+describe('재현성 측정(P8fix 1)', () => {
+  it('발 기준 정렬: 같은 그림을 옆으로 옮겨도 IoU 1·ΔE 0, 반쪽만 겹치면 IoU < 1', () => {
+    const a = canvas(32, 32), b = canvas(32, 32), c = canvas(32, 32);
+    figure(a, 4, 6); figure(b, 18, 7); rect(c, 18, 7, 21, 26, [200, 40, 40, 255]); rect(c, 20, 25, 23, 26, [20, 20, 20, 255]);
+    expect(silhouetteMatch(a, b)).toMatchObject({ iou: 1, deltaE: 0, offset: [-14, -1] });
+    expect(silhouetteMatch(a, c).iou).toBeLessThan(0.7);
   });
 });

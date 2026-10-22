@@ -2,7 +2,6 @@ import { ForgeError, srgbToOklab } from '@pixel-forge/core';
 import { outlineInPlace, placeInCell, ringStats, type IndexFrame } from './align.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { medianCut, quantize } from './palette.js';
-import { alphaOf } from './probe.js';
 import { dedupeRow, rowsByKmeans } from './rows.js';
 import { boxDownscale } from './scale.js';
 import { segmentSprites } from './segment.js';
@@ -62,7 +61,7 @@ function pick(rows: Sprite[][], o: ImportOptions, warnings: ImportWarning[]): { 
     const sprites = idx.map((i) => {
       const s = row[i];
       if (!s) throw new ForgeError('import.layout', `${ri}번 줄에 ${i}번 스프라이트가 없습니다(${row.length}개)`);
-      if (s.clipped) clipped.push(`${ri}:${i}`);
+      if (s.clipped) clipped.push(`${ri}:${i}(${(s.edges ?? []).join('·')})`);
       return { s, i };
     });
     return { anim: r.anim, dir: r.dir, row: ri, sprites };
@@ -78,10 +77,9 @@ function pick(rows: Sprite[][], o: ImportOptions, warnings: ImportWarning[]): { 
 export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   const img: RgbaImage = { w: src.w, h: src.h, rgba: src.rgba.slice() };
   if (o.background === 'auto') removeBackgroundInPlace(img);
-  const rawAlpha = alphaOf(img);
   binarizeAlphaInPlace(img, o.alphaThreshold);
   const warnings: ImportWarning[] = [];
-  const picked = pick(rowsByKmeans(segmentSprites(img, { rawAlpha }), imageRows(o)), o, warnings);
+  const picked = pick(rowsByKmeans(segmentSprites(img), imageRows(o)), o, warnings);
   const frameMap: Record<string, number[]> = {};
   const chosen = picked.map((p) => {
     const d = o.dedupe ? dedupeRow(p.sprites.map((x) => x.s)) : { unique: p.sprites.map((x) => x.s), frameMap: p.sprites.map((_, i) => i) };

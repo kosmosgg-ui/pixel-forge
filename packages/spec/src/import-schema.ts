@@ -53,6 +53,8 @@ export const importFields = {
   dedupe: z.boolean().default(true),
   /** 모든 프레임에 하나의 공통 배율: 가장 큰 프레임 키 → targetHeight(px). 생략하면 원본 크기 */
   targetHeight: z.number().int().min(4).optional(),
+  /** bible = 바이블 outline 설정(이미 어두운 테두리면 생략), none = 외곽선을 더하지 않음(원본 선을 그대로 — 보정 기준 A의 생성 설정) */
+  outline: z.enum(['bible', 'none']).default('bible'),
   /** auto = 불투명 배경이면 모서리 최빈색 중 가장자리와 이어진 영역만 투명(흰 천 내부 보존), none = 처리 안 함 */
   background: z.enum(['auto', 'none']).default('auto'),
 };

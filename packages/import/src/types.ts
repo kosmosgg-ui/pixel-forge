@@ -16,6 +16,8 @@ export interface Sprite {
   img: RgbaImage;
   /** 이미지 가장자리에 닿음(import.clipped) */
   clipped: boolean;
+  /** 잘림이면 닿은 변(top·bottom·left·right) */
+  edges?: string[];
 }
 
 export interface ImportWarning {
