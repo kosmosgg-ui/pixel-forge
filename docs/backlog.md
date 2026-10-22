@@ -52,3 +52,5 @@
 - [P8] anim.temporal-noise(P7 5)가 qa에 아직 없음 — 생기면 import에도 적용
 - [P8 리뷰·제안] import 검사·처리 수치(jitter 1px, palette-delta 0.06, identity 0.25·중앙값 3배, DARK_L 0.35, 외곽선 생략 0.7, feet-center 바닥 2px)를 rules에 import 절로 옮기기 — 수치 위치 변경이라 사용자 승인 후
 - [P8 리뷰] jitterCheck 대상 anim 'idle' 고정, target.dir가 후보 폴더(art/candidates)로 시작하는지 스키마 검사, DEFAULT_FPS 중복 정리
+- [P8fix 리뷰] import-samples 골든 테스트는 원본(gitignore)이 있는 환경에서만 돌고 repo out/에 쓴다 — CI에서 돌리려면 원본 보관 위치 결정 필요
+- [P8fix art-judge] 새 A(6등신)는 1배 얼굴·표정 판독이 B보다 약함 — 이후 "=A" 판정 축 흔들림 주의(보정 세트 축 재검토 후보)

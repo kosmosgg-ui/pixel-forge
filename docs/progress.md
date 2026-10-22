@@ -2,9 +2,13 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P8-9 대기**(세라 생산 — 사용자 GPT 원본·targets.local.json 대기)
+현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P8] 마감(P8fix, 사용자 승인) | 기준 A 교체(6등신 세라 47×64), 재현성 = 발 정렬 실루엣 IoU + ΔE(silhouetteMatch, Spec outline none), 잘림 정의 고정(알파 ≥ 128 픽셀이 바깥 1px — 골든 sera_gpt_raw 1개 #19 오른쪽), 바이블 display 1280×720·2배·스냅 2(640×360 취소), 초록·마젠타 배경 테스트, colorBudget 32 승인
+  - 수락: pnpm test → Tests 264 passed(test-runner, 원본 골든 2개 실행), 재현성 IoU 0.9985·ΔE 0.0445, art-judge v2 보정 유효(새 A), sera import B–A
+  - code-reviewer: 높음·중간 0, 낮음 3 → 2 수정(ΔE 색 캐시·잘림 1회 계산), 1 backlog(골든 원본 위치)
+  - targets.local.json: seonggeom 클론 없음 → 작성 안 함(G1에서)
 - [P8] 1~8 완료(9 전 정지) | import 모드(packages/import 순수: 가장자리 배경·이진화·연결 성분·줄·잘림·dedupe·공통 배율 BOX·median-cut·발 앵커·전 프레임 외곽선), QA(palette-delta·jitter·identity), forge import/--probe, data/projects/seonggeom(바이블·target·수락 Spec), godot-rowsheet(후보 폴더만, candidate·provenance 11·qa)
   - 수락: pnpm test → Tests 260 passed(test-runner), 합성 5종 통과, manifest 키 구조 테스트 통과, art-judge sera_gpt_raw B–A(보정 유효)
   - 불일치: probe 잘림 2(기대 3), ref_tall→A 재현 차이 97%(기준 ≤5%, A bbox 32×59 vs 48×64) — 사용자 확인 대기

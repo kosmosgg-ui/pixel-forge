@@ -80,7 +80,10 @@ export function segmentSprites(img: RgbaImage, o: SegmentOptions = {}): Sprite[]
   const comps = byLabel.filter((c): c is Comp => c !== undefined && count > 0);
   const heights = comps.map((c) => c.y1 - c.y0 + 1).sort((a, b) => a - b);
   const ref = o.refHeight ?? heights[Math.floor(heights.length / 2)] ?? 0;
-  return mergeSmall(comps, ref, o.smallRatio ?? 0.4).map((c) => ({ ...cropComp(img, label, c), clipped: edgesTouched(img, c).length > 0, edges: edgesTouched(img, c) }));
+  return mergeSmall(comps, ref, o.smallRatio ?? 0.4).map((c) => {
+    const edges = edgesTouched(img, c);
+    return { ...cropComp(img, label, c), clipped: edges.length > 0, edges };
+  });
 }
 
 function cropComp(img: RgbaImage, label: Int32Array, c: Comp): Sprite {

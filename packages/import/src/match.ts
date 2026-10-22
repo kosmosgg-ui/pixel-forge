@@ -19,20 +19,35 @@ function feet(i: RgbaImage): [number, number] {
 export function silhouetteMatch(a: RgbaImage, b: RgbaImage): { iou: number; deltaE: number; offset: [number, number] } {
   const fa = feet(a), fb = feet(b);
   const bx = Math.round(fa[0] - fb[0]), by = fa[1] - fb[1];
-  let best = { iou: -1, deltaE: 0, offset: [0, 0] as [number, number] };
+  let iou = -1, offset: [number, number] = [0, 0];
   for (let dy = by - 1; dy <= by + 1; dy++) for (let dx = bx - 1; dx <= bx + 1; dx++) {
-    let inter = 0, uni = 0, de = 0;
+    let inter = 0, uni = 0;
     for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
       const p = opaque(a, x, y), q = opaque(b, x - dx, y - dy);
       if (p || q) uni++;
-      if (!p || !q) continue;
-      inter++;
-      const k = (y * a.w + x) * 4, j = ((y - dy) * b.w + x - dx) * 4;
-      const l1 = srgbToOklab(a.rgba[k] ?? 0, a.rgba[k + 1] ?? 0, a.rgba[k + 2] ?? 0), l2 = srgbToOklab(b.rgba[j] ?? 0, b.rgba[j + 1] ?? 0, b.rgba[j + 2] ?? 0);
-      de += Math.hypot(l1.L - l2.L, l1.a - l2.a, l1.b - l2.b);
+      if (p && q) inter++;
     }
-    const iou = uni ? inter / uni : 0;
-    if (iou > best.iou) best = { iou, deltaE: inter ? de / inter : 0, offset: [dx, dy] };
+    const v = uni ? inter / uni : 0;
+    if (v > iou) { iou = v; offset = [dx, dy]; }
   }
-  return best;
+  return { iou, deltaE: meanDeltaE(a, b, offset), offset };
+}
+
+/** 겹친 불투명 픽셀 평균 OKLab ΔE — 색 변환은 고유 색마다 한 번(픽셀마다 객체를 만들지 않게) */
+function meanDeltaE(a: RgbaImage, b: RgbaImage, [dx, dy]: readonly [number, number]): number {
+  const cache = new Map<number, Float64Array>();
+  const lab = (img: RgbaImage, k: number): Float64Array => {
+    const rgb = ((img.rgba[k] ?? 0) << 16) | ((img.rgba[k + 1] ?? 0) << 8) | (img.rgba[k + 2] ?? 0);
+    let v = cache.get(rgb);
+    if (!v) { const o = srgbToOklab(rgb >> 16, (rgb >> 8) & 255, rgb & 255); v = Float64Array.of(o.L, o.a, o.b); cache.set(rgb, v); }
+    return v;
+  };
+  let n = 0, de = 0;
+  for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
+    if (!opaque(a, x, y) || !opaque(b, x - dx, y - dy)) continue;
+    const p = lab(a, (y * a.w + x) * 4), q = lab(b, ((y - dy) * b.w + x - dx) * 4);
+    de += Math.hypot((p[0] ?? 0) - (q[0] ?? 0), (p[1] ?? 0) - (q[1] ?? 0), (p[2] ?? 0) - (q[2] ?? 0));
+    n++;
+  }
+  return n ? de / n : 0;
 }
