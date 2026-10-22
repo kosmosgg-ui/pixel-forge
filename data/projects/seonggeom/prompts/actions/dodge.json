@@ -1,0 +1,13 @@
+{
+  "id": "dodge",
+  "title": "quick dodge roll",
+  "frames": 3,
+  "fps": 14,
+  "loop": false,
+  "poses": [
+    "frame 1: crouch and lean into the dodge",
+    "frame 2: low dash, body tucked, cape trailing",
+    "frame 3: landing in a crouch, ready to stand"
+  ],
+  "viewExtra": {}
+}

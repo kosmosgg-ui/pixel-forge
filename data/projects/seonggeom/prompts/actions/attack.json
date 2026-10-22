@@ -1,0 +1,15 @@
+{
+  "id": "attack",
+  "title": "sword slash attack",
+  "frames": 5,
+  "fps": 14,
+  "loop": false,
+  "poses": [
+    "frame 1: anticipation, sword raised back over the shoulder",
+    "frame 2: start of the swing, body twists forward",
+    "frame 3: the slash, sword fully extended forward",
+    "frame 4: follow-through, sword low across the body",
+    "frame 5: recovery, returning to a ready stance"
+  ],
+  "viewExtra": {}
+}

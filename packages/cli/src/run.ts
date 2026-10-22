@@ -13,6 +13,9 @@ import { compareCommand } from './commands/compare.js';
 import { sceneCommand } from './commands/scene.js';
 import { lineupCommand } from './commands/lineup.js';
 import { importCommand, probeCommand } from './commands/import.js';
+import { promptsCommand } from './commands/prompts.js';
+import { intakeCommand } from './commands/intake.js';
+import { makeCommand } from './commands/make.js';
 import { validateCommand } from './commands/validate.js';
 import { watchCommand } from './commands/watch.js';
 
@@ -45,6 +48,14 @@ export interface RunInput {
   obs?: string;
   /** import --probe <png> */
   probe?: boolean;
+  /** intake --as <actorId>/<key>, --at <ISO 시각> */
+  as?: string;
+  at?: string;
+  /** make --action --dir --pick --judge */
+  action?: string;
+  dir?: string;
+  pick?: string;
+  judge?: string;
   /** apply·watch: 검수 확인 생략 */
   skipReview?: boolean;
 }
@@ -80,6 +91,13 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> [--target godot-rowsheet --out <dir|@이름>] | --probe <png>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
+  if (cmd === 'prompts') return promptsCommand(need('<actorId>'), input.cwd);
+  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}) });
+  if (cmd === 'make') {
+    const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');
+    if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back>');
+    return makeCommand(actor, input.cwd, { action: input.action, dir: input.dir, ...(input.pick ? { pick: input.pick } : {}), ...(input.judge ? { judge: input.judge } : {}), ...(input.out ? { out: input.out } : {}) });
+  }
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) });
   if (cmd === 'watch') {

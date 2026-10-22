@@ -1,0 +1,13 @@
+{
+  "id": "hit",
+  "title": "hurt reaction",
+  "frames": 3,
+  "fps": 16,
+  "loop": false,
+  "poses": [
+    "frame 1: impact, head and torso snap backward",
+    "frame 2: stagger, knees bent, arm raised to guard",
+    "frame 3: recovering to a ready stance"
+  ],
+  "viewExtra": {}
+}

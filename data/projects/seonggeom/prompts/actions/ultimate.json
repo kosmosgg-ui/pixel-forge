@@ -1,0 +1,16 @@
+{
+  "id": "ultimate",
+  "title": "ultimate holy sword technique",
+  "frames": 6,
+  "fps": 12,
+  "loop": false,
+  "poses": [
+    "frame 1: sword raised high with both hands",
+    "frame 2: deep stance, gathering power",
+    "frame 3: leap forward",
+    "frame 4: huge overhead downward slash",
+    "frame 5: sword hits the ground in front",
+    "frame 6: standing up, sword lowered"
+  ],
+  "viewExtra": {}
+}

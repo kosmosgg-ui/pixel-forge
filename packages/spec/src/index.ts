@@ -8,3 +8,4 @@ export * from './refs.js';
 export * from './anim-schema.js';
 export * from './import-schema.js';
 export * from './target-schema.js';
+export * from './prompt-schema.js';

@@ -54,3 +54,8 @@
 - [P8 리뷰] jitterCheck 대상 anim 'idle' 고정, target.dir가 후보 폴더(art/candidates)로 시작하는지 스키마 검사, DEFAULT_FPS 중복 정리
 - [P8fix 리뷰] import-samples 골든 테스트는 원본(gitignore)이 있는 환경에서만 돌고 repo out/에 쓴다 — CI에서 돌리려면 원본 보관 위치 결정 필요
 - [P8fix art-judge] 새 A(6등신)는 1배 얼굴·표정 판독이 B보다 약함 — 이후 "=A" 판정 축 흔들림 주의(보정 세트 축 재검토 후보)
+- P9-API: 설계 완료, 사용자 결정으로 보류(docs/integrated/G1-P9/G1/INSTRUCTIONS_P9_gen.md)
+- [P9-M] intake는 PNG만(JPEG·WebP 디코더가 의존성 허용 목록 밖) — 필요하면 의존성 승인 요청
+- [P9-M] 뒷면 얼굴 자동 검출(눈 색 픽셀) 미구현 — 지금은 --judge 관찰("얼굴")로만 backface 문구
+- [P9-M] make 후보 시트는 동작마다 팔레트가 따로 — 캐릭터 단위 색 통일(공통 팔레트) 후속
+- [P9-M] import.oversize(셀 밖으로 나감)를 고치기 문구 "크기 다름"에 매핑 — 원인이 망토·검 등 가로 넘침이면 별도 문구 검토

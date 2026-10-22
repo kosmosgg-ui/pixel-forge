@@ -1,0 +1,14 @@
+{
+  "id": "death",
+  "title": "defeat",
+  "frames": 4,
+  "fps": 8,
+  "loop": false,
+  "poses": [
+    "frame 1: struck, body bends forward",
+    "frame 2: falling to the knees, sword drops",
+    "frame 3: falling sideways",
+    "frame 4: lying on the ground, still"
+  ],
+  "viewExtra": {}
+}

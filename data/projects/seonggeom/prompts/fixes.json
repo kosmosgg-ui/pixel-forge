@@ -1,0 +1,46 @@
+{
+  "$comment": "고치기 문구 8종(키트) — {{frame}}·{{frames}}는 make가 채운다. 같은 ChatGPT 대화에서 보낸다",
+  "frameCount": "The previous image did not have exactly {{frames}} frames. Draw exactly {{frames}} frames in one single row.",
+  "fixes": [
+    {
+      "id": "identity",
+      "title": "한 프레임 다른 캐릭터",
+      "text": "Frame {{frame}} looks like a different character. Redraw the same sheet so that frame {{frame}} has exactly the same hair, armor, colors and proportions as the other frames. Keep the other frames the same."
+    },
+    {
+      "id": "legs",
+      "title": "다리 안 움직임",
+      "text": "The legs barely move. Redraw the same sheet with a clear stride: the feet must alternate forward and back between frames, with visible knee bends."
+    },
+    {
+      "id": "clipped",
+      "title": "잘림",
+      "text": "Part of the character is cut off at the image edge. Redraw the same sheet with at least 40px of empty background around every figure, including the sword tip and the cape."
+    },
+    {
+      "id": "size",
+      "title": "크기 다름",
+      "text": "The figures are different sizes or drift up and down. Redraw the same sheet with every figure exactly the same height and the feet on the same baseline."
+    },
+    {
+      "id": "background",
+      "title": "배경",
+      "text": "The background is not a single flat color. Redraw the same sheet on a flat pure green #00FF00 background, no checkerboard, no gradient, no shadow."
+    },
+    {
+      "id": "detail",
+      "title": "너무 세밀",
+      "text": "The drawing is too detailed for a small game sprite. Redraw the same sheet with bolder lines, larger flat color areas and fewer small details."
+    },
+    {
+      "id": "text",
+      "title": "텍스트",
+      "text": "Remove all text, numbers and labels. Redraw the same sheet with only the character frames."
+    },
+    {
+      "id": "backface",
+      "title": "뒷면이 옆모습",
+      "text": "This should be a back view, but the face is visible. Redraw the same sheet from directly behind: show the back of the head, the ponytail and the cape, no face."
+    }
+  ]
+}

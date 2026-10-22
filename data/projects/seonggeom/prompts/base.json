@@ -1,0 +1,33 @@
+{
+  "$comment": "「세라 GPT 이미지 프롬프트 키트」 공통 스타일(사용자 승인 P9-M, 키트 원문 미수신 — 지시문 요약 기준). 조립은 {{이름}} 치환만",
+  "style": [
+    "clean anime game illustration",
+    "bold clean dark lineart",
+    "flat cel shading with 2-3 tones",
+    "no gradients, no glow, no texture",
+    "realistic proportions, about 6 heads tall"
+  ],
+  "background": {
+    "default": "flat pure green #00FF00 background, one solid color, no pattern",
+    "alt": "flat pure magenta #FF00FF background, one solid color, no pattern"
+  },
+  "rules": [
+    "no text, no numbers, no labels",
+    "no shadow, no ground, no effects",
+    "at least 40px of empty background around every figure",
+    "every figure the same size with the feet on the same baseline",
+    "keep the character design exactly the same in every frame"
+  ],
+  "views": {
+    "side": "side view facing right",
+    "front": "front view facing the viewer",
+    "back": "back view facing away from the viewer, the face is not visible"
+  },
+  "importDirs": {
+    "side": "e",
+    "front": "s",
+    "back": "n"
+  },
+  "template": "{{character}}\n\nDraw exactly {{frames}} frames of the {{action}} animation, {{view}}, arranged left to right in one single row, evenly spaced.\n{{poses}}\n{{extra}}\n\nStyle: {{style}}.\nBackground: {{background}}.\nRules: {{rules}}.",
+  "turnaround": "{{character}}\n\nCharacter turnaround sheet: exactly 3 full-body figures in one row, left to right: front view, side view facing right, back view. Neutral standing pose, arms relaxed, sword in its sheath or held down.\n\nStyle: {{style}}.\nBackground: {{background}}.\nRules: {{rules}}."
+}

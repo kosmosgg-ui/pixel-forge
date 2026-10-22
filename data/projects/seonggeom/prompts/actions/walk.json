@@ -1,0 +1,20 @@
+{
+  "id": "walk",
+  "title": "walk cycle",
+  "frames": 6,
+  "fps": 10,
+  "loop": true,
+  "poses": [
+    "frame 1: contact, right foot forward with heel touching the ground, left foot back",
+    "frame 2: down, weight on the right leg, knees bent",
+    "frame 3: passing, left leg swings past the right leg",
+    "frame 4: contact, left foot forward with heel touching the ground, right foot back",
+    "frame 5: down, weight on the left leg, knees bent",
+    "frame 6: passing, right leg swings past the left leg"
+  ],
+  "viewExtra": {
+    "front": "Arms and legs alternate clearly even in front view; the legs must visibly move.",
+    "back": "The legs must visibly move; show the back of the head and the cape."
+  },
+  "stride_px": 24
+}
