@@ -1,20 +1,20 @@
 # Codex 인계 — 「성검의 맹세」 아트 방향·화면 배율 결정 반영 (사용자 승인 2026-10-22)
 
-권위: 최근 명시적 사용자 승인. 기획서 v1.2의 "사실 비례 클래식 SRPG" 아트 기준을 아래 결정이 대체한다.
+권위: 최근 명시적 사용자 승인. 기획서 v1.2의 아트 방향(SD보다 사실적인 비례)은 **유지**하고, 제작 방식·화면 배율·크기·방향을 아래처럼 확정한다.
 범위: 문서·데이터·프로젝트 설정·검수용 연결만. 정상 미션의 asset binding 교체는 Gate C 후 별도 승인.
 작업 규칙은 AGENTS.md 그대로(작업 전 SHA, 격리 브랜치, 허용 파일 제한, 종료 시 해시·명령 기록, Draft PR).
 
 ## 1. 결정 기록
 `data/15_decision_register.json`에 3건 추가:
-- ART-DIR-SD: 아트 방향 = SD(2.5등신) 도트. 생산 = GPT 이미지 생성 → pixel-forge(외부 오프라인 툴) import·정리 → 후보 제출. 이전 "사실 비례 SRPG" 결정은 superseded로 표시(삭제 금지).
+- ART-PIPE-GPT: 아트 방향 = 사실 비례(약 6등신) 애니풍 도트(v1.2 유지). 생산 = GPT 애니 일러스트 → pixel-forge(외부 오프라인 툴) import로 도트 변환·정리 → 후보 제출. 기존 "Character Master + 파츠 + native 재작화" 제작 방식은 superseded로 표시(삭제 금지). 원작 픽셀 분석(SF-005)은 팔레트·시점 참고 자료로만 유지.
 - DISPLAY-INT-SCALE: 기준 해상도 640×360, 정수 배율 확대. 기존 64×80 → 96×112 비정수 표시 폐기.
 - DIR-SPLIT: 주인공·보스 4방향(front/back/side+반전), 일반 적 side+반전. "추후 재검토" 표시.
 
 ## 2. 데이터 갱신
 `data/12_assets_audio_tools.json`
-- `style.genre`: 이미 `SD_anime_2D` — 유지. `finalCharacterDesign`은 false 유지.
+- `style.genre`: `SD_anime_2D` → `anime_proportional_pixel`(약 6등신). 이전 값은 `style.previousGenre`에 보존. `finalCharacterDesign`은 false 유지.
 - `actorPipeline.workingChoice`: Krita 파츠 리깅 → `"gpt_image_plus_pixelforge_import_rowsheet"`. parts 목록은 삭제하지 말고 `deprecated` 키 아래로 이동.
-- `assetRows[*].displayHeight` → `logicalHeight`로 이름 변경, 값: 주인공 60, 일반 적 46, 보스 88. `canvas`: 주인공 [64,80], 적 [48,56], 보스 [112,112].
+- `assetRows[*].displayHeight` → `logicalHeight`로 이름 변경, 값: 주인공 64, 일반 적 52, 보스 96. `canvas`: 주인공 [64,80], 적 [64,64], 보스 [128,128].
 - 주인공·보스 `directions`: `"front_back_side_mirrored"`. 적은 기존 유지.
 - 기획서 6.1의 "논리 64×80 / 발 (32,78)"은 유지, "표시 96×112" 문구만 "정수 배율(2×/3×)"로.
 

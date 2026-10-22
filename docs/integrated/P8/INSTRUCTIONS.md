@@ -2,7 +2,7 @@
 
 CODEX_HANDOFF_seonggeom.md는 게임 저장소(Codex)용이다. 클로드 코드는 읽기만 하고 게임 저장소를 수정하지 않는다(candidates 폴더 쓰기 제외).
 
-(P7close로 P7 마감 — 그대로 P8 진행.) 이 작업은 P7과 파일이 겹치지 않는다(packages/import 신규).
+P7 진행 중이면 P7을 먼저 끝낸다. 이 작업은 P7과 파일이 겹치지 않는다(packages/import 신규).
 참고: samples/sera_gpt_raw.png(사용자가 GPT로 만든 원본, 640×240, 3줄×10칸), samples/sera_clean_preview_2x.png(기획 세션 시제품 결과).
 원본 이미지는 저장소에 커밋하지 않는다(data/import/ 는 .gitignore). 테스트는 코드로 만든 합성 이미지로 한다.
 
@@ -58,14 +58,14 @@ GPT 등 이미지 AI가 만든 "도트풍" 시트는 그림 수준은 높지만 
 ## 6. 수락
 - 합성 테스트: 격자 어긋남, 반투명 테두리, 가장자리 잘림, 중복 프레임, 흰 배경 각각 1케이스.
 - 사용자 원본으로 `--probe` → 결과가 "스프라이트 30, 줄 3, 잘림 3, 고유 프레임 21"과 일치.
-- (P7close 3번 보정) samples/sera_gpt_raw.png(첫 GPT 시트) import 결과가 보정 세트 v2 기준 `B–A` 이상(art-judge). walk 원본(sera_walk_gpt_raw.png)은 A 기준 이미지의 출처라 판정에 쓰지 않는다(순환 판정 금지) — 대신 import 결과 첫 프레임이 calibration-v2/A_gpt-import-sera.png와 픽셀 차이 ≤ 5%인지 재현성 검사로만 쓴다.
+- 원본 import 결과 시트를 samples/sera_clean_preview_2x.png와 나란히 비교한 시트 1장 → art-judge 등급 B 이상.
 - 보고 문서에 비교 시트 경로와 경고 목록.
 
 ## 7. 첫 적용 게임: 「성검의 맹세」(seonggeom) — 사용자 결정 (2026-10-22)
 범용 툴 원칙 유지: 게임 이름·수치는 코드에 넣지 않고 `data/projects/seonggeom/` 바이블·타깃 설정으로만 둔다.
-- 아트 방향: **SD(2.5등신 치비) 도트**. GPT 생성 → `forge import`가 주력 경로.
+- 아트 방향(2026-10-22 18:31 최종): **사실 비례(약 6등신) 애니풍 도트** — 기획서 v1.2 원래 방향. 생산 = GPT가 **깔끔한 애니 일러스트**(굵은 선·평평한 색·명암 2~3단, 흰색/초록 단색 배경)를 그리고 `forge import`가 도트로 변환. 입력이 도트풍이 아니라 일러스트인 경우가 기본이다(1-1 해상도 맞춤의 BOX 축소로 처리, 흰 배경은 1단계 배경 처리). 근거 샘플: samples/sera_ref_tall_gpt.png → 64px 결과가 docs/integrated/P7close/calibration-v2/A_gpt-import-sera.png.
 - 화면: 게임 기준 해상도 640×360, 엔진에서 정수 2배(1280×720)·3배(1920×1080) 확대. 에셋은 **1배 논리 크기**로만 만든다(미리 확대 금지).
-- 크기(바이블 기본값, 사용자 Gate C에서 조정 가능): 주인공 키 60px(셀 64×80, 발 앵커 (32,78) — 게임 기존 계약 유지), 일반 적 키 46px(셀 48×56), 보스 키 88px(셀 112×112). 기존 데이터의 표시 키 비율(72:60:110)을 유지한 값.
+- 크기(사용자 승인, Gate C에서 조정 가능): 주인공 키 64px(셀 64×80, 발 앵커 (32,78) — 게임 기존 계약 유지), 일반 적 키 52px(셀 64×64), 보스 키 96px(셀 128×128). 기존 데이터의 표시 키 비율(72:60:110)을 유지한 값.
 - 방향: 주인공·보스 4방향(front, back, side + 좌우 반전), 일반 적 side 1방향 + 반전.
 - 출처 기록: manifest의 출처 필드를 게임의 provenanceFields 이름과 맞춘다 — `assetId, creator, sourceUrl, license, aiUsed, promptRecord, editedBy, sourceFile, exportFile, rightsReviewed, creditText`. import 모드는 `aiUsed: true`, `rightsReviewed: false`(사람만 true로 바꾼다).
 
