@@ -356,5 +356,6 @@
     "hit",
     "death"
   ],
-  "seed": 1
+  "seed": 1,
+  "attackAnim": "shoot"
 }

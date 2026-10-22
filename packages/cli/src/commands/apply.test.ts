@@ -8,7 +8,12 @@ import { ForgeError } from '@pixel-forge/core';
 import { LEDGER } from '../adapters/dir.js';
 import { applyCommand } from './apply.js';
 import { buildCommand } from './build.js';
-import { reviewScoreCommand } from './review-gate.js';
+import { renderCommand } from './render.js';
+import { REVIEW_CRITERIA, reviewScoreCommand } from './review-gate.js';
+
+const OBS = JSON.stringify(Object.fromEntries(REVIEW_CRITERIA.map((c) => [c, '테스트 관찰'])));
+/** 검수 절차: 검수 시트(studio.png) 렌더 → 관찰 + 점수 기록 */
+const review = (specPath: string, cwd: string, score: number) => { renderCommand(specPath, cwd, [], 4); return reviewScoreCommand(specPath, cwd, score, OBS); };
 
 const repo = fileURLToPath(new URL('../../../../', import.meta.url));
 const work = mkdtempSync(join(tmpdir(), 'forge-apply-'));
@@ -36,7 +41,7 @@ describe('forge apply --target dir', () => {
   beforeAll(() => {
     buildCommand(spec, work);
     // 검수 통과 기록(합격선 18/24) — 검수 게이트 자체는 아래 별도 테스트
-    reviewScoreCommand(spec, work, 20);
+    review(spec, work, 20);
   });
 
   it('<out>/<id>/에 시트 PNG·JSON·manifest 복사, 대상 폴더 밖 파일 변경 0', () => {
@@ -117,9 +122,9 @@ describe('forge apply --target dir', () => {
     buildCommand(mage, work);
     rmSync(join(work, 'out', 'mage', 'review.json'), { force: true });
     expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: false, applied: false, review: expect.stringContaining('검수 기록이 없습니다') });
-    reviewScoreCommand(mage, work, 17);
+    review(mage, work, 17);
     expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: false, review: expect.stringContaining('17/24') });
-    reviewScoreCommand(mage, work, 21);
+    review(mage, work, 21);
     // build가 출력 폴더를 비워도 검수 기록은 남는다
     buildCommand(mage, work);
     expect(applyCommand(mage, work, { out: 'gate' })).toMatchObject({ pass: true, applied: true });
@@ -135,7 +140,25 @@ describe('forge apply --target dir', () => {
     const spec = JSON.parse(readFileSync(join(work, 'data/specs/sample/rogue.spec.json'), 'utf8'));
     writeFileSync(p, JSON.stringify({ ...spec, id: 'nobuild' }));
     try {
-      expect(() => reviewScoreCommand('data/specs/sample/nobuild.spec.json', work, 20)).toThrow(expect.objectContaining({ code: 'review.no-build' }));
+      expect(() => reviewScoreCommand('data/specs/sample/nobuild.spec.json', work, 20, OBS)).toThrow(expect.objectContaining({ code: 'review.no-build' }));
     } finally { rmSync(p); }
+  });
+
+  it('검수 기록: 기준별 관찰 12개 필수, sheetHash = 검수 시트 SHA-256, 시트가 지금 렌더와 다르면 거부, apply는 시트 해시 불일치 시 exit 2', () => {
+    const rogue = 'data/specs/sample/rogue.spec.json';
+    buildCommand(rogue, work);
+    renderCommand(rogue, work, [], 4);
+    expect(() => reviewScoreCommand(rogue, work, 20, JSON.stringify({ 얼굴: '눈 2px' }))).toThrow(expect.objectContaining({ code: 'review.observations' }));
+    const r = reviewScoreCommand(rogue, work, 20, OBS);
+    const rec = JSON.parse(readFileSync(join(work, r.out), 'utf8')) as { sheetHash: string; sheetScale: number; observations: Record<string, string> };
+    expect(rec.sheetHash).toBe(createHash('sha256').update(readFileSync(join(work, 'out/rogue/studio.png'))).digest('hex'));
+    expect(rec.sheetScale).toBe(4);
+    expect(Object.keys(rec.observations)).toHaveLength(12);
+    // 다른 배율 시트를 검수했다고 주장 → 지금 렌더로 만든 4배 시트와 다름
+    renderCommand(rogue, work, [], 3);
+    expect(() => reviewScoreCommand(rogue, work, 20, OBS)).toThrow(expect.objectContaining({ code: 'review.stale-sheet' }));
+    // 기록의 sheetHash를 바꾸면(검수한 시트 ≠ 지금 렌더) apply가 막는다
+    writeFileSync(join(work, r.out), JSON.stringify({ ...rec, score: 20, key: (JSON.parse(readFileSync(join(work, r.out), 'utf8')) as { key: string }).key, sheetHash: '0'.repeat(64) }));
+    expect(applyCommand(rogue, work, { out: 'game7' })).toMatchObject({ pass: false, applied: false, review: expect.stringContaining('sheetHash') });
   });
 });

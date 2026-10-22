@@ -4,7 +4,7 @@ import { reviewSheet } from '@pixel-forge/qa';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
 import { loadProject } from '../io/project.js';
-import { qaRows, renderProject, writeFrames } from './qa.js';
+import { qaRows, renderProject, writeFrames, type Rendered } from './qa.js';
 
 /**
  * 인자 없이: rest 1프레임 → out/<id>/frames/rest.png
@@ -18,8 +18,7 @@ export function renderCommand(specPath: string, cwd: string, anims: readonly str
   const files = writeFrames(dir, r);
   if (sheet !== undefined) {
     if (!Number.isInteger(sheet) || sheet < 1 || sheet > 16) throw new ForgeError('cli.args', `--sheet는 1~16 정수여야 합니다: ${sheet}`);
-    const s = reviewSheet([qaRows(r).map((row) => row.map((f) => f.raster))], r.palette.palette, { scale: sheet, background: p.bible.background });
-    writeFileEnsured(join(dir, 'studio.png'), encodePng({ w: s.raster.w, h: s.raster.h, rgba: toRGBA(s.raster, s.palette) }));
+    writeFileEnsured(join(dir, 'studio.png'), studioPng(r, p.bible.background, sheet));
     files.push('studio.png');
   }
   const all = [r.rest.raster, ...r.frames.map((f) => f.raster)];
@@ -31,4 +30,10 @@ export function renderCommand(specPath: string, cwd: string, anims: readonly str
     budget: `${budget.before}→${budget.after}/${budget.limit}`, merges: budget.merges.length, clipped: r.rest.clipped,
     out: relative(cwd, join(dir, sheet !== undefined ? 'studio.png' : files.length === 1 ? (files[0] ?? '') : 'frames')),
   };
+}
+
+/** 캐릭터 1종 시트(rest + 전 프레임, 게임 배경, k배) PNG 바이트 — pixel-studio·검수 기록(sheetHash)이 같은 함수로 만든다 */
+export function studioPng(r: Rendered, background: string, scale: number): Buffer {
+  const s = reviewSheet([qaRows(r).map((row) => row.map((f) => f.raster))], r.palette.palette, { scale, background });
+  return encodePng({ w: s.raster.w, h: s.raster.h, rgba: toRGBA(s.raster, s.palette) });
 }

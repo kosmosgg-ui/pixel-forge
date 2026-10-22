@@ -13,6 +13,11 @@ export const fxDefSchema = z.discriminatedUnion('type', [
     type: z.literal('arc'), bone: z.string().min(1), radius: z.number().positive(),
     fromDeg: z.number(), toDeg: z.number(), color: z.number().int().min(0),
   }),
+  /** bone 관절에서 dirDeg 방향으로 length px 직선(화살 궤적) */
+  z.object({
+    type: z.literal('line'), bone: z.string().min(1), length: z.number().positive(), dirDeg: z.number().default(0),
+    from: z.number().min(0).default(0), color: z.number().int().min(0),
+  }),
 ]);
 
 export const animKeySchema = z.object({

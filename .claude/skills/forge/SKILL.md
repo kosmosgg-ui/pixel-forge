@@ -60,7 +60,7 @@ description: 캐릭터·몬스터 스프라이트를 한 문장 지시나 기획
 
 ## 4. 교차 검사·적용
 1. `pnpm -s forge build-all <project>` → 이 캐릭터가 `failed`에 필수 항목으로 없는지(교차 검사: 실루엣·스케일).
-2. 시각 검수: `pnpm -s forge review <project>` 후 `pixel-reviewer` 서브에이전트에 `out/<project>/review.png` 검수 요청(점수 /24, 합격 18). 리뷰어가 `forge review-score`로 `out/<id>/review.json`을 남긴다. 미달이면 상위 제안 반영 후 3단계로(반복 횟수에 포함). 시트가 높이 2000px를 넘으면 리뷰어에게 해당 캐릭터 블록만 잘라 보라고 지시한다.
+2. 시각 검수: `pnpm -s forge render <spec> --sheet 4`(→ `out/<id>/studio.png`) 후 `pixel-reviewer` 서브에이전트에 그 시트 검수 요청(관찰 먼저, 점수 /24, 합격 18). 리뷰어가 `forge review-score --obs`로 `out/<id>/review.json`(점수·기준별 관찰·sheetHash)을 남긴다. 미달이면 상위 제안 반영 후 3단계로(반복 횟수에 포함).
 3. 적용(검수 합격 뒤에만): `pnpm -s forge apply <spec> --target dir --out <dir|@이름>`.
    - `--out`은 작업 폴더 안 상대 경로, 또는 `.forge/targets.local.json` 허용 목록의 `@이름`. 이 파일은 사람이 쓴다(클로드가 만들지 않는다).
    - 지시에 대상이 없으면 `out/apply-test`.

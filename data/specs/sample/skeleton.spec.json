@@ -1,324 +1,416 @@
 {
-  "id": "skeleton",
-  "kind": "character",
-  "bible": "sample-v0",
-  "sizeClass": "smallMonster",
-  "signature": "skull",
-  "proportions": {
-    "height": 20
+ "id": "skeleton",
+ "kind": "character",
+ "bible": "sample-v0",
+ "sizeClass": "smallMonster",
+ "sizeClassLock": true,
+ "mode": "frames",
+ "signature": "skull",
+ "grid": {
+  "rows": [
+   "....HHHHbb....",
+   "..HHHbbbbbbd..",
+   ".HHbbbbbbbbbd.",
+   "HHbbbbbbbbbbbd",
+   "Hboobbboobbbbd",
+   "Hboobbboobbbdd",
+   "bbbbbbbbbbbbdd",
+   ".bbbbobbbbbdd.",
+   "..bobobobdbd..",
+   "...bbbbbbdd...",
+   ".....bdb......",
+   "...HbbbbbbL...",
+   "..b.ooooo..L..",
+   "..b.bbbbbd.L..",
+   "..b.ooooo..HHb",
+   "..d.bbbbbd.HHb",
+   "....odbbdo....",
+   ".....b..b.....",
+   ".....b..b.....",
+   "....bb..bb...."
+  ],
+  "legend": {
+   "H": "bone:2",
+   "b": "bone:1",
+   "d": "bone:0",
+   "o": "@outline",
+   "l": "leather:1",
+   "L": "leather:0"
   },
-  "parts": [
-    {
-      "bone": "thighB",
-      "shape": {
-        "type": "line",
-        "to": [
-          3,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "thighB",
-      "shape": {
-        "type": "ellipse",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "anchor": "end",
-      "orient": "world",
-      "decorative": true
-    },
-    {
-      "bone": "shinB",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "footB",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "upperArmB",
-      "shape": {
-        "type": "line",
-        "to": [
-          3,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "upperArmB",
-      "shape": {
-        "type": "ellipse",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "anchor": "end",
-      "orient": "world",
-      "decorative": true
-    },
-    {
-      "bone": "lowerArmB",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "handB",
-      "shape": {
-        "type": "rect",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "orient": "world"
-    },
-    {
-      "bone": "spine",
-      "shape": {
-        "type": "rect",
-        "w": 4,
-        "h": 2
-      },
-      "material": "bone",
-      "anchor": "joint",
-      "orient": "world",
-      "name": "pelvis"
-    },
-    {
-      "bone": "spine",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "name": "vertebrae",
-      "decorative": true
-    },
-    {
-      "bone": "chest",
-      "shape": {
-        "type": "mask",
-        "origin": [
-          3,
-          2
-        ],
-        "rows": [
-          "bbbbb.",
-          ".b....",
-          "bbbbbb",
-          ".b....",
-          "bbbbb."
-        ],
-        "legend": {
-          "b": {
-            "material": "bone"
-          }
-        }
-      },
-      "material": "bone",
-      "orient": "world",
-      "name": "ribcage"
-    },
-    {
-      "bone": "head",
-      "shape": {
-        "type": "mask",
-        "origin": [
-          5,
-          5
-        ],
-        "rows": [
-          "...bbbb...",
-          ".bbbbbbbb.",
-          "bbbbbbbbbb",
-          "bbbbbbbbbb",
-          "bb..bb..bb",
-          "bb..bb..bb",
-          "bbbbbbbbbb",
-          ".bbbb.bbb.",
-          "..b.b.b.b.",
-          "..bbbbbb.."
-        ],
-        "legend": {
-          "b": {
-            "material": "bone"
-          }
-        }
-      },
-      "material": "bone",
-      "orient": "world",
-      "name": "skull",
-      "signature": true
-    },
-    {
-      "bone": "thighF",
-      "shape": {
-        "type": "line",
-        "to": [
-          3,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "thighF",
-      "shape": {
-        "type": "ellipse",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "anchor": "end",
-      "orient": "world",
-      "decorative": true
-    },
-    {
-      "bone": "shinF",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "footF",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "upperArmF",
-      "shape": {
-        "type": "line",
-        "to": [
-          3,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "upperArmF",
-      "shape": {
-        "type": "ellipse",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "anchor": "end",
-      "orient": "world",
-      "decorative": true
-    },
-    {
-      "bone": "lowerArmF",
-      "shape": {
-        "type": "line",
-        "to": [
-          2,
-          0
-        ]
-      },
-      "material": "bone",
-      "decorative": true
-    },
-    {
-      "bone": "handF",
-      "shape": {
-        "type": "rect",
-        "w": 2,
-        "h": 2
-      },
-      "material": "bone",
-      "orient": "world"
-    },
-    {
-      "bone": "weapon",
-      "shape": {
-        "type": "rect",
-        "w": 4,
-        "h": 2,
-        "angleDeg": -63
-      },
-      "material": "leather",
-      "anchor": "joint",
-      "at": [
-        1,
-        -1
-      ],
-      "orient": "world",
-      "name": "clubShaft"
-    },
-    {
-      "bone": "weapon",
-      "shape": {
-        "type": "rect",
-        "w": 4,
-        "h": 3,
-        "angleDeg": -63
-      },
-      "material": "bone",
-      "anchor": "joint",
-      "at": [
-        2,
-        -4
-      ],
-      "orient": "world",
-      "name": "clubHead",
-      "held": true
+  "signature": [
+   "....######....",
+   "..##########..",
+   ".############.",
+   "##############",
+   "##############",
+   "##############",
+   "##############",
+   ".############.",
+   "..##########..",
+   "...########...",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   "..............",
+   ".............."
+  ]
+ },
+ "frames": {
+  "idle": [
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
     }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      2,
+      8
+     ],
+     "rows": [
+      "~bobobob~"
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 160,
+    "patch": {
+     "at": [
+      2,
+      8
+     ],
+     "rows": [
+      "~bobobob~"
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   }
   ],
-  "animations": [
-    "idle",
-    "attack",
-    "hit",
-    "death"
+  "attack": [
+   {
+    "ms": 100,
+    "patch": {
+     "at": [
+      10,
+      9
+     ],
+     "rows": [
+      "..HHb",
+      "..HHb",
+      "..L..",
+      "..L..",
+      ".L...",
+      "~~~~~",
+      "~~~~~"
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 120,
+    "patch": {
+     "at": [
+      10,
+      11
+     ],
+     "rows": [
+      "~~~~...",
+      ".~L....",
+      ".~.L...",
+      "...LHHb",
+      "...LHHb",
+      "~~~~~~~"
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 80,
+    "patch": {
+     "at": [
+      10,
+      13
+     ],
+     "rows": [
+      "~.L....",
+      "~..LL..",
+      "~...HHb",
+      "~...HHb"
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 140,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   }
   ],
-  "seed": 1,
-  "sizeClassLock": true
+  "hit": [
+   {
+    "ms": 60,
+    "patch": {
+     "at": [
+      0,
+      0
+     ],
+     "rows": [
+      "."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    },
+    "fx": "flash"
+   },
+   {
+    "ms": 120,
+    "grid": {
+     "rows": [
+      "...HHHHbb.....",
+      ".HHHbbbbbbd...",
+      "HHbbbbbbbbbd..",
+      "Hbbbbbbbbbbbd.",
+      "boobbboobbbbd.",
+      "boobbboobbbdd.",
+      "bbbbbbbbbbbdd.",
+      "bbbbobbbbbdd..",
+      ".bobobobdbd...",
+      "..bbbbbbdd....",
+      "....bdb.......",
+      "..HbbbbbbL....",
+      ".b.ooooo..L...",
+      ".b.bbbbbd.L...",
+      ".b.ooooo..HHb.",
+      ".d.bbbbbd.HHb.",
+      "...odbbdo.....",
+      "....b..b......",
+      "....b..b......",
+      "...bb..bb....."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   }
+  ],
+  "death": [
+   {
+    "ms": 120,
+    "grid": {
+     "rows": [
+      "...HHHHbb.....",
+      ".HHHbbbbbbd...",
+      "HHbbbbbbbbbd..",
+      "Hbbbbbbbbbbbd.",
+      "boobbboobbbbd.",
+      "boobbboobbbdd.",
+      "bbbbbbbbbbbdd.",
+      "bbbbobbbbbdd..",
+      ".bobobobdbd...",
+      "..bbbbbbdd....",
+      "....bdb.......",
+      "..HbbbbbbL....",
+      ".b.ooooo..L...",
+      ".b.bbbbbd.L...",
+      ".b.ooooo..HHb.",
+      ".d.bbbbbd.HHb.",
+      "...odbbdo.....",
+      "....b..b......",
+      "....b..b......",
+      "...bb..bb....."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     }
+    }
+   },
+   {
+    "ms": 140,
+    "grid": {
+     "rows": [
+      "HHHHbb........",
+      "Hbbbbbbd......",
+      "bbbbbbbbd.....",
+      "bbbbbbbbbddddd",
+      "obbboobbbbdddd",
+      "obbboobbbddddd",
+      "bbbbbbbbbddddd",
+      "bbobbbbbdd....",
+      "bobobobdbd....",
+      ".bbbbbbdd.....",
+      "...bdb........",
+      ".HbbbbbbL.....",
+      ".b.ooooo..L...",
+      ".b.bbbbbd.L...",
+      ".b.ooooo..HHbb",
+      ".d.bbbbbd.HHbb",
+      "....odbbdo....",
+      ".....b..b.....",
+      ".....b..b.....",
+      "....bb..bb...."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     },
+     "pivot": [
+      7,
+      19
+     ]
+    },
+    "grounded": false
+   },
+   {
+    "ms": 400,
+    "grid": {
+     "rows": [
+      "...dddd.......bb....",
+      "..dbbddd......HH....",
+      ".dbbbbbdd...LLHH....",
+      ".bbbbbbbbd.L........",
+      "bbbbbbbbdd.b.d.do..b",
+      "bbbboobbbb.bobobdbbb",
+      "Hbbboobbobbbobobb...",
+      "Hbbbbbbbbbdbobobb...",
+      "Hbbbbbboobbbobobdbbb",
+      "HHbbbbbbbb.bobobo..b",
+      ".Hbboobbob.H........",
+      ".HHboobbb...bbbd....",
+      "..HHbbbb............",
+      "...HHHb............."
+     ],
+     "legend": {
+      "H": "bone:2",
+      "b": "bone:1",
+      "d": "bone:0",
+      "o": "@outline",
+      "l": "leather:1",
+      "L": "leather:0"
+     },
+     "pivot": [
+      10,
+      13
+     ]
+    },
+    "grounded": false
+   }
+  ]
+ },
+ "loop": [
+  "idle"
+ ],
+ "seed": 1
 }

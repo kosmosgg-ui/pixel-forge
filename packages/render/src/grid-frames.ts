@@ -10,8 +10,9 @@ import type { AnimFrame, AnimRender } from './render-anim.js';
 import { applySpecialsInPlace, BOTTOM_GAP, flipLayer, noFit, outlineModeOf, rampsOf, type RenderContext, type RenderResult } from './render-frame.js';
 import { resolveZone } from './resolve.js';
 
-/** 프레임 모드 파츠 id: base 그리드 = 1, patch = 2 (anim.flicker는 patch 밖 = base 영역만 비교) */
+/** 프레임 모드 파츠 id: base 그리드 = 1, patch = 2, base의 signature 칸 = 3 (anim.flicker는 patch 밖 = base·signature 영역만 비교) */
 const BASE = 1, PATCH = 2;
+export const GRID_SIGNATURE_PART = 3;
 
 /** 발밑 칸: pivot 또는 불투명 칸의 아래 가운데 */
 function pivotOf(g: FrameGrid): [number, number] {
@@ -22,7 +23,7 @@ function pivotOf(g: FrameGrid): [number, number] {
 }
 
 /** 그리드 칸을 zone에 기록(재질·고정 단계·특수 칸). patch의 "~"는 지운다 */
-function writeGridInPlace(z: FrameZone, g: Pick<FrameGrid, 'rows' | 'legend'>, ox: number, oy: number, part: number, materialId: (m: string) => number): number {
+function writeGridInPlace(z: FrameZone, g: Pick<FrameGrid, 'rows' | 'legend' | 'signature'>, ox: number, oy: number, part: number, materialId: (m: string) => number): number {
   let clipped = 0;
   const erase = g.rows.map((r) => [...r].map((ch) => ch === '~'));
   const m = gridToMask({ rows: g.rows.map((r) => r.replace(/~/g, '.')), legend: g.legend, origin: [0, 0] });
@@ -38,7 +39,7 @@ function writeGridInPlace(z: FrameZone, g: Pick<FrameGrid, 'rows' | 'legend'>, o
     z.shade[k] = m.shade[i] ?? 0;
     z.fixed[k] = m.shade[i] ?? 0;
     z.special[k] = m.special[i] ?? 0;
-    z.part[k] = part;
+    z.part[k] = part === BASE && g.signature?.[y]?.[x] === '#' ? GRID_SIGNATURE_PART : part;
     z.depth[k] = part;
     z.normal[k * 3 + 2] = 127;
   }
@@ -55,7 +56,8 @@ export function renderGridFrame(ctx: RenderContext, base: FrameGrid, f: GridFram
   const [W, H] = size;
   const names = Object.keys(bible.materials).sort();
   const materialId = (m: string) => names.indexOf(m) + 1;
-  const [px, py] = pivotOf(base);
+  // 전체 grid 프레임이 pivot을 주면 그 발밑을 쓴다(눕는 프레임 등 좌표계가 다른 그림), 아니면 base 발밑
+  const [px, py] = f.grid?.pivot ?? pivotOf(base);
   const origin: [number, number] = [Math.floor(W / 2) - px, H - 1 - BOTTOM_GAP - py];
   const zone = createFrameZone(W, H);
   let clipped = writeGridInPlace(zone, f.grid ?? base, origin[0], origin[1], BASE, materialId);
@@ -80,7 +82,7 @@ export function renderGridFrame(ctx: RenderContext, base: FrameGrid, f: GridFram
       budget, budgetExclude: exclude, eyes, smallParts: [], face: null, warnings: [],
       layers: { material: layer(zone.material), part: layer(zone.part), mark: layer(protect) },
       // base는 grid(전체) 프레임에서만 바뀐다 — patch 프레임끼리는 base 영역이 같아야 한다(anim.flicker)
-      partTransforms: [[0, 0, 0], [0, 0, 0]],
+      partTransforms: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     },
   };
 }
@@ -98,7 +100,7 @@ export function renderGridAnimations(ctx: RenderContext, ids: readonly string[])
     return list.map((f, index): AnimFrame => {
       const r = renderGridFrame(ctx, base, { ...(f.grid ? { grid: f.grid } : {}), ...(f.patch ? { patch: f.patch } : {}), ...(f.fx ? { fx: f.fx } : {}) }, true);
       uid++;
-      r.meta.partTransforms = [[0, 0, f.grid ? uid : 0], [uid, 0, 0]];
+      r.meta.partTransforms = [[0, 0, f.grid ? uid : 0], [uid, 0, 0], [0, 0, f.grid ? uid : 0]];
       return { anim: id, index, raster: r.raster, ms: f.ms, hold: !loop && index === list.length - 1, keyName: `f${index}`, inbetween: false, rootFixed: f.grounded, clipped: r.clipped, meta: r.meta };
     });
   });

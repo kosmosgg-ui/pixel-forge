@@ -61,8 +61,16 @@ export const gridShapeSchema = z.object({
 });
 
 /** 프레임 모드 그리드: pivot = 발밑 칸 [열, 행](생략하면 불투명 칸의 아래 가운데) */
-export const frameGridSchema = z.object({ ...gridBody, pivot: z.tuple([z.number().int(), z.number().int()]).optional() })
-  .superRefine((g, ctx) => addAll(ctx, gridIssues(g)));
+export const frameGridSchema = z.object({
+  ...gridBody, pivot: z.tuple([z.number().int(), z.number().int()]).optional(),
+  /** signature(과장한 특징) 칸 표시: rows와 같은 크기, "#" = 특징 칸(QA form.signature) */
+  signature: z.array(z.string()).optional(),
+}).superRefine((g, ctx) => {
+  addAll(ctx, gridIssues(g));
+  if (g.signature && (g.signature.length !== g.rows.length || g.signature.some((r, i) => r.length !== (g.rows[i]?.length ?? 0)))) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['signature'], message: 'signature는 rows와 같은 크기여야 합니다' });
+  }
+});
 
 /** 프레임 patch: base 위 at[열, 행]에 덮는다. "." = base 유지, "~" = 지움 */
 export const gridPatchSchema = z.object({ ...gridBody, at: z.tuple([z.number().int(), z.number().int()]) })

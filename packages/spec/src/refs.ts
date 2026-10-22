@@ -43,12 +43,13 @@ export function checkAnimRefs(spec: Spec, anims: AnimsFile, rig: Rig, bible: Bib
   const errors: string[] = [];
   if (anims.rig !== rig.id) errors.push(`anims.rig: ${anims.rig} ≠ ${rig.id}`);
   for (const a of spec.animations) if (!(a in anims.anims)) errors.push(`animations: 공용 애니에 없는 ${a}`);
+  if (spec.attackAnim !== undefined && !(spec.attackAnim in anims.anims)) errors.push(`attackAnim: 공용 애니에 없는 ${spec.attackAnim}`);
   const bones = (pose: Record<string, unknown>, where: string) => {
     for (const b of Object.keys(pose)) if (!(b in rig.bones)) errors.push(`${where}: 리그에 없는 뼈 ${b}`);
   };
   for (const [id, a] of Object.entries(anims.anims)) a.keys.forEach((k) => bones(k.pose, `anims.${id}.${k.name}`));
   for (const [name, fx] of Object.entries(anims.fx)) {
-    if (fx.type === 'arc' && !(fx.bone in rig.bones)) errors.push(`fx.${name}: 리그에 없는 뼈 ${fx.bone}`);
+    if (fx.type !== 'flash' && !(fx.bone in rig.bones)) errors.push(`fx.${name}: 리그에 없는 뼈 ${fx.bone}`);
     if (fx.color >= bible.fxColors.length) errors.push(`fx.${name}: bible.fxColors에 없는 순번 ${fx.color}`);
   }
   for (const [id, keys] of Object.entries(spec.overrides)) {

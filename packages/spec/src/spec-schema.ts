@@ -90,6 +90,8 @@ export const specSchema = z
       })
       .optional(),
     animations: z.array(z.string().min(1)).default([]),
+    /** attack 자리에 쓸 공용 애니(예 "shoot" — 궁수). 출력 이름은 attack 그대로(게임 쪽 코드가 같은 태그를 쓰게) */
+    attackAnim: z.string().min(1).optional(),
     /** 공용 애니의 키 포즈 일부 덮어쓰기: 애니 id → 키 이름 → 뼈별 변화량(뼈 단위로 교체) */
     overrides: z.record(z.string().min(1), z.record(z.string().min(1), z.object({ pose: poseSchema }))).default({}),
     /** 절차 애니 힌트(바이블 motion 위에 키 단위 덮어쓰기) */

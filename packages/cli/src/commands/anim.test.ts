@@ -73,7 +73,7 @@ describe('forge crowd', () => {
 describe('forge review', () => {
   it('캐릭터 × (rest + 애니 전 프레임), 4배, 같은 입력 → 같은 바이트', () => {
     const r = reviewCommand('sample', work);
-    expect(r).toMatchObject({ ok: true, kinds: 8, frames: [18, 18, 16, 18, 18, 18, 16, 18], scale: 4, out: 'out/sample/review.png' });
+    expect(r).toMatchObject({ ok: true, kinds: 8, frames: [16, 18, 14, 18, 18, 18, 14, 18], scale: 4, out: 'out/sample/review.png' });
     const first = sha(r.out);
     reviewCommand('sample', work);
     expect(sha(r.out)).toBe(first);

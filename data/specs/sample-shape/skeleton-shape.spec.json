@@ -1,0 +1,324 @@
+{
+  "id": "skeleton-shape",
+  "kind": "character",
+  "bible": "sample-v0",
+  "sizeClass": "smallMonster",
+  "signature": "skull",
+  "proportions": {
+    "height": 20
+  },
+  "parts": [
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "line",
+        "to": [
+          3,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "thighB",
+      "shape": {
+        "type": "ellipse",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "anchor": "end",
+      "orient": "world",
+      "decorative": true
+    },
+    {
+      "bone": "shinB",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "footB",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "line",
+        "to": [
+          3,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "upperArmB",
+      "shape": {
+        "type": "ellipse",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "anchor": "end",
+      "orient": "world",
+      "decorative": true
+    },
+    {
+      "bone": "lowerArmB",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "handB",
+      "shape": {
+        "type": "rect",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "orient": "world"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2
+      },
+      "material": "bone",
+      "anchor": "joint",
+      "orient": "world",
+      "name": "pelvis"
+    },
+    {
+      "bone": "spine",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "name": "vertebrae",
+      "decorative": true
+    },
+    {
+      "bone": "chest",
+      "shape": {
+        "type": "mask",
+        "origin": [
+          3,
+          2
+        ],
+        "rows": [
+          "bbbbb.",
+          ".b....",
+          "bbbbbb",
+          ".b....",
+          "bbbbb."
+        ],
+        "legend": {
+          "b": {
+            "material": "bone"
+          }
+        }
+      },
+      "material": "bone",
+      "orient": "world",
+      "name": "ribcage"
+    },
+    {
+      "bone": "head",
+      "shape": {
+        "type": "mask",
+        "origin": [
+          5,
+          5
+        ],
+        "rows": [
+          "...bbbb...",
+          ".bbbbbbbb.",
+          "bbbbbbbbbb",
+          "bbbbbbbbbb",
+          "bb..bb..bb",
+          "bb..bb..bb",
+          "bbbbbbbbbb",
+          ".bbbb.bbb.",
+          "..b.b.b.b.",
+          "..bbbbbb.."
+        ],
+        "legend": {
+          "b": {
+            "material": "bone"
+          }
+        }
+      },
+      "material": "bone",
+      "orient": "world",
+      "name": "skull",
+      "signature": true
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "line",
+        "to": [
+          3,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "thighF",
+      "shape": {
+        "type": "ellipse",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "anchor": "end",
+      "orient": "world",
+      "decorative": true
+    },
+    {
+      "bone": "shinF",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "footF",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "line",
+        "to": [
+          3,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "upperArmF",
+      "shape": {
+        "type": "ellipse",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "anchor": "end",
+      "orient": "world",
+      "decorative": true
+    },
+    {
+      "bone": "lowerArmF",
+      "shape": {
+        "type": "line",
+        "to": [
+          2,
+          0
+        ]
+      },
+      "material": "bone",
+      "decorative": true
+    },
+    {
+      "bone": "handF",
+      "shape": {
+        "type": "rect",
+        "w": 2,
+        "h": 2
+      },
+      "material": "bone",
+      "orient": "world"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 2,
+        "angleDeg": -63
+      },
+      "material": "leather",
+      "anchor": "joint",
+      "at": [
+        1,
+        -1
+      ],
+      "orient": "world",
+      "name": "clubShaft"
+    },
+    {
+      "bone": "weapon",
+      "shape": {
+        "type": "rect",
+        "w": 4,
+        "h": 3,
+        "angleDeg": -63
+      },
+      "material": "bone",
+      "anchor": "joint",
+      "at": [
+        2,
+        -4
+      ],
+      "orient": "world",
+      "name": "clubHead",
+      "held": true
+    }
+  ],
+  "animations": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "seed": 1,
+  "sizeClassLock": true
+}

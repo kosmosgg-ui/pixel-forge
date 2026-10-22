@@ -2,7 +2,7 @@ import { rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { buildBiblePalette, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
 import { contactSheet, runChecks, type Check, type HeldInfo, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
-import { mirrorFrame, renderAnimations, renderFitted, renderFrame, renderGridAnimations, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
+import { GRID_SIGNATURE_PART, mirrorFrame, renderAnimations, renderFitted, renderFrame, renderGridAnimations, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
 import { resolveMotion } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
@@ -33,7 +33,7 @@ export function qaContext(p: Project, palette: BiblePalette, rest?: RenderResult
     background: parseHex(p.bible.background), rules: p.rules.qa, rampOf,
     ...(roleRamp ? { roleIndices: new Set([...roleRamp.indices, roleRamp.outline]) } : {}),
     held: heldInfo(p, rest?.meta.layers.part),
-    ...(p.spec.signature ? { signature: { name: p.spec.signature, parts: new Set(p.spec.parts.flatMap((q, i) => (q.signature ? [i + 1] : []))) } } : {}),
+    ...(p.spec.signature ? { signature: { name: p.spec.signature, parts: p.spec.mode === 'frames' ? new Set([GRID_SIGNATURE_PART]) : new Set(p.spec.parts.flatMap((q, i) => (q.signature ? [i + 1] : []))) } } : {}),
     lineIndices: new Set([...Object.values(palette.ramps).map((r) => r.outline), palette.outlineIndex]),
   };
 }

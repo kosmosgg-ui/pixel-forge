@@ -36,9 +36,11 @@ export function renderAnimations(ctx: RenderContext, anims: AnimsFile, ids: read
   const root = Object.keys(ctx.rig.bones).find((n) => ctx.rig.bones[n]?.parent === null) ?? '';
   const isStrike = (fx: string) => anims.fx[fx]?.type === 'arc';
   const frames = ids.flatMap((id) => {
-    const anim = anims.anims[id];
-    if (!anim) throw new ForgeError('spec.refs', `공용 애니에 없는 애니: ${id}`);
-    return buildTimeline(anim, ctx.rules.anim, ctx.spec.overrides[id], isStrike).map((f, index): AnimFrame => {
+    // attack 자리에 다른 공용 애니(궁수 shoot 등) — 출력 이름은 attack 그대로
+    const clip = id === 'attack' && ctx.spec.attackAnim ? ctx.spec.attackAnim : id;
+    const anim = anims.anims[clip];
+    if (!anim) throw new ForgeError('spec.refs', `공용 애니에 없는 애니: ${clip}`);
+    return buildTimeline(anim, ctx.rules.anim, ctx.spec.overrides[clip], isStrike).map((f, index): AnimFrame => {
       const fx = f.fx === undefined ? undefined : anims.fx[f.fx];
       const r = renderFrame(ctx, { pose: f.pose, origin: rest.origin, skipBudget: true, ...(fx ? { fx } : {}) });
       return { anim: id, index, raster: r.raster, ms: f.ms, hold: f.hold, keyName: f.keyName, inbetween: f.inbetween, rootFixed: isRootFixed(f.pose, root), clipped: r.clipped, meta: r.meta };

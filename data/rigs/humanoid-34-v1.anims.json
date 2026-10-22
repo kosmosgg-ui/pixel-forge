@@ -3,7 +3,8 @@
   "rig": "humanoid-34-v1",
   "fx": {
     "slash": { "type": "arc", "bone": "chest", "radius": 13, "fromDeg": -75, "toDeg": 35, "color": 0 },
-    "flash": { "type": "flash", "color": 0 }
+    "flash": { "type": "flash", "color": 0 },
+    "arrow": { "type": "line", "bone": "handF", "length": 6, "dirDeg": 0, "from": 2, "color": 0 }
   },
   "anims": {
     "idle": {
@@ -25,6 +26,16 @@
         { "name": "recover", "ms": 160, "pose": {} }
       ],
       "inbetween": [ { "after": "strike", "count": 1, "ease": "out" } ]
+    },
+    "shoot": {
+      "id": "shoot", "loop": false,
+      "$comment": "활 쏘기(사용자 승인 P6.5). aim: 활 든 팔 수평·뒷손 시위에 → draw: 뒷손 뒤로 3px·몸통 -4° → release: 화살 궤적 직선 → recover",
+      "keys": [
+        { "name": "aim", "ms": 160, "pose": { "upperArmF": { "rot": -23 }, "lowerArmF": { "rot": 95 }, "weapon": { "rot": -72 }, "upperArmB": { "rot": -128 }, "lowerArmB": { "rot": 70 } } },
+        { "name": "draw", "ms": 200, "pose": { "spine": { "rot": -4 }, "upperArmF": { "rot": -23 }, "lowerArmF": { "rot": 95 }, "weapon": { "rot": -72 }, "upperArmB": { "rot": -128 }, "lowerArmB": { "rot": 110 } } },
+        { "name": "release", "ms": 60, "pose": { "upperArmF": { "rot": -23 }, "lowerArmF": { "rot": 95 }, "weapon": { "rot": -72 }, "upperArmB": { "rot": -150 }, "lowerArmB": { "rot": 70 } }, "fx": "arrow" },
+        { "name": "recover", "ms": 160, "pose": {} }
+      ]
     },
     "hit": {
       "id": "hit", "loop": false,
