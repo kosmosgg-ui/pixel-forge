@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { importFields } from './import-schema.js';
 import { motionOverrideSchema, poseSchema } from './anim-schema.js';
 import { checkGridShape, frameGridSchema, gridPatchSchema, gridShapeSchema, maskShapeSchema, partShapeSchema } from './shape-schema.js';
 
@@ -72,8 +73,9 @@ export const specSchema = z
         bulk: z.number().positive().optional(),
       })
       .default({}),
-    /** shapes = 도형 조합(기본), frames = 프레임마다 픽셀 그리드 직접 설계, atoms = 파츠가 그리드 아톰, prerender = 3D 모델을 Blender로 렌더해 도트로(P7-alt 실험) */
-    mode: z.enum(['shapes', 'frames', 'atoms', 'prerender']).default('shapes'),
+    /** shapes = 도형 조합(기본), frames = 프레임마다 픽셀 그리드 직접 설계, atoms = 파츠가 그리드 아톰, prerender = 3D 모델을 Blender로 렌더해 도트로(P7-alt 실험), import = 외부 AI 이미지 → 도트(P8) */
+    mode: z.enum(['shapes', 'frames', 'atoms', 'prerender', 'import']).default('shapes'),
+    ...importFields,
     parts: z.array(partSchema).max(64).default([]),
     /** 프레임 모드: rest(=base) 그리드 */
     grid: frameGridSchema.optional(),
@@ -130,6 +132,9 @@ export const specSchema = z
         if (!s.actions?.[a]) issue(['frames', a], `actions에 없는 애니: ${a}`);
         if (list.some((f) => typeof f !== 'number')) issue(['frames', a], '프리렌더 frames는 프레임 번호 목록입니다');
       }
+    } else if (s.mode === 'import') {
+      if (!s.source) issue(['source'], 'import 모드는 source(path·origin)가 필요합니다');
+      if (!s.layout) issue(['layout'], 'import 모드는 layout.rows가 필요합니다');
     } else if (s.parts.length === 0) issue(['parts'], '파츠가 하나 이상 필요합니다');
   });
 

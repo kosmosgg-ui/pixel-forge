@@ -6,10 +6,16 @@ const sizePx = z.tuple([z.number().int().min(1), z.number().int().min(1)]);
 export const outlineModeSchema = z.enum(['selout', 'dark', 'none']);
 
 /** 크기 등급별 설정: 외곽선 모드(작은 캔버스는 dark 단색 외곽선이 읽기 쉽다), 그 등급 Spec의 기본 리그 */
-export const sizeClassOptionSchema = z.object({ outline: outlineModeSchema.optional(), rig: z.string().min(1).optional() });
+export const sizeClassOptionSchema = z.object({
+  outline: outlineModeSchema.optional(), rig: z.string().min(1).optional(),
+  /** 셀 안 발 앵커 [x, y](import 정렬·게임 계약) — 없으면 가로 가운데·바닥 */
+  anchor: z.tuple([z.number().int(), z.number().int()]).optional(),
+  /** 이 등급의 논리 키(px, import targetHeight 기본값) */
+  height: z.number().int().positive().optional(),
+});
 
 /**
- * sizeClasses 항목은 [w, h] 또는 { size: [w, h], outline?, rig? }. 파싱 후에는 sizeClasses = [w, h]만,
+ * sizeClasses 항목은 [w, h] 또는 { size: [w, h], outline?, rig?, anchor?, height? }. 파싱 후에는 sizeClasses = [w, h]만,
  * 설정은 sizeClassOptions로 옮겨 기존 코드가 크기만 읽게 한다.
  */
 function splitSizeClasses(raw: unknown): unknown {
