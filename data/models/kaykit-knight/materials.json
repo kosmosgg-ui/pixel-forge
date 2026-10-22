@@ -1,0 +1,28 @@
+{
+  "bible": "sample-v0",
+  "$comment": "KayKit은 재질 하나(knight_texture) + 팔레트형 텍스처 — 알베도 색을 아래 견본 중 가장 가까운 것(OKLab)의 바이블 재질로. 견본은 1프레임 프로브 렌더의 알베도 색 무리에서 골랐다",
+  "map": { "knight_texture": "@palette" },
+  "palette": {
+    "knight_texture": [
+      { "hex": "#aab8be", "to": "metal", "note": "갑옷 밝은 면" },
+      { "hex": "#929ea4", "to": "metal" },
+      { "hex": "#879297", "to": "metal" },
+      { "hex": "#747d82", "to": "metal" },
+      { "hex": "#60686c", "to": "metal", "note": "갑옷 어두운 면" },
+      { "hex": "#f6c29e", "to": "skin" },
+      { "hex": "#f8ccab", "to": "skin" },
+      { "hex": "#f2a87e", "to": "skin" },
+      { "hex": "#c0212c", "to": "cloth_red", "note": "망토" },
+      { "hex": "#a01f35", "to": "cloth_red" },
+      { "hex": "#f26b6d", "to": "cloth_red" },
+      { "hex": "#9b5a45", "to": "leather", "note": "허리띠·손잡이" },
+      { "hex": "#b27052", "to": "leather" },
+      { "hex": "#7d3d2c", "to": "leather" },
+      { "hex": "#736357", "to": "leather" },
+      { "hex": "#daae7d", "to": "gold" },
+      { "hex": "#ffd523", "to": "gold" },
+      { "hex": "#13191b", "to": "@eye", "note": "눈" },
+      { "hex": "#263236", "to": "@eye" }
+    ]
+  }
+}

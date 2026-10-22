@@ -20,6 +20,9 @@
       "path": "packages/export"
     },
     {
+      "path": "packages/render3d"
+    },
+    {
       "path": "packages/cli"
     }
   ]

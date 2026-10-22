@@ -8,7 +8,7 @@ import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
 import { loadProject } from '../io/project.js';
 import { packFiles } from './pack-files.js';
-import { renderProject, type Rendered } from './qa.js';
+import { defaultAnims, renderProject, type Rendered } from './qa.js';
 
 export const PACK_FORMATS = ['aseprite-json'] as const;
 
@@ -22,12 +22,12 @@ export function writePack(r: Rendered, cwd: string): string[] {
   const W = r.rest.raster.w;
   // 바이블 facing이 리그와 다르면 렌더가 좌우 반전했으므로 루트 x도 반전
   const rootX = p.bible.facing !== p.rig.facing ? W - 1 - r.rest.origin[0] : r.rest.origin[0];
-  const loops = p.spec.mode === 'frames'
-    ? Object.fromEntries(Object.keys(p.spec.frames ?? {}).map((k) => [k, p.spec.loop.includes(k)]))
+  const loops = p.spec.mode === 'frames' || p.spec.mode === 'prerender'
+    ? Object.fromEntries(defaultAnims(p).map((k) => [k, p.spec.loop.includes(k)]))
     : Object.fromEntries(Object.entries(p.anims?.anims ?? {}).map(([k, a]) => [k, a.loop]));
   const packed = packCharacter({
     id: p.spec.id, bible: p.bible.id, sizeClass: p.spec.sizeClass, rest: r.rest.raster, rootX,
-    frames: r.frames.map((f) => ({ anim: f.anim, index: f.index, raster: f.raster, ms: f.ms })),
+    frames: r.frames.map((f) => ({ anim: f.anim, index: f.index, raster: f.raster, ms: f.ms, ...(f.dir ? { dir: f.dir } : {}) })),
     loops, motion: { ...resolveMotion(p.bible.motion, p.spec.motion), shadow: shadowOf(r.rest.raster) }, palette: r.palette.palette, version: FORGE_VERSION,
   }, `${p.spec.id}.png`);
   const png = encodePng({ w: packed.sheet.w, h: packed.sheet.h, rgba: toRGBA(packed.sheet, r.palette.palette) });

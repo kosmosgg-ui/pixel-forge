@@ -1,5 +1,5 @@
 import { ForgeError, flipX, type IndexedRaster } from '@pixel-forge/core';
-import type { FrameGrid, GridPatch } from '@pixel-forge/spec';
+import { gridFramesOf, type FrameGrid, type GridPatch } from '@pixel-forge/spec';
 import { assertFrame } from './assert.js';
 import { fitBudgetInPlace } from './budget-fit.js';
 import { createFrameZone, type FrameZone } from './frame-zone.js';
@@ -94,7 +94,7 @@ export function renderGridAnimations(ctx: RenderContext, ids: readonly string[])
   const rest = renderGridFrame(ctx, base, {}, true);
   let uid = 0;
   const frames = ids.flatMap((id) => {
-    const list = ctx.spec.frames?.[id];
+    const list = gridFramesOf(ctx.spec)[id];
     if (!list) throw new ForgeError('spec.refs', `프레임 모드 Spec에 없는 애니: ${id}`);
     const loop = ctx.spec.loop.includes(id);
     return list.map((f, index): AnimFrame => {

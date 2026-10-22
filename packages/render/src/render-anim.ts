@@ -6,6 +6,8 @@ import { rampsOf, renderFrame, type RenderContext, type RenderMeta, type RenderR
 
 export interface AnimFrame {
   anim: string;
+  /** 방향(프리렌더: s·se·e·…). 없으면 우향(r) — 좌향은 반전 */
+  dir?: string;
   /** 애니 안 순번(0부터) — 프레임 이름 <anim>_<dir>_<n> */
   index: number;
   raster: IndexedRaster;

@@ -1,0 +1,22 @@
+{
+  "bible": "sample-v0",
+  "$comment": "뼈는 바이블 bone(노란 기 뼈색)으로 — 살색(skin)으로 보이지 않게 뼈 색 무리는 전부 bone. 눈(Glow 재질)은 검은 눈으로 그려 눈구멍처럼",
+  "map": { "Glow": "@eye", "skeleton": "@palette" },
+  "palette": {
+    "skeleton": [
+      { "hex": "#f5eadf", "to": "bone", "note": "뼈 밝은 면" },
+      { "hex": "#ebd5bf", "to": "bone" },
+      { "hex": "#e2c1a1", "to": "bone" },
+      { "hex": "#d4a678", "to": "bone", "note": "뼈 어두운 면" },
+      { "hex": "#d8ac82", "to": "bone" },
+      { "hex": "#b97757", "to": "leather", "note": "누더기 망토" },
+      { "hex": "#af6e51", "to": "leather" },
+      { "hex": "#995843", "to": "leather" },
+      { "hex": "#7d3d2c", "to": "leather" },
+      { "hex": "#596064", "to": "metal" },
+      { "hex": "#798388", "to": "metal" },
+      { "hex": "#161c1f", "to": "@outline", "note": "갈비뼈 틈·눈구멍 안쪽" },
+      { "hex": "#13191b", "to": "@outline" }
+    ]
+  }
+}

@@ -106,3 +106,15 @@ export function formDetailMin(frames: readonly QaFrame[], ctx: QaContext): Check
 }
 
 const round = (v: number): number => Math.round(v * 1000) / 1000;
+
+/**
+ * form.face-visible(선택, 경고): 방향별로 나눈 프레임(프리렌더)에서 방향마다 첫 프레임에 눈 픽셀이 보이는지.
+ * 정면이 아닌 방향(뒤통수)이 기본 방향에 섞이면 군중에서 얼굴이 안 읽힌다. 방향 정보가 없으면 통과.
+ */
+export function formFaceVisible(frames: readonly QaFrame[]): Check {
+  const first = new Map<string, QaFrame>();
+  for (const f of frames) if (f.dir && !first.has(f.dir)) first.set(f.dir, f);
+  if (!first.size) return check('form.face-visible', false, true, null, 1, { note: '방향 프레임 없음' });
+  const blind = [...first].filter(([, f]) => !f.eyes).map(([d]) => d);
+  return check('form.face-visible', false, blind.length === 0, first.size - blind.length, first.size, blind.length ? { note: `눈이 안 보이는 방향: ${blind.join(', ')}` } : {});
+}

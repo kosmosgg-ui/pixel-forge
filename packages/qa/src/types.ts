@@ -47,6 +47,9 @@ export interface QaFrame {
   /** 애니 이름(rest 프레임은 'rest')과 키 프레임 여부(사이 프레임은 false) — anim.pose-distinct */
   anim?: string;
   key?: boolean;
+  /** 방향(프리렌더)과 눈 픽셀 수 — form.face-visible */
+  dir?: string;
+  eyes?: number;
 }
 
 export interface RampStep {

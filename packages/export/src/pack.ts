@@ -8,6 +8,8 @@ export interface PackFrame {
   index: number;
   raster: IndexedRaster;
   ms: number;
+  /** 방향(프리렌더: s·se·e·…). 없으면 r */
+  dir?: string;
 }
 
 export interface PackInput {
@@ -39,15 +41,18 @@ const hex = (c: number) => '#' + (c >>> 8).toString(16).padStart(6, '0');
 /** rest(1프레임 태그 rest_r) + 애니 프레임을 애니 순서대로 한 시트에. 프레임 이름 <anim>_<dir>_<n>, 태그 <anim>_<dir> (§10) */
 export function packCharacter(c: PackInput, image: string, o: PackOptions = {}): PackResult {
   const frames: PackFrame[] = [{ anim: 'rest', index: 0, raster: c.rest, ms: REST_MS }, ...c.frames];
-  const name = (f: PackFrame) => `${f.anim}_${DIR}_${f.index}`;
+  const dirs = [...new Set(c.frames.flatMap((f) => (f.dir ? [f.dir] : [])))];
+  const tagOf = (f: PackFrame) => `${f.anim}_${f.dir ?? DIR}`;
+  const name = (f: PackFrame) => `${tagOf(f)}_${f.index}`;
   const { sheet, rects } = packShelf(frames.map((f) => ({ name: name(f), raster: f.raster })), o);
   const tags: SheetTag[] = [];
   const anims: Manifest['anims'] = {};
   frames.forEach((f, i) => {
     const last = tags[tags.length - 1];
-    if (last && last.name === `${f.anim}_${DIR}`) last.to = i;
-    else tags.push({ name: `${f.anim}_${DIR}`, from: i, to: i, loop: f.anim === 'rest' ? false : c.loops[f.anim] ?? false });
-    const a = (anims[f.anim] ??= { frames: [], ms: [], loop: f.anim === 'rest' ? false : c.loops[f.anim] ?? false });
+    if (last && last.name === tagOf(f)) last.to = i;
+    else tags.push({ name: tagOf(f), from: i, to: i, loop: f.anim === 'rest' ? false : c.loops[f.anim] ?? false });
+    // 방향이 여러 개면 manifest 애니 키도 <anim>_<dir>(우향 하나뿐인 기존 출력은 <anim> 그대로)
+    const a = (anims[f.dir ? tagOf(f) : f.anim] ??= { frames: [], ms: [], loop: f.anim === 'rest' ? false : c.loops[f.anim] ?? false });
     a.frames.push(name(f));
     a.ms.push(f.ms);
   });
@@ -58,7 +63,7 @@ export function packCharacter(c: PackInput, image: string, o: PackOptions = {}):
   const used = [...new Set(sheet.px)].filter((v) => v).sort((a, b) => a - b);
   const manifest: Omit<Manifest, 'hash'> = {
     id: c.id, bible: c.bible, sizeClass: c.sizeClass, frameSize: [c.rest.w, c.rest.h],
-    pivot: [c.rootX, bottomRow(c.rest) + 1], facing: DIR, anims, motion: c.motion,
+    pivot: [c.rootX, bottomRow(c.rest) + 1], facing: dirs.length ? 'dirs' : DIR, ...(dirs.length ? { directions: dirs } : {}), anims, motion: c.motion,
     palette: used.map((v) => hex(c.palette.colors[v] ?? 0)),
   };
   return { sheet, json, manifest };

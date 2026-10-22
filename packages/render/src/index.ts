@@ -14,3 +14,4 @@ export * from './render-anim.js';
 export * from './fit-size.js';
 export * from './grid-atom.js';
 export * from './grid-frames.js';
+export * from './prerender.js';

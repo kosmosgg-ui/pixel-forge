@@ -32,6 +32,9 @@ importers:
       '@pixel-forge/render':
         specifier: workspace:*
         version: link:../render
+      '@pixel-forge/render3d':
+        specifier: workspace:*
+        version: link:../render3d
       '@pixel-forge/rig':
         specifier: workspace:*
         version: link:../rig
@@ -87,6 +90,25 @@ importers:
       '@pixel-forge/spec':
         specifier: workspace:*
         version: link:../spec
+
+  packages/render3d:
+    dependencies:
+      '@pixel-forge/core':
+        specifier: workspace:*
+        version: link:../core
+      '@pixel-forge/render':
+        specifier: workspace:*
+        version: link:../render
+      pngjs:
+        specifier: 7.0.0
+        version: 7.0.0
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/pngjs':
+        specifier: 6.0.5
+        version: 6.0.5
 
   packages/rig:
     dependencies:

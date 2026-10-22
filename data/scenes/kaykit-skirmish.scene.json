@@ -1,0 +1,126 @@
+{
+ "$comment": "P7-alt 목업: 기사 1 + 해골 미니언 무리(검토용, 게임 화면 아님)",
+ "scale": 2,
+ "items": [
+  {
+   "spec": "data/specs/prerender/kaykit-knight.spec.json",
+   "anim": "attack",
+   "dir": "se",
+   "index": 2,
+   "at": [
+    150,
+    120
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "walk",
+   "dir": "sw",
+   "index": 1,
+   "at": [
+    200,
+    96
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "walk",
+   "dir": "sw",
+   "index": 3,
+   "at": [
+    232,
+    108
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "idle",
+   "dir": "s",
+   "index": 0,
+   "at": [
+    262,
+    126
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "attack",
+   "dir": "sw",
+   "index": 1,
+   "at": [
+    190,
+    136
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "walk",
+   "dir": "s",
+   "index": 2,
+   "at": [
+    226,
+    150
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "hit",
+   "dir": "sw",
+   "index": 1,
+   "at": [
+    176,
+    116
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "idle",
+   "dir": "sw",
+   "index": 2,
+   "at": [
+    250,
+    92
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "walk",
+   "dir": "se",
+   "index": 4,
+   "at": [
+    96,
+    104
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "death",
+   "dir": "s",
+   "index": 8,
+   "at": [
+    120,
+    150
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "walk",
+   "dir": "sw",
+   "index": 5,
+   "at": [
+    284,
+    140
+   ]
+  },
+  {
+   "spec": "data/specs/prerender/kaykit-skeleton-minion.spec.json",
+   "anim": "idle",
+   "dir": "se",
+   "index": 3,
+   "at": [
+    72,
+    132
+   ]
+  }
+ ]
+}

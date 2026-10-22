@@ -16,6 +16,7 @@
     "@pixel-forge/export": "workspace:*",
     "@pixel-forge/qa": "workspace:*",
     "@pixel-forge/render": "workspace:*",
+    "@pixel-forge/render3d": "workspace:*",
     "@pixel-forge/rig": "workspace:*",
     "@pixel-forge/spec": "workspace:*",
     "chokidar": "4.0.3",

@@ -1,11 +1,13 @@
 import { rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { buildBiblePalette, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
+import { buildBiblePalette, ForgeError, parseHex, toRGBA, type BiblePalette, type IndexedRaster } from '@pixel-forge/core';
 import { contactSheet, runChecks, type Check, type HeldInfo, type QaContext, type QaFrame, type Report } from '@pixel-forge/qa';
-import { GRID_SIGNATURE_PART, mirrorFrame, renderAnimations, renderFitted, renderFrame, renderGridAnimations, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
-import { resolveMotion } from '@pixel-forge/spec';
+import { GRID_SIGNATURE_PART, mirrorFrame, renderAnimations, renderFitted, renderFrame, prerenderEyeCount, renderGridAnimations, renderPrerender, type AnimFrame, type RenderMeta, type RenderResult, type SizeFit } from '@pixel-forge/render';
+import { DIRECTIONS } from '@pixel-forge/render3d';
+import { resolveMotion, sampleFramesOf } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
 import { encodePng } from '../io/png.js';
+import type { PrerenderInput } from '../io/prerender.js';
 import { loadProject, type Project } from '../io/project.js';
 import { packFiles } from './pack-files.js';
 import { validateProject } from './validate.js';
@@ -52,9 +54,18 @@ export interface Rendered {
  * rest + 지정 애니(없으면 Spec의 animations 전부). 공용 애니 파일이 없으면 rest만.
  * 크기 등급은 Spec 애니 전부를 렌더해 정한다(일부 애니만 요청해도 같은 등급이 나오게) — 넘치면 큰 등급으로 다시 렌더.
  */
-export function renderProject(p: Project, ids: readonly string[] = p.spec.mode === 'frames' ? Object.keys(p.spec.frames ?? {}) : p.spec.animations): Rendered {
+export function renderProject(p: Project, ids: readonly string[] = defaultAnims(p)): Rendered {
   validateProject(p);
   const palette = buildBiblePalette(p.bible, p.rules);
+  if (p.spec.mode === 'prerender') {
+    // 캔버스는 Blender 카메라가 전 프레임 범위로 맞추므로 크기 등급 맞춤을 하지 않는다
+    if (!p.prerender) throw new ForgeError('render3d.no-model', '프리렌더 입력이 없습니다');
+    const input = p.prerender();
+    const ctx = { ...p, palette };
+    const res = renderPrerender(ctx, input.render(p.spec.directions === 4 ? pickDirections(ctx, input) : input.yaws), input.options);
+    const want = new Set(ids);
+    return { palette, rest: res.rest, frames: res.frames.filter((f) => want.has(f.anim)), project: p, sizeClass: { requested: p.spec.sizeClass, used: p.spec.sizeClass, reason: 'fits' } };
+  }
   const anims = p.anims;
   // 프레임 모드는 Spec frames의 애니(공용 애니 파일·리그 포즈를 쓰지 않는다)
   const frames = p.spec.mode === 'frames';
@@ -69,8 +80,29 @@ export function renderProject(p: Project, ids: readonly string[] = p.spec.mode =
   return { palette, rest: result.rest, frames: result.frames.filter((f) => want.has(f.anim)), project, sizeClass: fit };
 }
 
-const qaFrame = (name: string, raster: IndexedRaster, meta: RenderMeta, rootFixed: boolean, stillParts?: Set<number>, anim = 'rest', key = true): QaFrame =>
-  ({ name, raster, ...meta.layers, face: meta.face, rootFixed, ...(stillParts ? { stillParts } : {}), anim, key });
+const qaFrame = (name: string, raster: IndexedRaster, meta: RenderMeta, rootFixed: boolean, stillParts?: Set<number>, anim = 'rest', key = true, dir?: string): QaFrame =>
+  ({ name, raster, ...meta.layers, face: meta.face, rootFixed, ...(stillParts ? { stillParts } : {}), anim, key, eyes: meta.eyes.length, ...(dir ? { dir } : {}) });
+
+/**
+ * 4방향 기본값: 8방향 rest(첫 애니 첫 프레임)를 렌더해 눈 픽셀이 보이는 방향만, 눈이 많이 보이는 순으로 4개(사용자 승인 P7-alt).
+ * 정면이 아닌 방향(뒤통수)을 기본 방향에 넣지 않으려는 것 — 결과 순서는 회전각 순.
+ */
+function pickDirections(ctx: Parameters<typeof renderPrerender>[0], input: PrerenderInput): Record<string, number> {
+  const eight = { ...DIRECTIONS[8] };
+  const first = Object.keys(ctx.spec.actions ?? {})[0] ?? '';
+  const probe = input.render(eight, { [first]: [sampleFramesOf(ctx.spec)[first]?.[0] ?? 0] });
+  const seen = probe.frames.map((f) => ({ dir: f.dir, eyes: prerenderEyeCount(ctx, probe, f, input.options) })).filter((d) => d.eyes > 0);
+  const top = seen.sort((a, b) => b.eyes - a.eyes || (eight[a.dir] ?? 0) - (eight[b.dir] ?? 0)).slice(0, 4).map((d) => d.dir);
+  if (!top.length) return input.yaws;
+  return Object.fromEntries(Object.entries(eight).filter(([d]) => top.includes(d)));
+}
+
+/** Spec의 애니 목록: frames 모드 = frames 키, 프리렌더 = actions 키, 나머지 = animations */
+export function defaultAnims(p: Project): string[] {
+  if (p.spec.mode === 'frames') return Object.keys(p.spec.frames ?? {});
+  if (p.spec.mode === 'prerender') return Object.keys(p.spec.actions ?? {});
+  return p.spec.animations;
+}
 
 /** 애니별 행. 같은 애니 안에서 앞 프레임과 변환이 같은 파츠를 stillParts로 넘긴다(anim.flicker) */
 export function qaRows(r: Rendered): QaFrame[][] {
@@ -85,7 +117,7 @@ export function qaRows(r: Rendered): QaFrame[][] {
         if (q && q[0] === t[0] && q[1] === t[1] && q[2] === t[2]) still.add(i + 1);
       });
     }
-    rows[rows.length - 1]?.push(qaFrame(`${f.anim}_r_${f.index}`, f.raster, f.meta, f.rootFixed, f.index > 0 ? still : undefined, f.anim, !f.inbetween));
+    rows[rows.length - 1]?.push(qaFrame(`${f.anim}_${f.dir ?? 'r'}_${f.index}`, f.raster, f.meta, f.rootFixed, f.index > 0 ? still : undefined, f.anim, !f.inbetween, f.dir));
   }
   return rows;
 }
@@ -97,7 +129,9 @@ export function writeFrames(dir: string, r: Rendered): string[] {
   };
   const files = [png('frames/rest.png', r.rest.raster)];
   for (const f of r.frames) {
-    files.push(png(`frames/${f.anim}_r_${f.index}.png`, f.raster), png(`frames/${f.anim}_l_${f.index}.png`, mirrorFrame(f.raster)));
+    // 프리렌더는 방향마다 렌더한 프레임(dir) 그대로, 나머지는 우향 + 좌우 반전 좌향
+    if (f.dir) files.push(png(`frames/${f.anim}_${f.dir}_${f.index}.png`, f.raster));
+    else files.push(png(`frames/${f.anim}_r_${f.index}.png`, f.raster), png(`frames/${f.anim}_l_${f.index}.png`, mirrorFrame(f.raster)));
   }
   return files;
 }

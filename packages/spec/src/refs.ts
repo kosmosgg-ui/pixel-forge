@@ -1,7 +1,7 @@
 import type { AnimsFile } from './anim-schema.js';
 import type { Bible } from './bible-schema.js';
 import type { Rig } from './rig-schema.js';
-import type { Spec } from './spec-schema.js';
+import { gridFramesOf, type Spec } from './spec-schema.js';
 
 /** 참조 무결성: 재질∈바이블, 뼈∈리그, sizeClass∈sizeClasses, role∈roleColorKey. 오류 문구 목록(빈 배열 = 통과) */
 export function checkRefs(spec: Spec, bible: Bible, rig: Rig): string[] {
@@ -24,7 +24,7 @@ export function checkRefs(spec: Spec, bible: Bible, rig: Rig): string[] {
     for (const m of mats) if (!(m in bible.materials)) errors.push(`${where}.material: 바이블에 없는 재질 ${m}`);
   });
   if (spec.grid) errors.push(...gridRefs(spec.grid.legend, bible, 'grid'));
-  for (const [a, list] of Object.entries(spec.frames ?? {})) list.forEach((f, i) => {
+  for (const [a, list] of Object.entries(gridFramesOf(spec))) list.forEach((f, i) => {
     const g = f.grid ?? f.patch;
     if (g) errors.push(...gridRefs(g.legend, bible, `frames.${a}[${i}]`));
   });

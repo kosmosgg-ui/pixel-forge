@@ -86,6 +86,13 @@
     "attackKeyCount": [4, 6],
     "inbetweenMs": 60
   },
+  "prerender": {
+    "id": "prerender.toon",
+    "toon": [-0.1, 0.45],
+    "supersample": 2,
+    "margin": 3,
+    "source": "사용자 승인 실험(P7-alt): docs/prerender-poc/to_pixel.py 값 — n·L > 0.45 밝음, > -0.1 기본, 나머지 어둠. 2배로 렌더해 2×2 다수결로 축소. 여백 3px(외곽선 + 프레이밍 여유)"
+  },
   "qa": {
     "id": "qa.thresholds",
     "sheetScale": 4,

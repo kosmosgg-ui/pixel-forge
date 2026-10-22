@@ -44,6 +44,9 @@ export const rulesSchema = z
     heldThinShade: z.object({ id: z.string(), maxThickness: z.number().int().min(1), brightSteps: z.number().int().min(1) }).passthrough(),
     held: z.object({ id: z.string(), minWidth: z.number().int().min(1) }).passthrough(),
     qa: qaRulesSchema,
+    /** P7-alt 프리렌더(3D → 도트): 툰 경계(n·L), 슈퍼샘플 배율, 캔버스 여백 */
+    prerender: z.object({ toon: z.tuple([z.number(), z.number()]), supersample: z.number().int().min(1).max(4), margin: z.number().int().min(1) }).passthrough()
+      .default({ toon: [-0.1, 0.45], supersample: 2, margin: 3 }),
     anim: z
       .object({
         id: z.string().min(1),

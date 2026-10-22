@@ -1,0 +1,23 @@
+{
+  "name": "@pixel-forge/render3d",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@pixel-forge/core": "workspace:*",
+    "@pixel-forge/render": "workspace:*",
+    "pngjs": "7.0.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/pngjs": "6.0.5"
+  }
+}
