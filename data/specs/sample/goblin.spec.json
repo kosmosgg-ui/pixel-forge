@@ -379,9 +379,9 @@
     "ms": 140,
     "grid": {
      "rows": [
-      ".......HHHH..........HHHHHHH",
-      ".....HHssssHH......HHsssssss",
-      "H...HssssssssH...HHsssdddddd",
+      ".......HHHH..........HH.....",
+      ".....HHssssHH......HHss.....",
+      "H...HssssssssH...HHsssd.....",
       "ssHH.Hssssssssd.HHsssss.....",
       "ssssHHsssssddsdHssssssd.....",
       "ssssdHsssssddsddsssssd......",
@@ -413,7 +413,7 @@
       "m": "metal:3"
      },
      "pivot": [
-      14,
+      12,
       20
      ]
     },

@@ -5,6 +5,8 @@ export interface ReviewOptions {
   scale: number;
   /** 바이블 배경 hex — 게임 화면과 같은 바탕에서 판독하게 */
   background: string;
+  /** 한 줄 칸 수(생략하면 가장 긴 묶음) — 비교 시트는 묶음들을 한 줄에 나란히 놓으려고 늘린다 */
+  cols?: number;
 }
 
 export interface ReviewSheet {
@@ -27,7 +29,7 @@ export function reviewSheet(characters: readonly (readonly (readonly IndexedRast
   const all = characters.flat(2);
   const fw = Math.max(1, ...all.map((r) => r.w)) * k, fh = Math.max(1, ...all.map((r) => r.h)) * k;
   const gap = k, groupGap = Math.floor(fw / 2);
-  const cols = Math.max(1, ...characters.flat().map((g) => g.length));
+  const cols = o.cols ?? Math.max(1, ...characters.flat().map((g) => g.length));
   const lines = characters.map((groups) => packLines(groups, cols));
   const lineW = (line: readonly (readonly IndexedRaster[])[]) => line.reduce((a, g) => a + g.length * (fw + gap), 0) + (line.length - 1) * groupGap;
   const width = gap + Math.max(1, ...lines.flat().map(lineW));
