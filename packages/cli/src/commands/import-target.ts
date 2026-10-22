@@ -7,7 +7,7 @@ import { readJson, writeFileEnsured } from '../io/files.js';
 import { resolveInside } from '../io/paths.js';
 import { encodePng } from '../io/png.js';
 import { resolveOut } from '../io/targets.js';
-import type { Imported } from './import.js';
+import { qaContextOf, type Imported } from './import.js';
 
 const DEFAULT_FPS = 8;
 export const IMPORT_TARGETS = ['godot-rowsheet'] as const;
@@ -62,7 +62,7 @@ export function exportImportTarget(im: Imported, cwd: string, target: string, ou
       aiUsed: true, promptRecord: src?.prompt ?? '', editedBy: t.provenance.editedBy,
       sourceFile: src?.path ?? '', exportFile: `${spec.id}_sheet.png`, rightsReviewed: false, creditText: t.provenance.creditText,
     },
-    qa: { pass: true, warnings: importChecks(r).filter((c) => !c.pass).map((c) => ({ id: c.id, ...(c.note ? { note: c.note } : {}) })) },
+    qa: { pass: true, warnings: importChecks(r, qaContextOf(im)).filter((c) => !c.pass).map((c) => ({ id: c.id, ...(c.note ? { note: c.note } : {}) })) },
   });
   const png = encodePng({ w: sheet.sheet.w, h: sheet.sheet.h, rgba: toRGBA(sheet.sheet, im.palette) });
   const w = writeRowExport(cwd, t, spec.id, png, manifest, join(cwd, 'out', spec.id, target), outArg);

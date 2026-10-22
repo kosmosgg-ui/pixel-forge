@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { feetAnchor, measureStride, placeInCell } from './align.js';
+import { feetAnchor, measureStride, placeInCell, seloutInPlace } from './align.js';
 import { identityCheck, jitterCheck, paletteDeltaCheck } from './checks.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { silhouetteMatch } from './match.js';
@@ -206,3 +206,23 @@ describe('걷기 보폭 실측(P10 0절)', () => {
     expect(measureStride([])).toBe(0);
   });
 });
+
+describe('선택 외곽선(P10 1절)', () => {
+  it('바깥 경계만 어두운 짝으로, 안쪽·실루엣 크기는 그대로', () => {
+    const f = { w: 5, h: 5, px: new Uint8Array(25) };
+    for (let y = 1; y < 4; y++) for (let x = 1; x < 4; x++) f.px[y * 5 + x] = 2;
+    seloutInPlace(f, [1, 1]);
+    expect(f.px[2 * 5 + 2]).toBe(2);
+    expect([f.px[1 * 5 + 1], f.px[1 * 5 + 2], f.px[3 * 5 + 3]]).toEqual([1, 1, 1]);
+    expect([...f.px].filter(Boolean)).toHaveLength(9);
+  });
+  it('importImage selout: 키 = targetHeight 그대로, 경계는 더 어두운 색', () => {
+    const img = canvas(24, 24);
+    rect(img, 8, 2, 15, 21, [220, 180, 60, 255]); rect(img, 10, 5, 13, 18, [120, 90, 30, 255]);
+    const r = importImage(img, { ...OPTS, targetHeight: 20, outline: 0x101010, outlineMode: 'selout' });
+    const f = r.frames[0]?.frame;
+    const rows = f ? [...Array(f.h).keys()].filter((y) => [...f.px.subarray(y * f.w, (y + 1) * f.w)].some(Boolean)) : [];
+    expect(rows.length).toBe(20);
+  });
+});
+

@@ -9,3 +9,4 @@ export * from './align.js';
 export * from './pipeline.js';
 export * from './checks.js';
 export * from './match.js';
+export * from './anim-checks.js';

@@ -1,4 +1,5 @@
 import type { IndexFrame } from './align.js';
+import { footContactCheck, headBobCheck, topVisibilityCheck, weaponSeparationCheck } from './anim-checks.js';
 import type { ImportResult } from './pipeline.js';
 
 /** import QA 한 항목(경고만 — required 아님). cli가 qa.json 검사 목록에 더한다 */
@@ -74,7 +75,9 @@ export function identityCheck(r: ImportResult, max = 0.25): ImportCheck {
 }
 
 /** import QA 묶음 + 처리 경고(import.clipped 등)를 검사 항목으로 */
-export function importChecks(r: ImportResult): ImportCheck[] {
+export function importChecks(r: ImportResult, ctx: { anchorY?: number; weapon?: number | null } = {}): ImportCheck[] {
   const fromWarnings = r.warnings.map((w): ImportCheck => ({ id: w.id, pass: false, value: null, threshold: 0, note: w.note }));
-  return [paletteDeltaCheck(r), jitterCheck(r), identityCheck(r), ...fromWarnings];
+  // P10 1절 가독성 검사(걷기 검사는 walk가 있을 때만 의미 — 없으면 값 0으로 통과)
+  const read = [headBobCheck(r), ...(ctx.anchorY !== undefined ? [footContactCheck(r, ctx.anchorY)] : []), weaponSeparationCheck(r, ctx.weapon ?? null), topVisibilityCheck(r)];
+  return [paletteDeltaCheck(r), jitterCheck(r), identityCheck(r), ...read, ...fromWarnings];
 }

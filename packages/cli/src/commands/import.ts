@@ -51,10 +51,16 @@ export function runImport(specPath: string, cwd: string): Imported {
     rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, dedupe: spec.dedupe, background: spec.background,
     palette: { max: spec.palette.max, ...(fixed ? { fixed } : {}) },
     ...(targetHeight !== undefined ? { targetHeight } : {}),
-    ...(spec.outline === 'bible' && bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16) } : {}),
+    ...(spec.outline === 'bible' && bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16), outlineMode: bible.outline.mode === 'selout' ? 'selout' as const : 'ring' as const } : {}),
   });
   const palette: Palette = { colors: Uint32Array.from([0, ...result.palette.map((c) => ((c << 8) | 255) >>> 0)]), names: ['transparent', ...result.palette.map((_, i) => `import-${i + 1}`)] };
   return { spec, bible, rules, result, palette, sourceHash: createHash('sha256').update(bytes).digest('hex'), cell };
+}
+
+/** 가독성 검사 맥락: 발 앵커 행, 무기 색(바이블 재질 metal_blade, 없으면 null) */
+export function qaContextOf(im: Imported): { anchorY: number; weapon: number | null } {
+  const blade = im.bible.materials['metal_blade'];
+  return { anchorY: im.cell.anchor[1], weapon: blade ? parseInt(blade.base.slice(1, 7), 16) : null };
 }
 
 const frameName = (f: { anim: string; dir: string; index: number }) => `${f.anim}_${f.dir}_${f.index}`;
@@ -67,7 +73,7 @@ export function importCommand(specPath: string, cwd: string, o: { target?: strin
   rmSync(dir, { recursive: true, force: true });
   const png = (rel: string, ras: IndexedRaster) => writeFileEnsured(join(dir, rel), encodePng({ w: ras.w, h: ras.h, rgba: toRGBA(ras, im.palette) }));
   for (const f of r.frames) png(`frames/${frameName(f)}.png`, f.frame);
-  const checks = importChecks(r);
+  const checks = importChecks(r, qaContextOf(im));
   const groups = new Map<string, typeof r.frames>();
   for (const f of r.frames) groups.set(`${f.anim}_${f.dir}`, [...(groups.get(`${f.anim}_${f.dir}`) ?? []), f]);
   const rows = [...groups.values()].map((g) => g.map((f) => ({ name: frameName(f), raster: f.frame })));

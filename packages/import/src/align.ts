@@ -86,3 +86,17 @@ export function measureStride(contacts: readonly IndexFrame[], band = 3): number
   });
   return gaps.length ? Math.round(gaps.reduce((x, y) => x + y, 0) / gaps.length) : 0;
 }
+
+/**
+ * 선택 외곽선(selout): 실루엣 바깥 경계(4-이웃에 투명이 있는 불투명 칸)를 같은 색 계열의 더 어두운 팔레트 색으로 바꾼다.
+ * 실루엣을 키우지 않아 키·발 앵커가 그대로다. darker[i] = 팔레트 i+1번 색의 어두운 짝(인덱스, 1부터) — 호출자가 계산.
+ */
+export function seloutInPlace(f: IndexFrame, darker: readonly number[]): void {
+  const { w, h, px } = f;
+  const opaque = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && (px[y * w + x] ?? 0) > 0;
+  const edge: number[] = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (opaque(x, y) && !(opaque(x - 1, y) && opaque(x + 1, y) && opaque(x, y - 1) && opaque(x, y + 1))) edge.push(y * w + x);
+  }
+  for (const k of edge) px[k] = darker[(px[k] ?? 1) - 1] ?? px[k] ?? 0;
+}

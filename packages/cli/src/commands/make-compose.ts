@@ -6,7 +6,7 @@ import { importChecks, measureStride } from '@pixel-forge/import';
 import { encodePng } from '../io/png.js';
 import type { Kit } from '../prompts/kit.js';
 import { readState } from '../prompts/state.js';
-import { runImport, type Imported } from './import.js';
+import { qaContextOf, runImport, type Imported } from './import.js';
 import { displayScaleOf, loadTarget, writeRowExport } from './import-target.js';
 import { pickIntake } from './intake.js';
 
@@ -82,7 +82,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
       promptRecord: intakes.map((x) => x.meta.promptFile).join(', '), editedBy: t.provenance.editedBy,
       sourceFile: intakes.map((x) => x.png).join(', '), exportFile: `${kit.actor.id}_sheet.png`, rightsReviewed: false, creditText: t.provenance.creditText,
     },
-    qa: { pass: true, warnings: [...new Map(parts.map((p) => [p.key, p.im])).entries()].flatMap(([k, im]) => importChecks(im.result).filter((c) => !c.pass).map((c) => ({ id: c.id, note: `${k}: ${c.note ?? ''}`.trim() }))) },
+    qa: { pass: true, warnings: [...new Map(parts.map((p) => [p.key, p.im])).entries()].flatMap(([k, im]) => importChecks(im.result, qaContextOf(im)).filter((c) => !c.pass).map((c) => ({ id: c.id, note: `${k}: ${c.note ?? ''}`.trim() }))) },
   });
   const png = encodePng({ w: W, h: H, rgba });
   return { ...writeRowExport(cwd, t, kit.actor.id, png, manifest, join(cwd, 'out', 'make', kit.actor.id, 'godot-rowsheet'), outArg), columns: layout.columns, rows: layout.rows.map((r) => r.name), sheetSize: [W, H], parts: keys };

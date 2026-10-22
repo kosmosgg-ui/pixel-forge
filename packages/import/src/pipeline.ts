@@ -1,5 +1,5 @@
 import { ForgeError, srgbToOklab } from '@pixel-forge/core';
-import { outlineInPlace, placeInCell, ringStats, type IndexFrame } from './align.js';
+import { outlineInPlace, placeInCell, ringStats, seloutInPlace, type IndexFrame } from './align.js';
 import { binarizeAlphaInPlace, removeBackgroundInPlace } from './background.js';
 import { medianCut, quantize } from './palette.js';
 import { dedupeRow, rowsByKmeans } from './rows.js';
@@ -24,6 +24,8 @@ export interface ImportOptions {
   palette: { max: number; fixed?: readonly number[] };
   /** 외곽선 색(0xRRGGBB, 바이블 outline). 없으면 외곽선을 더하지 않는다 */
   outline?: number;
+  /** ring = 실루엣 밖 1px 고리(바이블 dark), selout = 바깥 경계를 같은 계열 어두운 색으로(바이블 selout, P10 1절 — 실루엣 크기 그대로) */
+  outlineMode?: 'ring' | 'selout';
 }
 
 export interface ImportedFrame {
@@ -88,6 +90,12 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   });
   const maxH = Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
   const first = scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap);
+  if (o.outline !== undefined && o.outlineMode === 'selout') {
+    // 48px 실루엣 분리(P10 1절): 이미 어두운 선이 있어도 축소로 흐려진 경계를 항상 다시 세운다
+    const darker = darkerPairs(first.palette);
+    for (const f of first.frames) seloutInPlace(f.frame, darker);
+    return first;
+  }
   if (o.outline === undefined || !needsOutline(first)) return first;
   // 외곽선은 실루엣을 위아래 1px씩 키운다 → 키 targetHeight·발 앵커 y를 지키게 2px 작게 줄이고 1px 위에 놓은 뒤 둘레 전체에(프레임마다 따로 정하면 깜빡인다)
   const anchor: readonly [number, number] = [o.cell.anchor[0], o.cell.anchor[1] - 1];
@@ -96,6 +104,21 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
   const outlineIndex = palette.indexOf(o.outline) + 1 || palette.push(o.outline);
   for (const f of r.frames) outlineInPlace(f.frame, outlineIndex);
   return { ...r, palette };
+}
+
+/** 팔레트 색마다 어두운 짝: 명도 0.45배·같은 a·b에 가장 가까운, 자기보다 어두운 색(없으면 가장 어두운 색) — 인덱스 1부터 */
+function darkerPairs(palette: readonly number[]): number[] {
+  const lab = palette.map((c) => srgbToOklab(c >> 16, (c >> 8) & 255, c & 255));
+  const darkest = lab.reduce((best, l, i) => (l.L < (lab[best]?.L ?? 1) ? i : best), 0);
+  return lab.map((p) => {
+    let best = -1, bd = Infinity;
+    lab.forEach((q, j) => {
+      if (q.L >= p.L - 0.05) return;
+      const d = (q.L - p.L * 0.45) ** 2 + (q.a - p.a) ** 2 + (q.b - p.b) ** 2;
+      if (d < bd) { bd = d; best = j; }
+    });
+    return (best < 0 ? darkest : best) + 1;
+  });
 }
 
 type Chosen = { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[] }[];
