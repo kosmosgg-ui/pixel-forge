@@ -19,7 +19,8 @@ function remapTable(palette: readonly number[], counts: readonly number[], bg: n
   let spill = palette.map(() => false);
   if (bg !== null) {
     const b = labOf(bg), bh = Math.atan2(b.b, b.a);
-    spill = lab.map((l) => Math.hypot(l.a, l.b) > 0.12 && Math.abs(Math.atan2(Math.sin(Math.atan2(l.b, l.a) - bh), Math.cos(Math.atan2(l.b, l.a) - bh))) < 0.5);
+    // 진한 초록(채도 > 0.12, 0.5rad) + 어두운 선과 섞인 탁한 초록(채도 > 0.06, 0.6rad — #274c1a 같은 색, G2 U1 death 실측)
+    spill = lab.map((l) => { const c = Math.hypot(l.a, l.b), d = Math.abs(Math.atan2(Math.sin(Math.atan2(l.b, l.a) - bh), Math.cos(Math.atan2(l.b, l.a) - bh))); return (c > 0.12 && d < 0.5) || (c > 0.06 && d < 0.6); });
     lab.forEach((l, i) => {
       if (!spill[i]) return;
       let best = -1, bd = Infinity;
@@ -51,6 +52,22 @@ function absorbLones(f: IndexFrame, protect: ReadonlySet<number>): number {
   return changes.length;
 }
 
+/**
+ * 가장자리 배경 번짐 제거: 실루엣 바깥 경계(투명 4-이웃이 있는) 픽셀 중 배경 색조에 가까운 색(채도 > 0.06, 색상 차 < 0.6rad — 금색·크림은 0.9rad 밖)은 투명으로.
+ * 작게 잘린 원본(보드에서 자른 death 등)은 초록이 다른 색과 섞인 번짐이 남는다(G2 U1 art-judge 관찰). 경계만 보므로 안쪽 색은 건드리지 않는다.
+ */
+function dropEdgeSpill(f: IndexFrame, greenish: readonly boolean[]): number {
+  const { w, h, px } = f;
+  const clear = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || !px[y * w + x];
+  const hits: number[] = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const v = px[y * w + x] ?? 0;
+    if (v && greenish[v - 1] && (clear(x - 1, y) || clear(x + 1, y) || clear(x, y - 1) || clear(x, y + 1))) hits.push(y * w + x);
+  }
+  for (const k of hits) px[k] = 0;
+  return hits.length;
+}
+
 export function cleanupFramesInPlace(frames: readonly IndexFrame[], palette: readonly number[], o: { background: number | null; near?: number }): CleanupStats {
   const counts = palette.map(() => 0);
   for (const f of frames) for (const v of f.px) if (v) counts[v - 1] = (counts[v - 1] ?? 0) + 1;
@@ -61,6 +78,11 @@ export function cleanupFramesInPlace(frames: readonly IndexFrame[], palette: rea
     if (m === v) continue;
     f.px[k] = m;
     if (spill[v - 1]) despilled++; else merged++;
+  }
+  if (o.background !== null) {
+    const b = labOf(o.background), bh = Math.atan2(b.b, b.a);
+    const greenish = palette.map((c) => { const l = labOf(c), d = Math.atan2(l.b, l.a) - bh; return Math.hypot(l.a, l.b) > 0.06 && Math.abs(Math.atan2(Math.sin(d), Math.cos(d))) < 0.6; });
+    for (const f of frames) despilled += dropEdgeSpill(f, greenish);
   }
   const darkest = new Set(palette.map((c, i) => [labOf(c).L, i + 1] as const).sort((a, b) => a[0] - b[0]).slice(0, 2).map(([, i]) => i));
   const absorbed = frames.reduce((a, f) => a + absorbLones(f, darkest), 0);
