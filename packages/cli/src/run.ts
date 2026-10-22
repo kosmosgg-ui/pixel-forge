@@ -67,7 +67,7 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'validate') return validateCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'render') return renderCommand(need('<spec 경로> [--anim a,b] [--sheet 8]'), input.cwd, input.anim ? input.anim.split(',').filter(Boolean) : [], input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'crowd') return crowdCommand(need('<프로젝트 이름> [--count 50] [--seed 1]'), input.cwd, intOption('count', input.count, 50), intOption('seed', input.seed, 1));
-  if (cmd === 'compare') return compareCommand(need('<out/….png> <a.spec.json,b.spec.json> ...'), input.positionals.slice(2), input.cwd);
+  if (cmd === 'compare') return compareCommand(need('<out/….png> <a.spec.json,b.spec.json> ... [--sheet 8]'), input.positionals.slice(2), input.cwd, input.sheet === undefined ? undefined : Number(input.sheet));
   if (cmd === 'review') return reviewCommand(need('<프로젝트 이름>'), input.cwd);
   if (cmd === 'review-score') return reviewScoreCommand(need('<spec 경로> --score <0~24> --obs <기준별 관찰 JSON> [--note 문장] [--sheet 4]'), input.cwd, Number(input.score), input.obs, input.note, input.sheet === undefined ? 4 : Number(input.sheet));
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
