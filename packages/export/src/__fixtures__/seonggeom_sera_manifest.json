@@ -1,0 +1,56 @@
+{
+  "version": "ART-100-B2-cleanup-1",
+  "quality": "corrected technical prototype; final manual keyframe pixel-art and GUI art review pending",
+  "source": "ART-100-B submitted PNG sheet; original pose silhouettes rebuilt conservatively from direction reference frames",
+  "frame_size": [
+    64,
+    80
+  ],
+  "sheet_size": [
+    640,
+    240
+  ],
+  "columns": 10,
+  "rows": [
+    "front",
+    "back",
+    "right_side"
+  ],
+  "directions": {
+    "down": {
+      "row": 0,
+      "flip_h": false
+    },
+    "up": {
+      "row": 1,
+      "flip_h": false
+    },
+    "right": {
+      "row": 2,
+      "flip_h": false
+    },
+    "left": {
+      "row": 2,
+      "flip_h": true
+    }
+  },
+  "animations": {
+    "idle": {
+      "start_column": 0,
+      "frames": 4,
+      "fps": 4
+    },
+    "run": {
+      "start_column": 4,
+      "frames": 6,
+      "fps": 9
+    }
+  },
+  "anchor": "foot-center, (32,78)",
+  "notes": [
+    "source-image floating connected fragments removed; base silhouettes stable across frames",
+    "subtle procedural torso motion is PLACEHOLDER, not artist-approved hand-keyframed full run cycle",
+    "existing Godot visual adapter remains unchanged",
+    "no original combat/saves/runtime JSON touched"
+  ]
+}

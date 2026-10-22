@@ -1,0 +1,52 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { createIndexed } from '@pixel-forge/core';
+import { godotRowManifest, rowSheet, type Provenance } from './rowsheet.js';
+
+/** 게임이 읽는 형식 원본(samples/seonggeom_sera_manifest.json 복사본 — 값이 아니라 키 구조를 비교) */
+const SAMPLE = JSON.parse(readFileSync(join(import.meta.dirname, '__fixtures__', 'seonggeom_sera_manifest.json'), 'utf8')) as unknown;
+
+/** 키 구조: 객체는 키별 재귀, 배열은 "[]"+첫 원소 구조, 값은 타입 이름. animations·directions의 이름 키는 하나로 묶는다 */
+function shape(v: unknown, path = ''): unknown {
+  if (Array.isArray(v)) return ['[]', v.length ? shape(v[0], path) : null];
+  if (v !== null && typeof v === 'object') {
+    const e = Object.entries(v);
+    if (path === 'animations' || path === 'directions') return { '<name>': shape(e[0]?.[1], `${path}.*`) };
+    return Object.fromEntries(e.map(([k, x]) => [k, shape(x, path ? `${path}.${k}` : k)]).sort(([a], [b]) => String(a).localeCompare(String(b))));
+  }
+  return typeof v;
+}
+
+const cell = (k: number) => { const r = createIndexed(4, 5); r.px.fill(k); return r; };
+const PROV: Provenance = { assetId: 'sera', creator: 'u', sourceUrl: '', license: 'owned', aiUsed: true, promptRecord: '', editedBy: 'pixel-forge', sourceFile: 'a.png', exportFile: 'sera_sheet.png', rightsReviewed: false, creditText: '' };
+
+describe('godot-rowsheet', () => {
+  const s = rowSheet({
+    cell: { w: 4, h: 5 }, rows: [{ name: 'front', dir: 's' }, { name: 'back', dir: 'n' }, { name: 'right_side', dir: 'e' }],
+    anims: [{ name: 'idle', fps: 4 }, { name: 'run', fps: 9 }],
+    frames: [
+      { anim: 'idle', dir: 's', unique: [cell(1), cell(2)], order: [0, 1, 0, 1] },
+      { anim: 'run', dir: 's', unique: [cell(3)], order: [0, 0, 0] },
+      { anim: 'idle', dir: 'e', unique: [cell(4)], order: [0, 0, 0, 0] },
+    ],
+  });
+  it('행 = 방향(프레임 없는 방향은 뺀다), 열 = 애니 연속, frameMap으로 원래 열 수 복원', () => {
+    expect(s).toMatchObject({ columns: 7, rows: ['front', 'right_side'], animations: { idle: { start_column: 0, frames: 4, fps: 4 }, run: { start_column: 4, frames: 3, fps: 9 } } });
+    expect([s.sheet.w, s.sheet.h]).toEqual([28, 10]);
+    const at = (col: number, row: number) => s.sheet.px[(row * 5) * 28 + col * 4];
+    expect([0, 1, 2, 3, 4, 6].map((c) => at(c, 0))).toEqual([1, 2, 1, 2, 3, 3]);
+    expect([at(0, 1), at(4, 1)]).toEqual([4, 0]);
+  });
+  it('manifest 키 구조 = 게임 샘플 + provenance(11) + qa, quality는 candidate', () => {
+    const m = godotRowManifest({
+      version: 'v', source: 's', sheet: s, cell: { w: 4, h: 5 }, anchor: [2, 4], notes: ['n'], provenance: PROV, qa: { pass: true, warnings: [{ id: 'import.clipped', note: 'x' }] },
+      directions: { down: { row: 'front', flip_h: false }, up: { row: 'back', flip_h: false }, right: { row: 'right_side', flip_h: false }, left: { row: 'right_side', flip_h: true } },
+    });
+    const { provenance, qa, ...game } = m;
+    expect(shape(game)).toEqual(shape(SAMPLE));
+    expect(Object.keys(provenance).sort()).toEqual(['aiUsed', 'assetId', 'creator', 'creditText', 'editedBy', 'exportFile', 'license', 'promptRecord', 'rightsReviewed', 'sourceFile', 'sourceUrl']);
+    expect(m).toMatchObject({ quality: 'candidate', directions: { left: { row: 1, flip_h: true } }, qa: { warnings: [{ id: 'import.clipped' }] } });
+    expect(m.directions).not.toHaveProperty('up');
+  });
+});

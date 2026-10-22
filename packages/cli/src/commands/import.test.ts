@@ -8,7 +8,7 @@ import { importCommand, probeCommand } from './import.js';
 const root = join(import.meta.dirname, '..', '..', '..', '..');
 const work = mkdtempSync(join(tmpdir(), 'forge-import-'));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
-for (const d of ['data/bibles', 'data/rules']) cpSync(join(root, d), join(work, d), { recursive: true });
+for (const d of ['data/bibles', 'data/rules', 'data/projects/seonggeom']) cpSync(join(root, d), join(work, d), { recursive: true });
 
 /** 흰 배경 시트: 2줄 × 3칸(32px), 몸(빨강·외곽 검정) + 가운데 흰 천 — 1줄은 천 길이가 칸마다 다르고, 2줄 1·3번은 같은 그림 */
 function sheet(): void {
@@ -43,6 +43,16 @@ describe('forge import', () => {
     const files = ['imp-t.png', 'imp-t.json', 'manifest.json', 'sheet.png', 'frames/run_e_1.png'].map((f) => readFileSync(join(work, 'out/imp-t', f)));
     importCommand('imp.spec.json', work);
     files.forEach((b, i) => expect(readFileSync(join(work, 'out/imp-t', ['imp-t.png', 'imp-t.json', 'manifest.json', 'sheet.png', 'frames/run_e_1.png'][i] ?? '')).equals(b)).toBe(true));
+  });
+  it('--target godot-rowsheet: 프로젝트 바이블(data/projects) + target.json → <out>/art/candidates/<id>/, quality candidate·aiUsed·rightsReviewed false', () => {
+    writeFileSync(join(work, 'g.spec.json'), JSON.stringify({ ...spec, id: 'imp-g', bible: 'seonggeom', sizeClass: 'hero', targetHeight: 24, layout: { rows: [{ anim: 'idle', dir: 's' }, { anim: 'run', dir: 'e' }] } }));
+    const r = importCommand('g.spec.json', work, { target: 'godot-rowsheet', out: 'game' });
+    expect(r.exported).toMatchObject({ columns: 6, rows: ['front', 'right_side'], dest: 'game/art/candidates/imp-g' });
+    const m = JSON.parse(readFileSync(join(work, 'game/art/candidates/imp-g/imp-g_manifest.json'), 'utf8'));
+    expect(m).toMatchObject({ quality: 'candidate', frame_size: [32, 32], sheet_size: [192, 64], directions: { left: { row: 1, flip_h: true } }, provenance: { assetId: 'imp-g', aiUsed: true, rightsReviewed: false, exportFile: 'imp-g_sheet.png' } });
+    expect(m.directions).not.toHaveProperty('up');
+    expect(() => importCommand('g.spec.json', work, { target: 'godot-rowsheet', out: '@seonggeom' })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
+    expect(() => importCommand('g.spec.json', work, { target: 'godot-rowsheet', out: '../x' })).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
   });
   it('--probe: 스프라이트·줄·고유 프레임 요약 + 표 파일, 작업 폴더 밖 경로는 io.path-escape', () => {
     expect(probeCommand('data/import/t.png', work)).toMatchObject({ sprites: 6, rows: 2, perRow: [3, 3], clipped: 0, unique: 5, out: 'out/probe/t.md' });

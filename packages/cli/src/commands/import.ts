@@ -10,6 +10,7 @@ import { readJson, writeFileEnsured } from '../io/files.js';
 import { resolveInside } from '../io/paths.js';
 import { decodePng, encodePng } from '../io/png.js';
 import { bibleFile } from '../io/project.js';
+import { exportImportTarget } from './import-target.js';
 import { packFiles } from './pack-files.js';
 
 const DEFAULT_FPS = 8;
@@ -59,7 +60,7 @@ export function runImport(specPath: string, cwd: string): Imported {
 const frameName = (f: { anim: string; dir: string; index: number }) => `${f.anim}_${f.dir}_${f.index}`;
 
 /** forge import <spec> → out/<id>/{frames/*, sheet.png, qa.json, <id>.png, <id>.json(Aseprite), manifest.json} */
-export function importCommand(specPath: string, cwd: string) {
+export function importCommand(specPath: string, cwd: string, o: { target?: string; out?: string } = {}) {
   const im = runImport(specPath, cwd);
   const { spec, result: r } = im;
   const dir = join(cwd, 'out', spec.id);
@@ -77,7 +78,10 @@ export function importCommand(specPath: string, cwd: string) {
   const qa = { id: spec.id, mode: 'import', pass: true, warnings, checks, scale: Math.round(r.scale * 10000) / 10000, paletteSize: r.palette.length, sheet: { path: relative(cwd, join(dir, 'sheet.png')) } };
   writeFileSync(join(dir, 'qa.json'), JSON.stringify(qa, null, 2) + '\n');
   const files = writeImportPack(im, dir);
-  return { ok: true as const, cmd: 'import', id: spec.id, frames: r.frames.length, palette: r.palette.length, warnings, out: relative(cwd, dir), files: files.map((f) => relative(cwd, f)) };
+  // --target: 게임 형식으로 후보 폴더에(기본 타깃 = 바이블 apply.target)
+  const target = o.target ?? (o.out ? im.bible.apply?.target : undefined);
+  const exported = target ? { exported: exportImportTarget(im, cwd, target, o.out) } : {};
+  return { ok: true as const, cmd: 'import', id: spec.id, frames: r.frames.length, palette: r.palette.length, warnings, out: relative(cwd, dir), files: files.map((f) => relative(cwd, f)), ...exported };
 }
 
 /** 표준 pack(Aseprite JSON + manifest) + import 기록(입력 sha256, aiGenerated, frameMap) */
