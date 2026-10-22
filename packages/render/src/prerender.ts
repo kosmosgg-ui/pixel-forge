@@ -44,8 +44,14 @@ export interface PrerenderOptions {
 
 interface Target { mat: number; special: number; step?: number }
 
-/** 3단계 툰 → 램프 단계: 어둠 = 0, 기본 = 가운데, 밝음 = 맨 끝(램프 길이와 무관하게 3색) */
-const toonStep = (level: number, steps: number): number => (level === 0 ? 0 : level === 1 ? Math.floor((steps - 1) / 2) : steps - 1);
+/**
+ * 3단계 툰 → 램프 단계: 어둠 = 0, 기본 = 가운데, 밝음 = 가운데 + 1. 밝음을 램프 맨 끝으로 하면 밝은 재질(흰 갑옷)이
+ * 하이라이트 띠로 날아가 입체가 사라진다(P7-alt 검수) — 맨 끝 단계는 쓰지 않는다(3단계 램프는 그대로 0·1·2)
+ */
+const toonStep = (level: number, steps: number): number => {
+  const mid = Math.floor((steps - 1) / 2);
+  return level === 0 ? 0 : level === 1 ? mid : Math.min(steps - 1, mid + 1);
+};
 
 /** "metal" | "@eye" | "@eye:gold:3" | "@outline" → zone 값. "@eye"(검은 눈)·"@outline"(틈·구멍)의 재질은 실루엣용 아무 재질(색은 외곽선색으로 덮는다) */
 function parseTarget(t: string, names: readonly string[], where: string): Target {

@@ -2,7 +2,7 @@
  "id": "kaykit-knight",
  "kind": "character",
  "bible": "sample-v0",
- "sizeClass": "large",
+ "sizeClass": "boss",
  "mode": "prerender",
  "directions": 4,
  "height": 48,
