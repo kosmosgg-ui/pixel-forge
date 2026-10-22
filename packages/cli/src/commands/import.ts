@@ -48,13 +48,14 @@ export function runImport(specPath: string, cwd: string): Imported {
   const fixed = spec.palette.from === 'bible' ? [...buildBiblePalette(bible, rules).palette.colors.slice(1)].map((c) => c >>> 8) : undefined;
   const targetHeight = spec.targetHeight ?? bible.sizeClassOptions[spec.sizeClass]?.height;
   const result = importImage(decodePng(bytes), {
-    rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, cleanup: spec.cleanup, dedupe: spec.dedupe, ...(spec.scaleAnchorFrame !== undefined ? { scaleAnchorFrame: spec.scaleAnchorFrame } : {}), background: spec.background,
+    rows: spec.layout.rows, cell, alphaThreshold: spec.alphaThreshold, cleanup: spec.cleanup, dedupe: spec.dedupe, ...(spec.scaleAnchorFrame !== undefined ? { scaleAnchorFrame: spec.scaleAnchorFrame } : {}), ...(spec.scaleAnchor ? { scaleAnchor: spec.scaleAnchor } : {}), ...(spec.dropHue ? { dropHue: spec.dropHue } : {}), ...(spec.redToMetal ? { redToMetal: true } : {}), ...(spec.cellGrow ? { cellGrow: true } : {}), background: spec.background,
     palette: { max: spec.palette.max, ...(fixed ? { fixed } : {}) },
     ...(targetHeight !== undefined ? { targetHeight } : {}),
     ...(spec.outline === 'bible' && bible.outline.mode !== 'none' ? { outline: parseInt(bible.outline.globalColor.slice(1, 7), 16), outlineMode: bible.outline.mode === 'selout' ? 'selout' as const : 'ring' as const } : {}),
   });
   const palette: Palette = { colors: Uint32Array.from([0, ...result.palette.map((c) => ((c << 8) | 255) >>> 0)]), names: ['transparent', ...result.palette.map((_, i) => `import-${i + 1}`)] };
-  return { spec, bible, rules, result, palette, sourceHash: createHash('sha256').update(bytes).digest('hex'), cell };
+  // cellGrow로 넓혔으면 그 셀이 이 원본의 셀(매니페스트 frame_size·anchor)
+  return { spec, bible, rules, result, palette, sourceHash: createHash('sha256').update(bytes).digest('hex'), cell: result.cell ?? cell };
 }
 
 /** 가독성 검사 맥락: 발 앵커 행, 무기 색(바이블 재질 metal_blade, 없으면 null) */

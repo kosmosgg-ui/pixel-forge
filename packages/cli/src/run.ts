@@ -17,6 +17,7 @@ import { fxImportCommand } from './commands/fx-import.js';
 import { promptsCommand } from './commands/prompts.js';
 import { intakeCommand } from './commands/intake.js';
 import { makeCommand } from './commands/make.js';
+import { makeSheetCommand } from './commands/make-sheet.js';
 import { validateCommand } from './commands/validate.js';
 import { watchCommand } from './commands/watch.js';
 
@@ -101,7 +102,8 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'make') {
     const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');
-    if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back>');
+    if (input.sheet && !input.action) return makeSheetCommand(actor, input.cwd, { view: input.sheet, ...(input.pick ? { pick: input.pick } : {}), ...(input.out ? { out: input.out } : {}) });
+    if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back> | --sheet <side>');
     return makeCommand(actor, input.cwd, { action: input.action, dir: input.dir, ...(input.pick ? { pick: input.pick } : {}), ...(input.judge ? { judge: input.judge } : {}), ...(input.out ? { out: input.out } : {}) });
   }
   if (cmd === 'fx-import') return fxImportCommand(input.cwd, { ...(arg ? { assets: arg } : {}), ...(input.out ? { out: input.out } : {}) });

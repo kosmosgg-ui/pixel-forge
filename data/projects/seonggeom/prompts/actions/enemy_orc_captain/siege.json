@@ -1,22 +1,24 @@
 {
   "id": "siege",
   "title": "siege smash",
-  "frames": 6,
+  "frames": 7,
   "fps": 6,
   "loop": false,
   "poses": [
-    "frame 1: lifting the axe over the head with both hands",
-    "frame 2: leaning back, axe high",
-    "frame 3: fully arched back, holding the pose",
-    "frame 4: smashing the axe down into the ground",
-    "frame 5: axe stuck in the ground",
-    "frame 6: pulling the axe free"
+    "frame 1: gripping the axe with both hands",
+    "frame 2: lifting the axe over the head",
+    "frame 3: leaning back, axe high",
+    "frame 4: fully arched back, holding the pose",
+    "frame 5: smashing the axe down into the ground",
+    "frame 6: axe stuck in the ground",
+    "frame 7: pulling the axe free"
   ],
   "viewExtra": {},
   "ms": [
     450,
     450,
-    500,
+    400,
+    100,
     150,
     600,
     600
@@ -25,15 +27,17 @@
     "telegraph": [
       0,
       1,
-      2
-    ],
-    "active": [
+      2,
       3
     ],
+    "active": [
+      4
+    ],
     "recovery": [
-      4,
-      5
+      5,
+      6
     ]
   },
-  "hold": 2
+  "hold": 3,
+  "$comment": "G2 U3: 사용자 시트 실측 7프레임(머리 위 들기 2) → 예고 4프레임. 예고 합 1400ms(450·450·400 + 유지 100 — 유지 프레임은 남은 예고 시간 동안 보여 준다), 발동 150, 회복 600·600(ch1_02_slice SIEGE 1.4·0.15·1.2)"
 }

@@ -118,3 +118,15 @@ export function headWidth(f: IndexFrame): number {
   }
   return best;
 }
+
+/**
+ * 셀 넓히기(G2 U3 동작 시트, 옵션 cellGrow): 모든 프레임이 발 앵커 기준으로 들어가는 가장 작은 셀(16px 단위).
+ * 키·배율은 그대로, 앵커는 가로 가운데·바닥에서 원래 셀과 같은 거리. 원래 셀보다 작아지지 않는다.
+ */
+export function grownCell(frames: readonly IndexFrame[], cell: { w: number; h: number; anchor: readonly [number, number] }): { w: number; h: number; anchor: [number, number] } {
+  let half = 0, up = 0;
+  for (const f of frames) { const [fx, fy] = feetAnchor(f); half = Math.max(half, fx + 1, f.w - fx); up = Math.max(up, fy); }
+  const below = cell.h - 1 - cell.anchor[1], ceil16 = (v: number) => Math.ceil(v / 16) * 16;
+  const w = Math.max(cell.w, ceil16(2 * half)), h = Math.max(cell.h, ceil16(up + 1 + below));
+  return w === cell.w && h === cell.h ? { w, h, anchor: [cell.anchor[0], cell.anchor[1]] } : { w, h, anchor: [w / 2, h - 1 - below] };
+}

@@ -20,10 +20,18 @@ function sizeRefPng(cwd: string, actorId: string): string | null {
 
 const round = (v: number, d: number) => Math.round(v * 10 ** d) / 10 ** d;
 
-/** 동작의 기준 프레임(크기 보정 프레임, 없으면 첫 프레임) — 중복 제거 전 순서로 */
+/**
+ * 동작의 '서 있는' 기준 프레임(중복 제거 전 순서): 크기 보정 프레임(scaleAnchorFrame, 시트 scaleAnchor 줄의 frame)이거나
+ * idle·walk·run의 첫 프레임. 공격·피격처럼 무기가 머리 위로 올라가는 동작은 머리 폭 비교에서 뺀다(undefined).
+ */
+const STANDING = ['idle', 'walk', 'run'];
 function anchorFrame(p: ScalePart): IndexFrame | undefined {
+  const s = p.im.spec, rows = s.layout?.rows ?? [];
+  const sheetRow = s.scaleAnchor ? rows[s.scaleAnchor.row] : undefined;
+  const k = s.scaleAnchorFrame ?? (sheetRow?.anim === p.anim ? s.scaleAnchor?.frame : STANDING.includes(p.anim) ? 0 : undefined);
+  if (k === undefined) return undefined;
   const frames = p.im.result.frames.filter((f) => f.anim === p.anim).sort((a, b) => a.index - b.index);
-  const u = p.order[p.im.spec.scaleAnchorFrame ?? 0];
+  const u = p.order[k];
   return u === undefined ? undefined : frames[u]?.frame;
 }
 
@@ -40,10 +48,10 @@ export function scaleQa(cwd: string, actorId: string, parts: readonly ScalePart[
     return { action: p.anim, frame, scale: round(p.im.result.scale, 4), ...(h && refH ? { drawnRatioToSizeRef: round(h / refH, 3) } : {}) };
   });
   const idle = parts.find((p) => p.anim === 'idle');
-  const base = idle ? anchorFrame(idle) : undefined;
+  const base = idle ? anchorFrame(idle) : parts.map(anchorFrame).find((f) => f !== undefined);
   const head = base ? headWidth(base) : 0;
-  const heads = parts.map((p) => { const f = anchorFrame(p); return { action: p.anim, head: f ? headWidth(f) : 0 }; });
-  const warnings = head > 0 ? heads.filter((h) => h.action !== 'idle' && Math.abs(h.head / head - 1) > HEAD_TOLERANCE)
-    .map((h) => ({ id: 'anim.scale-consistency', note: `${h.action} 머리 폭 ${h.head}px vs idle ${head}px(±10% 밖)` })) : [];
+  const heads = parts.flatMap((p) => { const f = anchorFrame(p); return f ? [{ action: p.anim, head: headWidth(f) }] : []; });
+  const warnings = head > 0 ? heads.filter((h) => h.action !== (idle?.anim ?? heads[0]?.action) && Math.abs(h.head / head - 1) > HEAD_TOLERANCE)
+    .map((h) => ({ id: 'anim.scale-consistency', note: `${h.action} 머리 폭 ${h.head}px vs ${idle ? 'idle' : heads[0]?.action} ${head}px(±10% 밖)` })) : [];
   return { scaleAnchor, heads: [...heads], idleHead: head, warnings };
 }

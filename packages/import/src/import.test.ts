@@ -242,3 +242,38 @@ describe('G2 U1 크기 보정', () => {
     expect(headWidth({ w: 20, h: 24, px })).toBe(8);
   });
 });
+
+describe('G2 U3 동작 시트 정리', () => {
+  it('배경 허용오차는 둘레 변동에 맞춘다(마젠타 G 5~37): 고정 24로 남던 배경이 지워져 스프라이트 2개', () => {
+    const img = canvas(40, 20, [240, 8, 240, 255]);
+    for (let x = 0; x < 40; x++) for (let y = 0; y < 20; y++) if ((x + y) % 3 === 0) img.rgba.set([236, 36, 236, 255], (y * 40 + x) * 4);
+    figure(img, 4, 0, 18); figure(img, 24, 0, 18);
+    removeBackgroundInPlace(img);
+    expect(segmentSprites(img)).toHaveLength(2);
+  });
+  it('despill: 가장자리 2px 분홍(R·B ≫ G)은 G 기준으로 낮추고 안쪽은 그대로, 초록 배경은 대칭', async () => {
+    const { despillEdgesInPlace } = await import('./background.js');
+    const img = canvas(8, 8);
+    rect(img, 1, 1, 6, 6, [200, 60, 60, 255]); img.rgba.set([230, 90, 220, 255], (1 * 8 + 3) * 4); img.rgba.set([230, 90, 220, 255], (4 * 8 + 4) * 4);
+    expect(despillEdgesInPlace(img, [255, 0, 255], 2)).toBeGreaterThan(0);
+    expect(Array.from(img.rgba.subarray((1 * 8 + 3) * 4, (1 * 8 + 3) * 4 + 3))).toEqual([106, 90, 106]);
+    const g = canvas(4, 4); rect(g, 0, 0, 3, 3, [40, 200, 50, 255]);
+    despillEdgesInPlace(g, [0, 255, 0], 2);
+    expect(g.rgba[1]).toBe(66);
+  });
+  it('dropHue: 몸 안 분홍 점은 주변 다수색으로, redToMetal: 붉은 색 → 가까운 명도 회색', async () => {
+    const { cleanupFramesInPlace } = await import('./cleanup.js');
+    const palette = [0x101010, 0x40a040, 0xe040d0, 0x909090, 0xc02020];
+    const w = 6, px = new Uint8Array(w * 6).fill(2);
+    px[2 * w + 2] = 3; px[5 * w + 5] = 1; px[0] = 4; px[3 * w + 3] = 5; px[3 * w + 4] = 5; px[4 * w + 3] = 5; px[4 * w + 4] = 5;
+    cleanupFramesInPlace([{ w, h: 6, px }], palette, { background: 0xff00ff, dropHue: [280, 320], redToMetal: true });
+    expect([px[2 * w + 2], px[3 * w + 4]]).toEqual([2, 4]);
+  });
+  it('scaleAnchor axis w: 몸길이 기준 배율, cellGrow: 셀보다 넓은 프레임은 16px 단위로 셀을 넓힌다', () => {
+    const img = canvas(120, 30);
+    rect(img, 2, 10, 81, 27, [200, 40, 40, 255]);
+    const r = importImage(img, { ...OPTS, cell: { w: 32, h: 32, anchor: [16, 30] }, rows: [{ anim: 'run', dir: 'e' }], scaleAnchor: { row: 0, frame: 0, axis: 'w', size: 40 }, cellGrow: true });
+    expect(r.scale).toBeCloseTo(0.5);
+    expect(r.cell).toEqual({ w: 48, h: 32, anchor: [24, 30] });
+  });
+});

@@ -1,6 +1,6 @@
 import { ForgeError, srgbToOklab } from '@pixel-forge/core';
-import { outlineInPlace, placeInCell, ringStats, seloutInPlace, type IndexFrame } from './align.js';
-import { binarizeAlphaInPlace, cornerBackground, removeBackgroundInPlace } from './background.js';
+import { grownCell, outlineInPlace, placeInCell, ringStats, seloutInPlace, type IndexFrame } from './align.js';
+import { binarizeAlphaInPlace, cornerBackground, despillEdgesInPlace, removeBackgroundInPlace } from './background.js';
 import { cleanupFramesInPlace, type CleanupStats } from './cleanup.js';
 import { medianCut, quantize } from './palette.js';
 import { dedupeRow, rowsByKmeans } from './rows.js';
@@ -34,6 +34,16 @@ export interface ImportOptions {
    * 원본마다 그려진 크기가 달라도(보드 death는 0.67배) 서 있는 키가 같아진다. 생략하면 가장 큰 프레임 키.
    */
   scaleAnchorFrame?: number;
+  /** 크기 보정 일반형(G2 U3 동작 시트): layout 줄 row의 frame번 스프라이트의 키(h) 또는 몸길이(w)를 size px로. targetHeight보다 우선 */
+  scaleAnchor?: { row: number; frame: number; axis: 'h' | 'w'; size: number };
+  /** 정리(cleanup)에서 지울 색상 범위(HSV 도, 예: 마젠타 배경의 분홍 잡티 280~320) — 원화 팔레트에 없는 계열만 */
+  dropHue?: readonly [number, number];
+  /** 무기 붉은 기 → 금속 회색(옵션, 피 얼룩 제거) */
+  redToMetal?: boolean;
+  /** 셀보다 큰 프레임이 있으면 셀을 넓힌다(오류 대신 — 동작 시트 후보, 사용자 확인 대상) */
+  cellGrow?: boolean;
+  /** 내부: 배경 키 색(despill용, importImage가 채운다) */
+  keyColor?: readonly [number, number, number] | null;
 }
 
 export interface ImportedFrame {
@@ -57,6 +67,20 @@ export interface ImportResult {
   paletteDelta: number;
   scale: number;
   cleanup?: CleanupStats;
+  /** cellGrow로 넓힌 셀(넓히지 않았으면 없음) */
+  cell?: { w: number; h: number; anchor: [number, number] };
+}
+
+/**
+ * 크기 기준 스프라이트로 정한 '가장 큰 키' 대용값: 배율 = targetHeight / 반환값 = size / (기준 스프라이트 h 또는 w).
+ * 기준이 없으면 undefined(가장 큰 프레임 키를 쓴다).
+ */
+function anchorMaxH(picked: { sprites: { s: Sprite }[] }[], o: ImportOptions): number | undefined {
+  const a = o.scaleAnchor ?? (o.scaleAnchorFrame !== undefined && o.targetHeight ? { row: 0, frame: o.scaleAnchorFrame, axis: 'h' as const, size: o.targetHeight } : undefined);
+  if (!a) return undefined;
+  const s = picked[a.row]?.sprites[a.frame]?.s;
+  if (!s) throw new ForgeError('import.scale-anchor', `크기 기준 프레임이 없습니다: 줄 ${a.row} · ${a.frame}번`);
+  return ((a.axis === 'w' ? s.w : s.h) * (o.targetHeight ?? a.size)) / a.size;
 }
 
 /** 이미지 줄 수 = layout row 번호 최댓값 + 1 */
@@ -98,9 +122,9 @@ export function importImage(src: RgbaImage, o: ImportOptions): ImportResult {
     frameMap[`${p.anim}_${p.dir}`] = d.frameMap;
     return { ...p, unique: d.unique.map((s) => ({ s, i: p.sprites.find((x) => x.s === s)?.i ?? 0 })) };
   });
-  const anchorSprite = o.scaleAnchorFrame === undefined ? undefined : picked[0]?.sprites[o.scaleAnchorFrame]?.s;
-  if (o.scaleAnchorFrame !== undefined && !anchorSprite) throw new ForgeError('import.scale-anchor', `크기 기준 프레임이 없습니다: ${o.scaleAnchorFrame}`);
-  const maxH = anchorSprite?.h ?? Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
+  const maxH = anchorMaxH(picked, o) ?? Math.max(...chosen.flatMap((c) => c.unique.map((u) => u.s.h)));
+  // 크기 기준만 있고 targetHeight가 없으면 기준 크기를 목표로(배율 = size / 기준 스프라이트 h·w)
+  o = { ...o, keyColor: bgRgb, ...(o.targetHeight === undefined && o.scaleAnchor ? { targetHeight: o.scaleAnchor.size } : {}) };
   const first = withCleanup(scaleQuantize(chosen, o, maxH, o.targetHeight, o.cell.anchor, warnings, frameMap), o, bgRgb);
   if (o.outline !== undefined && o.outlineMode === 'selout') {
     // 48px 실루엣 분리(P10 1절): 이미 어두운 선이 있어도 축소로 흐려진 경계를 항상 다시 세운다
@@ -135,7 +159,7 @@ function darkerPairs(palette: readonly number[]): number[] {
 
 function withCleanup(r: ImportResult, o: ImportOptions, bg: readonly [number, number, number] | null): ImportResult {
   if (!o.cleanup) return r;
-  const stats = cleanupFramesInPlace(r.frames.map((f) => f.frame), r.palette, { background: bg ? (bg[0] << 16) | (bg[1] << 8) | bg[2] : null });
+  const stats = cleanupFramesInPlace(r.frames.map((f) => f.frame), r.palette, { background: bg ? (bg[0] << 16) | (bg[1] << 8) | bg[2] : null, ...(o.dropHue ? { dropHue: o.dropHue } : {}), ...(o.redToMetal ? { redToMetal: true } : {}) });
   return { ...r, cleanup: stats };
 }
 
@@ -154,6 +178,8 @@ function scaleQuantize(chosen: Chosen, o: ImportOptions, maxH: number, height: n
   warnings: ImportWarning[], frameMap: Record<string, number[]>): ImportResult {
   const scale = height ? height / maxH : 1;
   const scaled = chosen.map((c) => ({ ...c, imgs: c.unique.map((u) => (scale === 1 ? u.s.img : boxDownscale(u.s.img, scale, o.alphaThreshold))) }));
+  // 축소 뒤 가장자리 2px 배경 번짐 빼기(정리 옵션과 함께 — 분홍·연두 테두리)
+  if (o.cleanup && o.keyColor) for (const c of scaled) for (const im of c.imgs) despillEdgesInPlace(im, o.keyColor, 2);
   const palette = o.palette.fixed ? [...o.palette.fixed] : medianCut(scaled.flatMap((c) => c.imgs), o.palette.max);
   return place(scaled, palette, o, anchor, warnings, frameMap, scale);
 }
@@ -161,16 +187,18 @@ function scaleQuantize(chosen: Chosen, o: ImportOptions, maxH: number, height: n
 function place(scaled: { anim: string; dir: string; row: number; unique: { s: Sprite; i: number }[]; imgs: RgbaImage[] }[], palette: number[], o: ImportOptions,
   anchor: readonly [number, number], warnings: ImportWarning[], frameMap: Record<string, number[]>, scale: number): ImportResult {
   let delta = 0, count = 0;
+  const qs = scaled.map((c) => c.imgs.map((im) => { const q = quantize(im, palette); delta += q.delta; count += q.count; return { w: im.w, h: im.h, px: q.px }; }));
+  // 넓힌 셀: 외곽선 때문에 위로 옮긴 앵커(anchor − cell.anchor)는 그대로 유지
+  const grown = o.cellGrow ? grownCell(qs.flat(), o.cell) : undefined;
+  const cell = grown ?? o.cell, at: readonly [number, number] = grown ? [grown.anchor[0], grown.anchor[1] + anchor[1] - o.cell.anchor[1]] : anchor;
   const oversize: string[] = [];
-  const frames = scaled.flatMap((c) => c.imgs.map((im, index): ImportedFrame => {
-    const q = quantize(im, palette);
-    delta += q.delta; count += q.count;
-    const placed = placeInCell({ w: im.w, h: im.h, px: q.px }, o.cell.w, o.cell.h, anchor);
+  const frames = scaled.flatMap((c, ci) => c.imgs.map((_, index): ImportedFrame => {
+    const placed = placeInCell(qs[ci]?.[index] ?? { w: 1, h: 1, px: new Uint8Array(1) }, cell.w, cell.h, at);
     if (placed.outside) oversize.push(`${c.anim}_${c.dir}_${index}(${placed.outside}px)`);
     return { anim: c.anim, dir: c.dir, index, frame: placed.frame, source: { row: c.row, sprite: c.unique[index]?.i ?? 0 } };
   }));
-  if (oversize.length) throw new ForgeError('import.oversize', `셀 ${o.cell.w}×${o.cell.h}보다 큰 프레임 ${oversize.join(', ')} — 축소하지 않는다(targetHeight·셀 크기는 사용자가 정한다)`);
-  return { palette: [...palette], frames, frameMap: { ...frameMap }, warnings: [...warnings], paletteDelta: count ? delta / count : 0, scale };
+  if (oversize.length) throw new ForgeError('import.oversize', `셀 ${cell.w}×${cell.h}보다 큰 프레임 ${oversize.join(', ')} — 축소하지 않는다(targetHeight·셀 크기는 사용자가 정한다)`);
+  return { palette: [...palette], frames, frameMap: { ...frameMap }, warnings: [...warnings], paletteDelta: count ? delta / count : 0, scale, ...(grown && (grown.w !== o.cell.w || grown.h !== o.cell.h) ? { cell: grown } : {}) };
 }
 
 /**

@@ -1,5 +1,5 @@
 {
-  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_orc__ref.png + 세라 크기 기준 hero_sera__size_ref.png",
+  "$comment": "G2 U2 데모 적(통합 기획서 v1.0 §5). 첨부: 원화 enemy_orc__ref.png + 세라 크기 기준 hero_sera__size_ref.png · dropHue 280~355: hit 프레임 분홍 덩어리(199,116,130 h350) 제거 — 원화에 320~350 계열 0%(G2 U3 실측)",
   "id": "enemy_orc",
   "bible": "seonggeom",
   "sizeClass": "elite",
@@ -41,5 +41,38 @@
         "side"
       ]
     }
+  ],
+  "sheets": {
+    "actions_side": {
+      "view": "side",
+      "rows": [
+        {
+          "action": "walk",
+          "frames": 4
+        },
+        {
+          "action": "attack",
+          "frames": 5
+        },
+        {
+          "action": "hit",
+          "frames": 2
+        },
+        {
+          "action": "death",
+          "frames": 4
+        }
+      ],
+      "anchor": {
+        "row": 0,
+        "frame": 0,
+        "axis": "h",
+        "size": 52
+      }
+    }
+  },
+  "dropHue": [
+    280,
+    355
   ]
 }

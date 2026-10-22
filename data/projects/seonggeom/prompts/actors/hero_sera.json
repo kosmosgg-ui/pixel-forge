@@ -91,5 +91,35 @@
         "back"
       ]
     }
-  ]
+  ],
+  "sheets": {
+    "actions_side": {
+      "view": "side",
+      "rows": [
+        {
+          "action": "attack",
+          "frames": 5
+        },
+        {
+          "action": "hit",
+          "frames": 3
+        },
+        {
+          "action": "dodge",
+          "frames": 3
+        },
+        {
+          "action": "ultimate",
+          "frames": 6
+        }
+      ],
+      "anchor": {
+        "row": 0,
+        "frame": 4,
+        "axis": "h",
+        "size": 48
+      },
+      "$comment": "크기 기준 = attack 5번(회복 자세, 서 있는 키 원본 200px → 48). 1번은 웅크린 준비 자세(168px)라 기준이 아니다"
+    }
+  }
 }

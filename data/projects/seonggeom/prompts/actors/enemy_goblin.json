@@ -41,5 +41,38 @@
         "side"
       ]
     }
+  ],
+  "sheets": {
+    "actions_side": {
+      "view": "side",
+      "rows": [
+        {
+          "action": "walk",
+          "frames": 4
+        },
+        {
+          "action": "attack",
+          "frames": 4
+        },
+        {
+          "action": "hit",
+          "frames": 2
+        },
+        {
+          "action": "death",
+          "frames": 4
+        }
+      ],
+      "anchor": {
+        "row": 0,
+        "frame": 0,
+        "axis": "h",
+        "size": 34
+      }
+    }
+  },
+  "dropHue": [
+    280,
+    320
   ]
 }

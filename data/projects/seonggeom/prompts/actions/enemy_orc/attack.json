@@ -1,14 +1,16 @@
 {
   "id": "attack",
   "title": "overhead chop",
-  "frames": 4,
+  "frames": 5,
   "fps": 10,
   "loop": false,
   "poses": [
-    "frame 1: cleaver raised high over the head",
-    "frame 2: starting the downward chop",
-    "frame 3: cleaver smashed down in front",
-    "frame 4: lifting the cleaver back up"
+    "frame 1: ready stance, cleaver held in front",
+    "frame 2: cleaver raised high over the head",
+    "frame 3: starting the downward chop",
+    "frame 4: cleaver smashed down in front",
+    "frame 5: lifting the cleaver back up"
   ],
-  "viewExtra": {}
+  "viewExtra": {},
+  "$comment": "G2 U3: 사용자 시트 실측 5프레임(준비 자세 1 추가 — 그대로 사용)"
 }

@@ -59,5 +59,50 @@
         "side"
       ]
     }
+  ],
+  "sheets": {
+    "actions_side": {
+      "view": "side",
+      "rows": [
+        {
+          "action": "idle",
+          "frames": 4
+        },
+        {
+          "action": "walk",
+          "frames": 4
+        },
+        {
+          "action": "cleave",
+          "frames": 6
+        },
+        {
+          "action": "dash",
+          "frames": 8
+        },
+        {
+          "action": "siege",
+          "frames": 7
+        },
+        {
+          "action": "hit",
+          "frames": 2
+        },
+        {
+          "action": "death",
+          "frames": 6
+        }
+      ],
+      "anchor": {
+        "row": 0,
+        "frame": 0,
+        "axis": "h",
+        "size": 78
+      }
+    }
+  },
+  "dropHue": [
+    280,
+    320
   ]
 }

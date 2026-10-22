@@ -68,7 +68,51 @@ function dropEdgeSpill(f: IndexFrame, greenish: readonly boolean[]): number {
   return hits.length;
 }
 
-export function cleanupFramesInPlace(frames: readonly IndexFrame[], palette: readonly number[], o: { background: number | null; near?: number }): CleanupStats {
+/** HSV 색상(도)·채도·명도 */
+function hsv(c: number): [number, number, number] {
+  const r = (c >> 16) / 255, g = ((c >> 8) & 255) / 255, b = (c & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  const h = d === 0 ? 0 : mx === r ? 60 * (((g - b) / d) % 6) : mx === g ? 60 * ((b - r) / d + 2) : 60 * ((r - g) / d + 4);
+  return [(h + 360) % 360, mx === 0 ? 0 : d / mx, mx];
+}
+
+/**
+ * 잡티 흡수(G2 U3 분홍 점): drop 색 픽셀을 3×3 이웃의 다수색(drop·투명 제외)으로. 두 번 돌려 2px 덩어리까지. 이웃이 없으면 투명.
+ */
+function absorbColors(f: IndexFrame, drop: readonly boolean[]): number {
+  const { w, h, px } = f;
+  let n = 0;
+  for (let pass = 0; pass < 2; pass++) {
+    const next = px.slice();
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const v = px[y * w + x] ?? 0;
+      if (!v || !drop[v - 1]) continue;
+      const votes = new Map<number, number>();
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const q = x + dx >= 0 && y + dy >= 0 && x + dx < w && y + dy < h ? px[(y + dy) * w + x + dx] ?? 0 : 0;
+        if (q && !drop[q - 1]) votes.set(q, (votes.get(q) ?? 0) + 1);
+      }
+      const best = [...votes].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0];
+      next[y * w + x] = pass === 1 && !best ? 0 : best?.[0] ?? v;
+      if (best || pass === 1) n++;
+    }
+    px.set(next);
+  }
+  return n;
+}
+
+/** 붉은 기(피 얼룩) → 가장 가까운 명도의 무채색(금속) 팔레트 색. 무채색이 없으면 그대로 */
+function redToMetalMap(palette: readonly number[]): number[] {
+  const lab = palette.map(labOf);
+  const grey = lab.flatMap((l, i) => (Math.hypot(l.a, l.b) < 0.04 ? [i] : []));
+  return palette.map((c, i) => {
+    const [h, sat] = hsv(c);
+    if (!((h >= 345 || h <= 15) && sat > 0.35) || !grey.length) return i + 1;
+    const g = grey.reduce((a, b) => (Math.abs((lab[b]?.L ?? 0) - (lab[i]?.L ?? 0)) < Math.abs((lab[a]?.L ?? 0) - (lab[i]?.L ?? 0)) ? b : a));
+    return g + 1;
+  });
+}
+
+export function cleanupFramesInPlace(frames: readonly IndexFrame[], palette: readonly number[], o: { background: number | null; near?: number; dropHue?: readonly [number, number]; redToMetal?: boolean }): CleanupStats {
   const counts = palette.map(() => 0);
   for (const f of frames) for (const v of f.px) if (v) counts[v - 1] = (counts[v - 1] ?? 0) + 1;
   const { map, spill } = remapTable(palette, counts, o.background, o.near ?? 0.05);
@@ -83,6 +127,15 @@ export function cleanupFramesInPlace(frames: readonly IndexFrame[], palette: rea
     const b = labOf(o.background), bh = Math.atan2(b.b, b.a);
     const greenish = palette.map((c) => { const l = labOf(c), d = Math.atan2(l.b, l.a) - bh; return Math.hypot(l.a, l.b) > 0.06 && Math.abs(Math.atan2(Math.sin(d), Math.cos(d))) < 0.6; });
     for (const f of frames) despilled += dropEdgeSpill(f, greenish);
+  }
+  if (o.dropHue) {
+    const [lo, hi] = o.dropHue;
+    const drop = palette.map((c) => { const [h, sat, v] = hsv(c); return h >= lo && h <= hi && sat > 0.25 && v > 0.3; });
+    if (drop.some(Boolean)) for (const f of frames) merged += absorbColors(f, drop);
+  }
+  if (o.redToMetal) {
+    const m = redToMetalMap(palette);
+    for (const f of frames) for (let k = 0; k < f.px.length; k++) { const v = f.px[k] ?? 0; if (v && m[v - 1] !== v) { f.px[k] = m[v - 1] ?? v; merged++; } }
   }
   const darkest = new Set(palette.map((c, i) => [labOf(c).L, i + 1] as const).sort((a, b) => a[0] - b[0]).slice(0, 2).map(([, i]) => i));
   const absorbed = frames.reduce((a, f) => a + absorbLones(f, darkest), 0);

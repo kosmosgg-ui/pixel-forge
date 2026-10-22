@@ -59,6 +59,14 @@ export const importFields = {
   cleanup: z.boolean().default(false),
   /** 크기 보정(G2 U1): 첫 줄 이 번호 스프라이트(서 있는 프레임)의 키를 targetHeight에 맞춘다 */
   scaleAnchorFrame: z.number().int().min(0).optional(),
+  /** 정리에서 지울 색상 범위(HSV 도) — 마젠타 배경 분홍 잡티(G2 U3) */
+  dropHue: z.tuple([z.number().min(0).max(360), z.number().min(0).max(360)]).optional(),
+  /** 무기 붉은 기 → 금속 회색(옵션) */
+  redToMetal: z.boolean().default(false),
+  /** 셀보다 큰 프레임이면 셀을 넓힌다(16px 단위, 키·배율 그대로) — 동작 시트 후보용, 셀 확정은 사용자 */
+  cellGrow: z.boolean().default(false),
+  /** 크기 보정 일반형(G2 U3): layout 줄 row의 frame번 스프라이트의 키(h)·몸길이(w)를 size px로 */
+  scaleAnchor: z.object({ row: z.number().int().min(0), frame: z.number().int().min(0), axis: z.enum(['h', 'w']), size: z.number().int().positive() }).optional(),
   /** auto = 불투명 배경이면 모서리 최빈색 중 가장자리와 이어진 영역만 투명(흰 천 내부 보존), none = 처리 안 함 */
   background: z.enum(['auto', 'none']).default('auto'),
 };

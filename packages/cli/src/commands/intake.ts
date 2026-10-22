@@ -60,7 +60,8 @@ const stampOf = (iso: string, sha: string) => `${iso.replace(/[-:]/g, '').replac
 export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string; kind?: string; temp?: string; out?: string } = {}) {
   if (o.kind === 'reference') return intakeReference(file, cwd, o);
   if (o.kind === 'cutin') return intakeCutin(file, cwd, o);
-  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference | cutin: ${o.kind}`);
+  if (o.kind === 'sheet') return intakeSheet(file, cwd, o);
+  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference | cutin | sheet: ${o.kind}`);
   const src = resolveInside(cwd, file);
   const { actorId, key } = target(file, o.as);
   const kit = loadKit(actorId, cwd);
@@ -136,4 +137,26 @@ export function pickIntake(cwd: string, actorId: string, key: string, pick?: str
   if (!stamp) throw new ForgeError('make.no-intake', `등록된 원본이 없습니다: ${actorId}/${key}${pick ? ` (--pick ${pick})` : ''} — forge intake 먼저`);
   const meta = JSON.parse(readFileSync(join(dir, `${stamp}.intake.json`), 'utf8')) as IntakeMeta;
   return { png: relative(cwd, join(dir, `${stamp}.png`)), meta, stamp };
+}
+
+/**
+ * --kind sheet: 동작 시트(<actorId>__actions_<view>.png, 한 줄 = 한 동작 — G2 U3) 등록 → data/import/<actorId>/actions_<view>/.
+ * 줄마다 동작 항목을 '등록'(spec = 시트 키)으로 표시한다. 줄 구성은 actors/<actorId>.json sheets가 정한다.
+ */
+function intakeSheet(file: string, cwd: string, o: { as?: string; at?: string }) {
+  const src = resolveInside(cwd, file);
+  const m = o.as ? /^([a-z][a-z0-9_]*)\/(actions_[a-z]+)$/.exec(o.as) : /^([a-z][a-z0-9_]*?)__(actions_[a-z]+)\.png$/.exec(basename(file));
+  if (!m?.[1] || !m[2]) throw new ForgeError('intake.name', `동작 시트 이름: <actorId>__actions_<view>.png 또는 --as <actorId>/actions_<view>: ${basename(file)}`);
+  const actorId = m[1], key = m[2];
+  const kit = loadKit(actorId, cwd), sheet = kit.actor.sheets[key];
+  if (!sheet) throw new ForgeError('intake.key', `${actorId}에 동작 시트 정의가 없습니다: ${key}`);
+  const { bytes, img, warnings, sha, createdAt, stamp } = readSource(src, file, o.at);
+  const dir = join(cwd, 'data', 'import', actorId, key);
+  const meta: IntakeMeta = { origin: 'chatgpt-manual', model: 'ChatGPT 이미지 생성(사용자 실행, 모델명 미확인)', createdAt, promptFile: '', promptSha256: '', references: [...kit.actor.references, ...(kit.actor.sizeRefFile ? [kit.actor.sizeRefFile] : [])], receivedFrom: 'user', sourceName: basename(file), sha256: sha, size: [img.w, img.h], warnings };
+  writeFileEnsured(join(dir, `${stamp}.png`), bytes);
+  writeFileSync(join(dir, `${stamp}.intake.json`), JSON.stringify(meta, null, 2) + '\n');
+  const state = readState(cwd, actorId);
+  for (const r of sheet.rows) state.items[`${r.action}_${sheet.view}`] = { status: '등록', fails: 0, latest: stamp, spec: key };
+  writeState(cwd, actorId, state);
+  return { ok: true as const, cmd: 'intake', kind: 'sheet', actor: actorId, key, rows: sheet.rows.map((r) => `${r.action}×${r.frames}`), stamp, size: [img.w, img.h], warnings, out: relative(cwd, join(dir, `${stamp}.png`)) };
 }

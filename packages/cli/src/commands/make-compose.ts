@@ -22,10 +22,15 @@ const LICENSE = 'OpenAI 이용약관에 따른 사용자 생성물(사용자 확
 
 interface Part { key: string; im: Imported; anim: string; dir: string; order: number[] }
 
-/** 합격한 항목 전부를 다시 import(결정론 — 같은 원본·Spec → 같은 프레임) */
+/**
+ * 합격한 항목 전부를 다시 import(결정론 — 같은 원본·Spec → 같은 프레임). 동작 시트(G2 U3)는 여러 동작이 Spec 하나를 공유하므로
+ * Spec(state spec, 없으면 항목 키)마다 한 번만 import한다.
+ */
 function passedParts(kit: Kit, cwd: string): Part[] {
   const st = readState(cwd, kit.actor.id);
-  return Object.entries(st.items).filter(([key, v]) => (v.status === '합격' || v.made === true) && existsSync(join(cwd, makeSpecPath(kit.actor.id, key)))).sort(([a], [b]) => a.localeCompare(b)).flatMap(([key]) => {
+  const specs = [...new Set(Object.entries(st.items).filter(([, v]) => v.status === '합격' || v.made === true).map(([key, v]) => v.spec ?? key))]
+    .filter((k) => existsSync(join(cwd, makeSpecPath(kit.actor.id, k)))).sort();
+  return specs.flatMap((key) => {
     const im = runImport(makeSpecPath(kit.actor.id, key), cwd);
     return Object.entries(im.result.frameMap).map(([k, order]) => {
       const f = im.result.frames.find((g) => `${g.anim}_${g.dir}` === k);
@@ -61,6 +66,13 @@ function studyOf(cwd: string, actorId: string, png: Buffer): (StudyNumbers & { w
   return { ...s, warnings: studyWarnings(s) };
 }
 
+/** 여러 원본의 셀 → 시트 셀: 가장 넓고 높은 것, 앵커는 가로 가운데·바닥 거리 유지(가장 큰 셀 기준) */
+function unifiedCell(cells: readonly { w: number; h: number; anchor: readonly [number, number] }[]): { w: number; h: number; anchor: [number, number] } {
+  const big = cells.reduce((a, c) => (c.w * c.h > a.w * a.h ? c : a));
+  const w = Math.max(...cells.map((c) => c.w)), h = Math.max(...cells.map((c) => c.h)), below = big.h - 1 - big.anchor[1];
+  return { w, h, anchor: [Math.floor(w / 2), h - 1 - below] };
+}
+
 /** 셀 하나를 RGBA 시트에 붙인다(원본마다 팔레트가 달라 인덱스가 아니라 RGBA로 합친다) */
 function blit(sheet: Uint8Array, sw: number, rgba: Uint8Array, w: number, h: number, ox: number, oy: number): void {
   for (let y = 0; y < h; y++) sheet.set(rgba.subarray(y * w * 4, (y + 1) * w * 4), ((oy + y) * sw + ox) * 4);
@@ -73,7 +85,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
   const parts = passedParts(kit, cwd);
   const first = parts[0];
   if (!first) throw new ForgeError('make.empty', `합격한 항목이 없습니다: ${kit.actor.id}`);
-  const t = loadTarget(first.im.bible.id, cwd), cell = first.im.cell;
+  const t = loadTarget(first.im.bible.id, cwd), cell = unifiedCell(parts.map((p) => p.im.cell));
   const layout = rowSheetLayout(t.rows, animMetas(kit, measuredStrides(parts)), parts.map((p) => ({ anim: p.anim, dir: p.dir, count: p.order.length })));
   const W = layout.columns * cell.w, H = layout.rows.length * cell.h, rgba = new Uint8Array(W * H * 4);
   for (const p of parts) {
@@ -81,7 +93,9 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
     const frames = p.im.result.frames.filter((f) => f.anim === p.anim && f.dir === p.dir).sort((a, b) => a.index - b.index);
     p.order.forEach((u, i) => {
       const f = frames[u]?.frame;
-      if (f) blit(rgba, W, toRGBA(f, p.im.palette), f.w, f.h, (start + i) * cell.w, ry * cell.h);
+      // 원본마다 셀이 다르면(동작 시트 cellGrow) 발 앵커를 맞춰 붙인다
+      const dx = cell.anchor[0] - p.im.cell.anchor[0], dy = cell.anchor[1] - p.im.cell.anchor[1];
+      if (f) blit(rgba, W, toRGBA(f, p.im.palette), f.w, f.h, (start + i) * cell.w + dx, ry * cell.h + dy);
     });
   }
   const keys = [...new Set(parts.map((p) => p.key))];

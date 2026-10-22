@@ -62,6 +62,16 @@ export const promptActorSchema = z.object({
   mustKeep: z.array(z.string().min(1)).default([]),
   /** 턴어라운드 요청을 낼지(적은 원화 1장이 기준이라 false — G2 U2) */
   turnaround: z.boolean().default(true),
+  /** 동작 시트(한 줄 = 한 동작, G2 U3): 시트 키(actions_side) → 줄 구성 + 크기 기준(시트 하나에 배율 하나) */
+  sheets: z.record(z.string().regex(/^[a-z][a-z0-9]*_[a-z]+$/), z.object({
+    view: promptViewSchema,
+    rows: z.array(z.object({ action: z.string().min(1), frames: z.number().int().min(1) })).min(1),
+    anchor: z.object({ row: z.number().int().min(0), frame: z.number().int().min(0), axis: z.enum(['h', 'w']), size: z.number().int().positive() }),
+  })).default({}),
+  /** 정리에서 지울 색상 범위(HSV 도) — 원화에 없는 배경 계열 잡티 */
+  dropHue: z.tuple([z.number(), z.number()]).optional(),
+  /** 무기 붉은 기 → 금속(옵션) */
+  redToMetal: z.boolean().default(false),
   /** 변환 팔레트 색 수(바이블 colorBudget과 같게 — 적 24) */
   paletteMax: z.number().int().min(2).max(64).optional(),
   /** 초록 옷 캐릭터면 마젠타 배경 */

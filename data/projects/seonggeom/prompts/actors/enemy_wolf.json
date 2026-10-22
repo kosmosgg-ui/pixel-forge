@@ -47,5 +47,42 @@
         "side"
       ]
     }
+  ],
+  "sheets": {
+    "actions_side": {
+      "view": "side",
+      "rows": [
+        {
+          "action": "run",
+          "frames": 4
+        },
+        {
+          "action": "dashtelegraph",
+          "frames": 2
+        },
+        {
+          "action": "dash",
+          "frames": 3
+        },
+        {
+          "action": "hit",
+          "frames": 2
+        },
+        {
+          "action": "death",
+          "frames": 4
+        }
+      ],
+      "anchor": {
+        "row": 0,
+        "frame": 0,
+        "axis": "w",
+        "size": 52
+      }
+    }
+  },
+  "dropHue": [
+    280,
+    320
   ]
 }
