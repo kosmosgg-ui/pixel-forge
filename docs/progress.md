@@ -5,6 +5,8 @@
 현재 단계: **P7**
 
 ## 로그
+- [P7-alt] 막힘 | 3D 프리렌더 → 도트 실험(사용자 승인). 컨테이너에 Blender 없음(`which blender` 없음, `python3 -c "import bpy"` 실패, pip bpy 배포판 없음) → 지시대로 설치 방법만 보고하고 멈춤. P6.5 미결 2건은 커밋 404e119 상태로 보류
+
 - [P6.5] 완료(조건부 — 미달 2개 사용자 결정 대기) | 그리드 파츠(재질:단계·@eye·@outline), frames 모드(base+patch), atoms 모드(관절 원점 아톰·각도 변형·upright), 시안 docs/quality-ref/target-grids.json, forge compare(시안 열·iou·diff·headDiff), review.json v2(sheetHash·12기준 관찰), shoot(당김 5px·−8°·시위 화살). 사용자 승인: 기본 모드(생물 = atoms, 아이템·리그 없는 생물 = frames, shapes = 시안용), humanoid-small-v1 비율, signature 15~40% 경고, 새 필수 QA anim.pose-distinct
   | 캐릭터 | 모드 | reviewer | 시안 대비 |
   | goblin | atoms | 22 | rest 실루엣 IoU 1.0, 색 예산 9 병합으로 30px(머리 19) 차이 → 예산 12 제안(승인 대기, 12면 diff 0) |
