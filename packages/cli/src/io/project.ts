@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { ForgeError } from '@pixel-forge/core';
 import { animsFileSchema, bibleSchema, rigSchema, rulesSchema, specSchema, type AnimsFile, type Bible, type Rig, type Rules, type Spec } from '@pixel-forge/spec';
 import { readJson } from './files.js';
+import { resolveInside } from './paths.js';
 import { prerenderLoader, type PrerenderInput } from './prerender.js';
 
 export interface Project {
@@ -38,8 +39,9 @@ export function loadProject(specPath: string, cwd: string): Project {
 
 /** 바이블 파일 경로: data/bibles/<id>.bible.json, 없으면 프로젝트 폴더 data/projects/<id>/<id>.bible.json(게임별 바이블·타깃을 한곳에) */
 export function bibleFile(id: string, cwd: string): string {
-  const shared = join(cwd, 'data', 'bibles', `${id}.bible.json`);
-  const project = join(cwd, 'data', 'projects', id, `${id}.bible.json`);
+  // id가 data/ 밖을 가리키지 않게(io.path-escape)
+  const shared = resolveInside(join(cwd, 'data', 'bibles'), `${id}.bible.json`);
+  const project = resolveInside(join(cwd, 'data', 'projects'), join(id, `${id}.bible.json`));
   return existsSync(shared) || !existsSync(project) ? shared : project;
 }
 

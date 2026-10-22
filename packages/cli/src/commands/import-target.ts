@@ -14,7 +14,7 @@ export const IMPORT_TARGETS = ['godot-rowsheet'] as const;
 
 /** 프로젝트 타깃 설정: data/projects/<바이블 id>/target.json */
 export function loadTarget(bibleId: string, cwd: string): ProjectTarget {
-  return readJson(join(cwd, 'data', 'projects', bibleId, 'target.json'), projectTargetSchema);
+  return readJson(resolveInside(join(cwd, 'data', 'projects'), join(bibleId, 'target.json')), projectTargetSchema);
 }
 
 /** 가져온 프레임 → 줄(방향)×애니 묶음. 열 수는 frameMap(중복 제거 전 순서)으로 되살린다 */

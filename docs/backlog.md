@@ -50,3 +50,5 @@
 - [P8] import.clipped 정의: sera_gpt_raw 기대 3 vs 측정 2(#19·#20만 가장자리 접촉) — 기대값 근거 확인 필요
 - [P8] 보정 A 재현 실패(ref_tall 64px vs A 차이 97%, A bbox 32×59 vs 결과 48×64) — A의 원본·파라미터 확인 필요
 - [P8] anim.temporal-noise(P7 5)가 qa에 아직 없음 — 생기면 import에도 적용
+- [P8 리뷰·제안] import 검사·처리 수치(jitter 1px, palette-delta 0.06, identity 0.25·중앙값 3배, DARK_L 0.35, 외곽선 생략 0.7, feet-center 바닥 2px)를 rules에 import 절로 옮기기 — 수치 위치 변경이라 사용자 승인 후
+- [P8 리뷰] jitterCheck 대상 anim 'idle' 고정, target.dir가 후보 폴더(art/candidates)로 시작하는지 스키마 검사, DEFAULT_FPS 중복 정리

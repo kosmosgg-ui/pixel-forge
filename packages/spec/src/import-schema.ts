@@ -31,7 +31,8 @@ export const importLayoutSchema = z.object({ rows: z.array(importRowSchema).min(
 export const importCellSchema = z.object({
   w: z.number().int().min(4),
   h: z.number().int().min(4),
-  anchor: z.union([z.literal('feet-center'), z.tuple([z.number().int(), z.number().int()])]).default('feet-center'),
+  /** 생략하면 바이블 크기 등급 anchor, 그것도 없으면 feet-center */
+  anchor: z.union([z.literal('feet-center'), z.tuple([z.number().int(), z.number().int()])]).optional(),
 });
 
 export const importPaletteSchema = z.object({

@@ -2,9 +2,13 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P8**
+현재 단계: **P8-9 대기**(세라 생산 — 사용자 GPT 원본·targets.local.json 대기)
 
 ## 로그
+- [P8] 1~8 완료(9 전 정지) | import 모드(packages/import 순수: 가장자리 배경·이진화·연결 성분·줄·잘림·dedupe·공통 배율 BOX·median-cut·발 앵커·전 프레임 외곽선), QA(palette-delta·jitter·identity), forge import/--probe, data/projects/seonggeom(바이블·target·수락 Spec), godot-rowsheet(후보 폴더만, candidate·provenance 11·qa)
+  - 수락: pnpm test → Tests 260 passed(test-runner), 합성 5종 통과, manifest 키 구조 테스트 통과, art-judge sera_gpt_raw B–A(보정 유효)
+  - 불일치: probe 잘림 2(기대 3), ref_tall→A 재현 차이 97%(기준 ≤5%, A bbox 32×59 vs 48×64) — 사용자 확인 대기
+  - code-reviewer: 높음 0, 중간 4 → 2 수정(anchor 바이블 우선, 바이블·타깃 경로 io.path-escape), 2 backlog(수치 rules 이전 제안, idle 고정)
 - [P7] 완료(마감, 사용자 승인 P7close) | 0 생물 기본 모드 결정(→ 바이블 defaultCreatureMode로 일반화, 스키마 기본 atoms), se(yaw −35°) 1방향 + manifest mirror. 1 렌더 회귀 수정(POC 툰·명도 순위 램프·dark 외곽선·소품 가시성 경고·바이블 pixelsPerUnit 17.72) 기술 수락. 판정 체계: 보정 세트 v2 + art-judge(축 "1배 게임 화면 SD 스프라이트 완성도"), pixel-reviewer 폐기, forge lineup
   - 수락: pnpm build && pnpm test → Tests 241 passed(test-runner), art-judge v2 보정 확인 유효(D<C<B<A), 기사 프리렌더 등급 D–C(기록만)
   - code-reviewer: 높음 0, 중간 6 → 5 수정(pose-distinct 방향 경계, 소품·lineup 테스트, prerenderDeps 경로, 검증 시점 문서화), 1 backlog(bpy 버전 캐시 키)

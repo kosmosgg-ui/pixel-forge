@@ -56,6 +56,8 @@ describe('forge import', () => {
   });
   it('--probe: 스프라이트·줄·고유 프레임 요약 + 표 파일, 작업 폴더 밖 경로는 io.path-escape', () => {
     expect(probeCommand('data/import/t.png', work)).toMatchObject({ sprites: 6, rows: 2, perRow: [3, 3], clipped: 0, unique: 5, out: 'out/probe/t.md' });
+    writeFileSync(join(work, 'esc.spec.json'), JSON.stringify({ ...spec, bible: '../../x' }));
+    expect(() => importCommand('esc.spec.json', work)).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
     expect(() => probeCommand('../x.png', work)).toThrow(expect.objectContaining({ code: 'io.path-escape' }));
   });
 });
