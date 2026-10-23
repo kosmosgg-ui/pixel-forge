@@ -61,3 +61,7 @@
 | test-runner / code-reviewer / art-judge 서브에이전트 | AGENTS.md 3절 체크리스트 |
 | /phase-done, report-doc 스킬 | AGENTS.md 3절 "단계 마무리" (Claude Docs 보고 문서 갱신은 생략, progress.md만) |
 | .claude/ | 그대로 둔다(Claude Code 복귀 대비). 수정 금지 |
+
+## 2026-10-23 공정 보완 후속
+
+최신 build/test=301 passed/2 skipped. 안전 baseline 병합/누락보호·상태/출력 예외복구·전체공통팔레트·컷인전용요청 적용. [잔여 제작 계약](proposals/G2_REMAINING_IMAGE_CONTRACTS.md), 게임 결과 seonggeom/docs/DEMO_DEV/G2_PROCESS_IMPLEMENTATION.md. 로컬 baseline5쌍은 data/import/<actor>/baseline, 색변환5종/report/lineup은 out/process-fix, 기존게임후보 불변. 세라31색/적18·11·12·14색. 신규 원본/state/spec는 여전히 미복원. 다음3요청은 기존 NEXT_IMAGE_REQUESTS.md, 새원본 수령후 별도출력 병합·사람검수. 검기90과현재데모110/100 불일치로 기본도형 유지, 게임수치를맞추지않는다.

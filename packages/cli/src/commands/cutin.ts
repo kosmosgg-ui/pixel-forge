@@ -21,14 +21,14 @@ const LICENSE = 'OpenAI 이용약관에 따른 사용자 생성물(사용자 확
 export function cutinPrompt(actorId: string, cwd: string): { text: string; file: string } {
   const kit = loadKit(actorId, cwd);
   const c = readJson(join(cwd, 'data', 'projects', kit.project, 'prompts', 'actions', 'cutin.json'), promptCutinSchema);
-  const text = fill(c.text, { character: kit.actor.description, style: kit.base.style.join(', '), rules: [...kit.base.rules, ...kit.actor.mustKeep].join('; '), background: kit.actor.altBackground ? kit.base.background.alt : kit.base.background.default });
+  const text = fill(c.text, { character: kit.actor.description, style: (c.style ?? kit.base.style).join(', '), rules: (c.rules ?? [...kit.base.rules, ...kit.actor.mustKeep]).join('; '), background: kit.actor.altBackground ? kit.base.background.alt : kit.base.background.default });
   const file = `out/prompts/${actorId}/cutin.txt`;
   writeFileEnsured(join(cwd, file), Buffer.from(text));
   return { text, file };
 }
 
 /**
- * forge intake <file> --kind cutin [--as <actorId>/cutin] [--out @이름]: 필살기 컷인 — 도트 변환하지 않고 배경(초록) 제거 + 가로 1280 이하 선형(면적) 축소만.
+ * forge intake <file> --kind cutin [--as <actorId>/cutin] [--out @이름]: 필살기 컷인 — 도트 변환하지 않고 배경(초록) 제거 + 가로 1280 이하 BOX 면적 축소만(게임 표시 필터 linear와 별개).
  * 원본 → data/import/<actorId>/cutin/(gitignore), 결과 → @게임 candidates/cutin_<actorId>/cutin.png + 매니페스트(kind cutin, aiUsed true).
  */
 export function intakeCutin(file: string, cwd: string, o: { as?: string; at?: string; out?: string } = {}) {

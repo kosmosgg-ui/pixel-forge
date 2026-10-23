@@ -1,5 +1,17 @@
 {
   "$comment": "필살기 컷인(P10 3절): 도트 변환하지 않는 일러스트 — forge intake --kind cutin이 배경 제거·가로 1280 이하 축소만 한다",
   "id": "cutin",
-  "text": "{{character}}\n\nUltimate attack cut-in illustration: upper body only, raising the sword with a determined expression, strong diagonal composition, dramatic strong light and shadow, wide 16:9 framing with the figure on one side.\n\nStyle: {{style}}.\nBackground: {{background}}.\nRules: {{rules}}."
+  "text": "{{character}}\n\nUltimate attack cut-in illustration: upper body only, raising the sword with a determined expression, strong diagonal composition, dramatic strong light and shadow, wide 16:9 framing with the figure on one side.\n\nStyle: {{style}}.\nBackground: {{background}}.\nRules: {{rules}}.",
+  "style": [
+    "clean anime game illustration",
+    "bold clean dark lineart",
+    "flat cel shading with strong light and shadow"
+  ],
+  "rules": [
+    "one upper-body illustration, not a sprite sheet",
+    "preserve the referenced face, hairstyle, armor and sword design; no cape for Sera",
+    "keep the face, hands and raised sword fully inside the image; leave empty background around them",
+    "no text, no numbers, no labels, no ground, no cast shadow",
+    "no slash trails, no glow or motion effects; the character only"
+  ]
 }

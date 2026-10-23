@@ -244,6 +244,13 @@
         "sheetSize": null
       },
       "source": "docs/proposals/P10_G2_CODEX_APPROVALS.md"
+    },
+    {
+      "date": "2026-10-23",
+      "change": "사용자 결정: hero32/적24는 캐릭터 전체 공통 팔레트",
+      "previous": {
+        "paletteScope": "import 단위(명시 없음)"
+      }
     }
   ],
   "outlineSource": "P10 1절(사용자 승인 G2): 게임 출력은 1px 선택 외곽선 — 바깥 경계를 같은 계열 어두운 색으로(48px 실루엣 분리). 재현성 검사 Spec은 outline none 유지",
@@ -276,5 +283,6 @@
     "G": "#7d786e",
     "m": "#9fe0ff",
     "M": "#3f7fd0"
-  }
+  },
+  "paletteScope": "character"
 }

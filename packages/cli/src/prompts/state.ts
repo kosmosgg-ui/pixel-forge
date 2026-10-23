@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { writeFileEnsured } from '../io/files.js';
@@ -28,4 +28,13 @@ export function writeState(cwd: string, actorId: string, s: ActorState): void {
 export function nextRequests<T extends { key: string }>(list: readonly T[], s: ActorState, n = 3): T[] {
   const st = (k: string) => s.items[k]?.status ?? '대기';
   return [...list.filter((r) => st(r.key) === '재요청'), ...list.filter((r) => st(r.key) === '대기')].slice(0, n);
+}
+
+/** 후보 출력 실패 시 원래 상태 바이트를 복원한다. 합격/등록 상태를 앞서 확정하지 않는다. */
+export function withStateUpdate<T>(cwd: string, actorId: string, next: ActorState, run: () => T): T {
+  const file = stateFile(cwd, actorId), before = existsSync(file) ? readFileSync(file) : undefined;
+  try { writeState(cwd, actorId, next); return run(); } catch (error) {
+    if (before) writeFileSync(file, before); else rmSync(file, { force: true });
+    throw error;
+  }
 }

@@ -5,7 +5,7 @@ import { probeImage } from '@pixel-forge/import';
 import { writeFileEnsured } from '../io/files.js';
 import { decodePng } from '../io/png.js';
 import { loadKit, type Kit } from '../prompts/kit.js';
-import { readState, writeState } from '../prompts/state.js';
+import { readState, withStateUpdate } from '../prompts/state.js';
 import { importCommand } from './import.js';
 import { pickIntake } from './intake.js';
 import { composeCandidates, makeSpecPath } from './make-compose.js';
@@ -52,7 +52,6 @@ export function makeSheetCommand(actorId: string, cwd: string, o: { view: string
   const imported = importCommand(writeSheetSpec(kit, key, picked.png, picked.meta, cwd), cwd);
   const state = readState(cwd, actorId);
   for (const r of sh.rows) state.items[`${r.action}_${sh.view}`] = { status: '합격', fails: 0, latest: picked.stamp, spec: key };
-  writeState(cwd, actorId, state);
-  const exported = composeCandidates(kit, cwd, o.out);
+  const exported = withStateUpdate(cwd, actorId, state, () => composeCandidates(kit, cwd, o.out));
   return { ok: true as const, cmd: 'make', actor: actorId, key, pass: true, actions: sh.rows.map((r) => `${r.action}×${r.frames}`), warnings: imported.warnings, exported, next: promptsCommand(actorId, cwd).next };
 }

@@ -12,6 +12,7 @@ import { readState } from '../prompts/state.js';
 import { qaContextOf, runImport, type Imported } from './import.js';
 import { displayScaleOf, loadTarget, writeRowExport } from './import-target.js';
 import { pickIntake } from './intake.js';
+import { finishCandidate, protectCandidate } from './candidate-baseline.js';
 import { scaleQa } from './make-scale.js';
 
 /** make Spec 경로(out/make/<actorId>/<key>.spec.json) */
@@ -29,7 +30,8 @@ interface Part { key: string; im: Imported; anim: string; dir: string; order: nu
 function passedParts(kit: Kit, cwd: string): Part[] {
   const st = readState(cwd, kit.actor.id);
   const specs = [...new Set(Object.entries(st.items).filter(([, v]) => v.status === '합격' || v.made === true).map(([key, v]) => v.spec ?? key))]
-    .filter((k) => existsSync(join(cwd, makeSpecPath(kit.actor.id, k)))).sort();
+    .sort();
+  for (const key of specs) if (!existsSync(join(cwd, makeSpecPath(kit.actor.id, key)))) throw new ForgeError('make.source-missing', `제작 Spec 복원 필요: ${key}`);
   return specs.flatMap((key) => {
     const im = runImport(makeSpecPath(kit.actor.id, key), cwd);
     return Object.entries(im.result.frameMap).map(([k, order]) => {
@@ -106,7 +108,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
     assetId: kit.actor.id, version: t.version, source: `pixel-forge make: chatgpt-manual (${keys.join(', ')})`,
     sheet: { w: W, h: H, columns: layout.columns, rows: layout.rows.map((r) => r.name), animations: layout.animations },
     cell, directions: t.directions, anchor: cell.anchor, displayScale: displayScaleOf(first.im.bible),
-    notes: [...t.notes, '동작마다 원본이 달라 팔레트가 따로다(같은 캐릭터 색 통일은 후속)'],
+    notes: [...t.notes, '원본/기존 파생 후보를 보존하며 합성 — 공통 팔레트는 캐릭터 전체 기준'],
     provenance: {
       assetId: kit.actor.id, creator: 'user via ChatGPT', sourceUrl: '', license: LICENSE, aiUsed: true,
       promptRecord: intakes.map((x) => x.meta.promptFile).join(', '), editedBy: t.provenance.editedBy,
@@ -119,7 +121,10 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
   Object.assign(manifest.qa, { scaleAnchor: sq.scaleAnchor, heads: sq.heads });
   manifest.qa.warnings.push(...sq.warnings);
   const png = encodePng({ w: W, h: H, rgba });
-  const study = studyOf(cwd, kit.actor.id, png);
-  if (study) Object.assign(manifest.qa, { study });
-  return { ...writeRowExport(cwd, t, kit.actor.id, png, manifest, join(cwd, 'out', 'make', kit.actor.id, 'godot-rowsheet'), outArg), columns: layout.columns, rows: layout.rows.map((r) => r.name), sheetSize: [W, H], parts: keys };
+  const finished = finishCandidate(cwd, kit.actor.id, png, manifest, first.im.bible.paletteScope === 'character' ? first.im.bible.colorBudget[kit.actor.sizeClass] : undefined);
+  const study = studyOf(cwd, kit.actor.id, finished.png);
+  if (study) Object.assign(finished.manifest.qa, { study });
+  const local = join(cwd, 'out', 'make', kit.actor.id, 'godot-rowsheet');
+  protectCandidate(cwd, t, kit.actor.id, finished.manifest, local, outArg);
+  return { ...writeRowExport(cwd, t, kit.actor.id, finished.png, finished.manifest, local, outArg), columns: finished.manifest.sheet_size[0] / finished.manifest.frame_size[0], rows: finished.manifest.row_names ?? Object.keys(finished.manifest.rows), sheetSize: finished.manifest.sheet_size, parts: keys };
 }

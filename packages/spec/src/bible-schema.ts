@@ -53,6 +53,7 @@ export const bibleSchema = z.preprocess(splitSizeClasses, z
     light: z.object({ dir: z.tuple([z.number(), z.number(), z.number()]), ambient: z.number().min(0).max(1) }),
     outline: z.object({ mode: outlineModeSchema, globalColor: hexColorSchema }).passthrough(),
     colorBudget: z.record(z.string().min(1), z.number().int().min(1)),
+    paletteScope: z.enum(['import', 'character']).default('import'),
     materials: z.record(z.string().min(1), materialSchema),
     fxColors: z.array(hexColorSchema),
     /** 코드 이펙트의 명명 팔레트(팔레트 숫자·색은 프로젝트 바이블에서만) */

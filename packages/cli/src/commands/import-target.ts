@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { ForgeError, toRGBA } from '@pixel-forge/core';
 import { godotRowManifest, rowSheet, type RowAnim } from '@pixel-forge/export';
@@ -33,7 +34,13 @@ export function writeRowExport(cwd: string, t: ProjectTarget, assetId: string, p
   const json = Buffer.from(JSON.stringify(manifest, null, 2) + '\n');
   const out = outArg ?? t.out;
   const dest = resolveInside(resolveOut(cwd, out), join(t.dir, assetId));
-  for (const d of [local, dest]) { writeFileEnsured(join(d, sheetName), png); writeFileEnsured(join(d, manifestName), json); }
+  const files = [...new Set([local, dest])].flatMap((d) => [{ path: join(d, sheetName), bytes: png }, { path: join(d, manifestName), bytes: json }]);
+  const backups = files.map((f) => existsSync(f.path) ? readFileSync(f.path) : undefined);
+  try { for (const f of files) writeFileEnsured(f.path, f.bytes); }
+  catch (error) {
+    files.forEach((f, i) => { const old = backups[i]; if (old) writeFileEnsured(f.path, old); else if (existsSync(f.path)) rmSync(f.path); });
+    throw error;
+  }
   return { local: relative(cwd, local), dest: out.startsWith('@') ? `${out}/${join(t.dir, assetId)}` : relative(cwd, dest) };
 }
 

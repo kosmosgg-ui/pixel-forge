@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { decodePng, encodePng } from '../io/png.js';
+import { cutinPrompt } from './cutin.js';
 import { intakeCommand } from './intake.js';
 
 const root = join(import.meta.dirname, '..', '..', '..', '..');
@@ -12,6 +13,12 @@ for (const d of ['data/bibles', 'data/rules', 'data/projects/seonggeom']) cpSync
 mkdirSync(join(work, 'inbox'), { recursive: true });
 
 describe('forge intake --kind cutin(P10 3절, 합성 입력)', () => {
+  it('컷인 요청은 전신/발 기준선/캐릭터 픽셀 키 규칙을 포함하지 않는다', () => {
+    const { text } = cutinPrompt('hero_sera', work);
+    expect(text).toContain('upper body only');
+    expect(text).toContain('face, hands and raised sword fully inside');
+    expect(text).not.toMatch(/feet|baseline|height when standing|exactly the same size|top-down/);
+  });
   it('초록 배경 제거 + 가로 1280 이하 축소(도트 변환 없음) → candidates cutin_<actor>/cutin.png + 매니페스트 kind cutin·aiUsed true', () => {
     const W = 1600, H = 600, rgba = new Uint8Array(W * H * 4);
     for (let k = 0; k < W * H; k++) rgba.set([0, 255, 0, 255], k * 4);

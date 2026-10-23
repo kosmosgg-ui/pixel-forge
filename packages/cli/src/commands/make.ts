@@ -8,7 +8,7 @@ import { decodePng } from '../io/png.js';
 import { fixText, promptText, requestList } from '../prompts/assemble.js';
 import { retryAdvice, selectFixes, type MakeFindings } from '../prompts/fix-select.js';
 import { loadKit, type Kit } from '../prompts/kit.js';
-import { readState, writeState } from '../prompts/state.js';
+import { readState, writeState, withStateUpdate } from '../prompts/state.js';
 import { importCommand } from './import.js';
 import { pickIntake } from './intake.js';
 import { composeCandidates, makeSpecPath } from './make-compose.js';
@@ -80,12 +80,12 @@ function finishMake(kit: Kit, cwd: string, key: string, file: string, stamp: str
   const temp = prev?.note !== undefined && prev.status === '재요청';
   const note = temp && prev?.note !== undefined ? { note: prev.note } : {};
   state.items[key] = pass && temp ? { ...prev, latest: stamp, made: true } : { status: pass ? '합격' : '재요청', fails: pass ? 0 : (prev?.fails ?? 0) + 1, latest: stamp, ...note };
-  writeState(cwd, kit.actor.id, state);
   if (pass) {
-    const exported = composeCandidates(kit, cwd, o.out);
+    const exported = withStateUpdate(cwd, kit.actor.id, state, () => composeCandidates(kit, cwd, o.out));
     const p = promptsCommand(kit.actor.id, cwd);
     return { ok: true as const, cmd: 'make', actor: kit.actor.id, key, pass: true, exported, next: p.next };
   }
+  writeState(cwd, kit.actor.id, state);
   const fails = state.items[key]?.fails ?? 1;
   const text = (choice.frameCount ? promptText(kit, req) + '\n' : '') + fixText(kit, choice.ids, { frames: f.frames, frameCount: choice.frameCount, ...(choice.frame !== undefined ? { frame: choice.frame } : {}) });
   const fixFile = join(cwd, 'out', 'prompts', kit.actor.id, `fix_${key}.txt`);

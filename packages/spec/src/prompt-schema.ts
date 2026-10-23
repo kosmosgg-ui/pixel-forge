@@ -81,7 +81,7 @@ export const promptActorSchema = z.object({
 });
 
 /** 필살기 컷인 요청 문구(P10 3절) — 프레임 없는 일러스트 1장, {{character}}·{{style}}·{{background}}·{{rules}} 치환 */
-export const promptCutinSchema = z.object({ id: z.literal('cutin'), text: z.string().min(1) });
+export const promptCutinSchema = z.object({ id: z.literal('cutin'), text: z.string().min(1), style: z.array(z.string()).optional(), rules: z.array(z.string()).optional() });
 export type PromptCutin = z.infer<typeof promptCutinSchema>;
 
 export const FIX_IDS = ['identity', 'legs', 'clipped', 'size', 'background', 'detail', 'text', 'backface'] as const;
