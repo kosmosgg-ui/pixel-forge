@@ -9,6 +9,7 @@ import { FILE_RULE, promptText, requestList, TURNAROUND, turnaroundFile, type Pr
 import { loadKit } from '../prompts/kit.js';
 import { readState, writeState } from '../prompts/state.js';
 import { intakeCutin } from './cutin.js';
+import { intakePortrait } from './portrait.js';
 import { archiveActor } from './archive.js';
 import { promptSha } from './prompts.js';
 
@@ -64,10 +65,11 @@ export function intakeCommand(file: string, cwd: string, o: IntakeOptions = {}) 
   return o.archive ? { ...result, ...archiveActor(cwd, result.actor, o.archive) } : result;
 }
 function intakeOne(file: string, cwd: string, o: IntakeOptions) {
+  if (o.kind === 'portrait') return intakePortrait(file, cwd, o);
   if (o.kind === 'reference') return intakeReference(file, cwd, o);
   if (o.kind === 'cutin') return intakeCutin(file, cwd, o);
   if (o.kind === 'sheet') return intakeSheet(file, cwd, o);
-  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference | cutin | sheet: ${o.kind}`);
+  if (o.kind !== undefined && o.kind !== 'action') throw new ForgeError('intake.kind', `--kind는 action | reference | cutin | sheet | portrait: ${o.kind}`);
   const src = resolveInside(cwd, file);
   const { actorId, key } = target(file, o.as);
   const kit = loadKit(actorId, cwd);

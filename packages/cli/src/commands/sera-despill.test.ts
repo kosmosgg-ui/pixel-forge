@@ -7,3 +7,9 @@ it('Sera-specific pre-palette despill preserves alpha and non-green channels; pr
   expect(seraDespillColor(0x535d38)).toBe(0x535338);
   expect(seraDespillColor(seraDespillColor(0x535d38))).toBe(0x535338);
 });
+
+it('exact 70 and 170 degree green boundaries are included without floating point gaps', () => {
+  expect(seraDespillColor(0x30312b)).toBe(0x30302b);
+  expect(seraDespillColor((43 << 16) | (49 << 8) | 48)).toBe((43 << 16) | (48 << 8) | 48);
+  expect(seraDespillColor(0x30302b)).toBe(0x30302b);
+});

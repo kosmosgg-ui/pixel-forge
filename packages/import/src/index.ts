@@ -11,3 +11,4 @@ export * from './checks.js';
 export * from './match.js';
 export * from './anim-checks.js';
 export * from './cleanup.js';
+export * from './portrait.js';

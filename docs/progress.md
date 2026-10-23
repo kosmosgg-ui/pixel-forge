@@ -5,6 +5,16 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P13 추가16~18] 세라 후보 채택·HSV70°경계 정수화·portrait intake 완료(실제 원본 미수신).
+  - portrait1/2/4칸·green/2px despill·linear/720/y40·11필드·합성QA/클리핑·경로 차단.
+  - 세라33프레임 green0/alpha동일/32색, 기존 P12 float 경계298픽셀 누락 교정·적 피부 보존.
+  - pnpm build PASS; pnpm test --testTimeout=20000:311passed/2skipped(원본PNG2부재), rules PASS.
+  - 최초 기본5s FX 회귀는5.38s timeout, 병렬부하 종료 후20s실행 통과; 구현/QA조건 완화 없음.
+  - P13_PORTRAIT_USAGE 및 세라forge lineup1장, 게임P13 통합 ZIP/Windows/캡처와 함께 보고.
+- [P13 추가 계획] 승인16~18: P12 세라 despill 실험본 후보 채택·원본/정식 보존.
+  - 기존 make 배경 despill→공통 팔레트 순서 확인 및 회귀1개, 초상 intake(kind portrait) 예외 구현.
+  - PNG 일러스트 1/2/4칸·linear/720/y40·green QA·합성 입력 검사·Godot fallback/표정 연결.
+  - 기존 도구 재사용, 새 의존성/API 없음. build/test/rules 후 통합 P13_review.zip.
 - [P12] 지시1~9+추가10~13 구현/기술검수, CH1≥20조건은상한10불일치로미충족.
   - 승인원문/v1.3/계획v1.1/스킬동결/PR1~19정리안/29행11열등록부, 실제병합/삭제없음.
   - 체험F초기화예외·캠페인45s불변·natural3직업F2회/HP90·52·52.

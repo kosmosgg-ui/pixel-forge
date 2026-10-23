@@ -3,8 +3,9 @@ import type { RgbaImage } from '../io/png.js';
 export function seraDespillColor(rgb: number): number {
   const r = rgb >>> 16, g = (rgb >>> 8) & 255, b = rgb & 255;
   const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
-  const hue = !delta ? 0 : max === r ? ((g - b) / delta + 6) % 6 * 60 : max === g ? ((b - r) / delta + 2) * 60 : ((r - g) / delta + 4) * 60;
-  return hue >= 70 && hue <= 170 && delta / Math.max(1, max) > .12 ? (r << 16) | (Math.max(r, b) << 8) | b : rgb;
+  // HSV 70..170 inclusive, S>.12, evaluated as integers to include exact 70/170 boundaries.
+  const green = delta > 0 && g === max && Math.abs(6 * (b - r)) <= 5 * delta && 100 * delta > 12 * max;
+  return green ? (r << 16) | (Math.max(r, b) << 8) | b : rgb;
 }
 export function seraDespillInPlace(image: RgbaImage): number {
   let changed = 0;

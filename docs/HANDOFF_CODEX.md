@@ -14,6 +14,10 @@
 - 도구: Node22.23.4·pnpm10.28.0, pxl은 저장소 밖 /workspace/tools/pxl @2e72b9ad5fae3709b1bcd81ea6a3cfc5eafbdb90(PXL_BIN). 활성화/캐시/격리 경로는 환경 start_skill과 실행 계약 참고.
 - 보호 범위: 이미지 생성 API 호출 없음, 후보/생성 원본 PNG 커밋 금지, .claude/ 불변, 정식 에셋 교체·기존 PR 병합·전투/히트박스/저장/17JSON 변경 없음. ART_HOLD/Gate C PENDING. 별도 승인이 필요한 작업을 문서 인계만으로 승인된 것으로 간주하지 않는다.
 
+## P13 초상·세라 후속
+
+P12_REVIEW_AND_P13_ADDENDUM 16~18 및 P13_PORTRAIT_USAGE 우선. 후보 세라 despill-before-palette 채택(HSV70 경계 누락 교정), 초상 intake1/2/4칸/11필드·linear/720/y40. 실제 PNG 미수신; raw는 seonggeom private orphan art-source만. make 공통팔레트 앞 despill 순서 유지. 게임 대사 매핑/표시·승인14/15 스폰은 seonggeom 후속 커밋.
+
 ## 1. 인계 당시 저장소 상태(과거 기준점)
 | 저장소 | 브랜치 | 커밋 | 상태 |
 | --- | --- | --- | --- |

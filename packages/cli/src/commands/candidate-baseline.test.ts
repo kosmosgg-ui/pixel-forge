@@ -86,3 +86,12 @@ describe('후보 보존과 전체 공통 팔레트', () => {
     expect(() => finishCandidate(work, 'hero', fresh.png, fresh.manifest)).toThrow(expect.objectContaining({ code: 'make.baseline' }));
   });
 });
+it('approved Sera cleanup runs before common palette, preserving alpha and recording corrected colors', () => {
+  const source = sheet('right', ['idle']); source.manifest.assetId = 'hero_sera';
+  const image = decodePng(source.png);
+  for (let i = 0; i < image.rgba.length; i += 4) image.rgba.set([83, 93, 56, 255], i);
+  const result = finishCandidate(work, 'hero_sera', encodePng(image), source.manifest, 1), after = decodePng(result.png);
+  expect([...colors(result.png)]).toEqual(['83,83,56']);
+  expect(after.rgba.filter((_, i) => i % 4 === 3)).toEqual(image.rgba.filter((_, i) => i % 4 === 3));
+  expect(result.manifest.provenance['commonPalette']).toMatchObject({ despilled: image.w * image.h, budget: 1, scope: 'character' });
+});
