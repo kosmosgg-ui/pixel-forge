@@ -3,7 +3,7 @@ import { importFields } from './import-schema.js';
 import { motionOverrideSchema, poseSchema } from './anim-schema.js';
 import { checkGridShape, frameGridSchema, gridPatchSchema, gridShapeSchema, maskShapeSchema, partShapeSchema } from './shape-schema.js';
 
-export const specKindSchema = z.enum(['character', 'item', 'tile', 'fx', 'ui']);
+export const specKindSchema = z.enum(['character', 'item', 'tile', 'fx', 'ui', 'portrait', 'cutin', 'prop', 'ground', 'keyart']);
 
 export const partSchema = z
   .object({

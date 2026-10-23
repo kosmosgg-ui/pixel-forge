@@ -19,6 +19,19 @@ describe('forge intake --kind cutin(P10 3절, 합성 입력)', () => {
     expect(text).toContain('face, hands and raised sword fully inside');
     expect(text).not.toMatch(/feet|baseline|height when standing|exactly the same size|top-down/);
   });
+  it('AUTOPILOT profile preserves the whole subject in a linear 16:9 canvas and retains the legacy default', () => {
+    const w=1600,h=1000,rgba=new Uint8Array(w*h*4);
+    for(let i=0;i<w*h;i++)rgba.set([0,255,0,255],i*4);
+    for(let y=100;y<900;y++)for(let x=100;x<1500;x++)rgba.set([180,60,40,255],(y*w+x)*4);
+    writeFileSync(join(work,'inbox/auto.png'),encodePng({w,h,rgba}));
+    const result=intakeCommand('inbox/auto.png',work,{kind:'cutin',as:'hero_sera/cutin',from:'autopilot',out:'auto'});
+    expect(result).toMatchObject({size:[1280,720]});
+    const img=decodePng(readFileSync(join(work,'auto/cutin_hero_sera/cutin.png')));
+    expect(img.rgba[3]).toBe(0);
+    expect(img.rgba[(360*1280+640)*4+3]).toBe(255);
+    const m=JSON.parse(readFileSync(join(work,'auto/cutin_hero_sera/cutin_hero_sera_manifest.json'),'utf8'));
+    expect(m.presentation).toEqual({slide_from:'right',slide_seconds:.35,height_ratio:.7,hud_top:80});
+  });
   it('초록 배경 제거 + 가로 1280 이하 축소(도트 변환 없음) → candidates cutin_<actor>/cutin.png + 매니페스트 kind cutin·aiUsed true', () => {
     const W = 1600, H = 600, rgba = new Uint8Array(W * H * 4);
     for (let k = 0; k < W * H; k++) rgba.set([0, 255, 0, 255], k * 4);

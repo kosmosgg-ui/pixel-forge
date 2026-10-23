@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "source": "docs/instructions/DEMO_AUTOPILOT.md",
+  "common": "modern JRPG illustration, bold clean dark lineart, flat cel shading with only 2-3 tones per color, large clean color areas, no texture, no noise, no speckled details, no gradients, no glow. Flat pure green #00FF00 background, no shadow, no ground, no effects, no text, no numbers, no labels. Generous spacing, do not shrink any frame.",
+  "characters": {
+    "hero_sera": "Sera, a young female knight: brown hair in a high ponytail tied with a blue ribbon, brown eyes, silver plate armor with gold trim, black gloves, a white and blue tabard with a gold lily emblem, a blue skirt with armored tassets, no cape, holding a longsword.",
+    "sera": "Sera, a young female knight: brown hair in a high ponytail tied with a blue ribbon, brown eyes, silver plate armor with gold trim, black gloves, a white and blue tabard with a gold lily emblem, a blue skirt with armored tassets, no cape, holding a longsword.",
+    "leona": "Leona Valenstein, 26-year-old senior royal knight and mentor, calm dependable mature expression, athletic build, dark-blonde low ponytail, gray-blue eyes, gunmetal full plate with steel-blue trim, white tabard with navy shield crest, short navy half-cape on one shoulder, longsword at hip, kite shield on back. This is an unapproved design proposal.",
+    "npc": "Two separate fantasy JRPG NPC portraits: left a friendly adult female guild receptionist, short chestnut bob, brown vest/white blouse/guild badge/ledger; right Mia, an 8-year-old refugee girl, light brown braided hair, patched travel cloak/scarf, hopeful tired expression."
+  },
+  "templates": {
+    "reference-master": {
+      "actor": "hero_sera",
+      "variants": {
+        "A": "Exactly three full-body neutral figures: front, right-facing side, back. Straight-on character design reference, no overhead perspective. Prioritize a clean enlarged front design and consistent turnaround.",
+        "B": "Exactly three full-body neutral figures: front, right-facing side, back. Straight-on character design reference, no overhead perspective. Prioritize precise silhouette, matching armor seams and a clean readable face across all views."
+      },
+      "text": "Using only the three attached fixed reference crops, recreate the exact same Sera design at high resolution, not a redesign. {{character}}\n{{variant}}\n1536x1024 canvas, longest edge at least 1536 and no larger than2048. All three standing figures the same height, same head size and foot baseline; complete sword tips, ponytail, ribbon, hands and feet within the canvas, generous green margins. Preserve brown eyes, brown high ponytail, blue ribbon, silver armor/gold trim, white/blue gold-lily tabard, black gloves and longsword. NO cape. Improve resolution and clean shapes only; do not add accessories, embroidery, emblems or change anatomy/design. No labels or panel borders. {{common}}"
+    },
+    "portrait": {
+      "variants": {
+        "A": "Sera: 2x2 four equal square waist-up portraits, same framing and head size: top-left default calm, top-right determined, bottom-left gentle smile, bottom-right surprised. Body turned three-quarters right. Exact fixed Sera identity, brown eyes, no cape."
+      },
+      "text": "{{character}}\n{{variant}}\n1536x1536 maximum2048 canvas. No panel borders, each full head/shoulders in frame with green margins. {{common}}"
+    },
+    "design": {
+      "actor": "leona",
+      "variants": {
+        "A": "Design proposal A: restrained formal royal-knight silhouette and clearly segmented functional plate.",
+        "B": "Design proposal B: slightly broader protective shoulder silhouette while retaining all specified hair, eyes, colors, armor and equipment."
+      },
+      "text": "{{character}}\n{{variant}}\nExactly two full-body neutral figures: front and three-quarter view, matching height. 1536x1024 canvas. This is a user-approval proposal, no gameplay asset promotion. {{common}}"
+    },
+    "cutin": {
+      "actor": "hero_sera",
+      "variants": {
+        "A": "Upper body, determined expression, raising a longsword diagonally; keep complete sword blade/tip, both hands and face inside frame, no effects. Subject on the right with generous empty space on the left."
+      },
+      "text": "Use the attached fixed references, preserve the identical Sera character. {{character}}\n{{variant}}\n16:9 canvas, longest edge1536..2048. {{common}}"
+    },
+    "prop": {
+      "variants": {
+        "A": "{{subject}}. Slightly high camera around30degrees, light from upper-left, full object including base/contact, generous margins."
+      },
+      "text": "One fantasy game prop, {{subject}}. {{variant}}\n1536x1024. {{common}}"
+    },
+    "ground": {
+      "variants": {
+        "A": "Seamless tileable fantasy stone ground for a west gate, overhead30degree perspective convention, upper-left light, simple large clean stone shapes, no walls, no objects, no text. Exact matching left/right and top/bottom edges."
+      },
+      "text": "{{variant}}\n1536x1536. Flat cel shading2-3 tones, large clean color areas, no noise, no speckled details, no gradients, no glow. Fully filled ground tile (no chroma backdrop), no shadows/objects/text."
+    },
+    "keyart": {
+      "actor": "hero_sera",
+      "variants": {
+        "A": "Sera full body in the foreground before a west gate, quiet resolve, open sky left for a future logo (no letters).",
+        "B": "Sera full body near the west gate in a calm protective stance, open sky upper-left for a future logo (no letters)."
+      },
+      "text": "{{character}}\n{{variant}}\n16:9 composition, longest edge1536..2048, keep full face/sword/feet. This keyart is an unapproved proposal. Modern JRPG illustration, clean dark lineart, flat cel shading2-3 tones, large clean colors, no texture/noise/speckles, no gradients/glow, no text/labels."
+    },
+    "class-design": {
+      "actor": "hero_sera",
+      "variants": {
+        "GUARD_A": "GUARD proposal A: heavy armor, large shield and longsword.",
+        "GUARD_B": "GUARD proposal B: heavy armor with a different large-shield silhouette, longsword.",
+        "SWIFT_A": "SWIFT proposal A: light armor, short clean hems and agile sword.",
+        "SWIFT_B": "SWIFT proposal B: alternative light-armor plate layout, short hems, agile sword.",
+        "RUNE_A": "RUNE proposal A: magical cloth plus light armor and rune longsword.",
+        "RUNE_B": "RUNE proposal B: alternative magical cloth/light plate arrangement with rune longsword."
+      },
+      "text": "Use fixed Sera references for identical face, brown eyes, brown high ponytail with blue ribbon, same body proportions. {{variant}}\nExactly two full-body neutral figures front+three-quarter view, matching height/foot baseline. Do not alter Sera identity. New costume proposal ONLY, needs user approval. No cape. 1536x1024. {{common}}"
+    },
+    "portrait-npc": {
+      "actor": "npc",
+      "variants": {
+        "A": "Two equal square waist-up panels side by side, identical head height and framing: receptionist left, Mia right, both turned three-quarters left. Full heads, shoulders and ledger inside green margins. No lettering on ledger or guild badge."
+      },
+      "text": "{{character}}\n{{variant}}\n1536x1024 canvas with generous green top/bottom margins around the two square panels. {{common}}"
+    }
+  }
+}

@@ -53,5 +53,5 @@ export function intakePortrait(file: string, cwd: string, options: { as?: string
     }
     destinations.push(relative(cwd, dest));
   }
-  return { ok: true as const, cmd: 'intake', kind: 'portrait', actor: character, count: entries.length, destinations, qa: { pass: panels.every(p => p.qa.pass) && deviation <= .08, headDeviation: deviation } };
+  return { ok: true as const, cmd: 'intake', kind: 'portrait', actor: character, stamp, count: entries.length, destinations, qa: { pass: panels.every(p => p.qa.pass) && deviation <= .08, headDeviation: deviation } };
 }

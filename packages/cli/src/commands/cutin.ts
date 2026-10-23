@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import { ForgeError } from '@pixel-forge/core';
-import { boxDownscale, removeBackgroundInPlace } from '@pixel-forge/import';
+import { fitIllustration, boxDownscale, removeBackgroundInPlace } from '@pixel-forge/import';
 import { promptCutinSchema } from '@pixel-forge/spec';
 import { readJson, writeFileEnsured } from '../io/files.js';
 import { resolveInside } from '../io/paths.js';
@@ -31,7 +31,7 @@ export function cutinPrompt(actorId: string, cwd: string): { text: string; file:
  * forge intake <file> --kind cutin [--as <actorId>/cutin] [--out @이름]: 필살기 컷인 — 도트 변환하지 않고 배경(초록) 제거 + 가로 1280 이하 BOX 면적 축소만(게임 표시 필터 linear와 별개).
  * 원본 → data/import/<actorId>/cutin/(gitignore), 결과 → @게임 candidates/cutin_<actorId>/cutin.png + 매니페스트(kind cutin, aiUsed true).
  */
-export function intakeCutin(file: string, cwd: string, o: { as?: string; at?: string; out?: string } = {}) {
+export function intakeCutin(file: string, cwd: string, o: { as?: string; at?: string; out?: string; from?: string } = {}) {
   const src = resolveInside(cwd, file);
   const m = o.as ? /^([a-z][a-z0-9_]*)\/cutin$/.exec(o.as) : /^([a-z][a-z0-9_]*?)__cutin\.png$/.exec(basename(file));
   const actorId = m?.[1];
@@ -39,8 +39,9 @@ export function intakeCutin(file: string, cwd: string, o: { as?: string; at?: st
   const bytes = readFileSync(src);
   if (!bytes.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]))) throw new ForgeError('intake.format', `PNG만 읽습니다: ${basename(file)}`);
   const img = decodePng(bytes);
-  removeBackgroundInPlace(img);
-  const out = img.w > MAX_W ? boxDownscale(img, MAX_W / img.w, 1) : img;
+  const autopilot = o.from === "autopilot";
+  if (!autopilot) removeBackgroundInPlace(img);
+  const out = autopilot ? fitIllustration(img, MAX_W, 720) : img.w > MAX_W ? boxDownscale(img, MAX_W / img.w, 1) : img;
   const sha = createHash('sha256').update(bytes).digest('hex'), createdAt = o.at ?? statSync(src).mtime.toISOString();
   const stamp = `${createdAt.replace(/[-:]/g, '').replace(/\.\d+/, '')}_${sha.slice(0, 8)}`;
   const prompt = cutinPrompt(actorId, cwd);
@@ -50,7 +51,7 @@ export function intakeCutin(file: string, cwd: string, o: { as?: string; at?: st
   const kit = loadKit(actorId, cwd), t = loadTarget(kit.actor.bible, cwd), assetId = `cutin_${actorId}`;
   const manifest = {
     assetId, kind: 'cutin', version: t.version, quality: 'candidate', size: [out.w, out.h], source: `chatgpt-manual 일러스트(도트 변환 안 함): ${basename(file)}`,
-    notes: ['배경 제거 + 가로 1280 이하 축소만(P10 3절)'],
+    notes: [autopilot ? 'DEMO_AUTOPILOT Q5: green key/despill, premultiplied linear, 1280x720' : '배경 제거 + 가로 1280 이하 축소만(P10 3절)'], ...(autopilot ? {presentation: {slide_from:'right',slide_seconds:.35,height_ratio:.7,hud_top:80}} : {}),
     provenance: { assetId, creator: 'user via ChatGPT', sourceUrl: '', license: LICENSE, aiUsed: true, promptRecord: prompt.file, editedBy: t.provenance.editedBy, sourceFile: relative(cwd, join(dir, `${stamp}.png`)), exportFile: 'cutin.png', rightsReviewed: false, creditText: '' },
   };
   const png = encodePng(out), json = Buffer.from(JSON.stringify(manifest, null, 2) + '\n');

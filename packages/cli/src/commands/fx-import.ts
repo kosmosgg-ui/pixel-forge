@@ -1,3 +1,4 @@
+import {parseFxVariant,variantRows} from './fx-variant.js';
 import { join, relative } from 'node:path';
 import { parseHex, ForgeError } from '@pixel-forge/core';
 import { bibleSchema, fxAssetsSchema, type FxAsset } from '@pixel-forge/spec';
@@ -73,7 +74,8 @@ function overview(packed: { rows: FxRow[] }[]): { w: number; h: number; rgba: Ui
 /**
  * forge fx-import [묶음.json] [--out @이름]: pxl(외부, 2e72b9a 고정)로 sg_fx.px.js를 빌드 → 이펙트마다 godot-rowsheet 후보(kind fx) + 한눈 시트 out/fx/fx_sheet.png.
  */
-export function fxImportCommand(cwd: string, o: { assets?: string; out?: string } = {}) {
+export function fxImportCommand(cwd: string, o: { assets?: string; out?: string; variant?: string } = {}) {
+  const variant=parseFxVariant(o.variant);
   const spec = readJson(resolveInside(cwd, o.assets ?? DEFAULT_ASSETS), fxAssetsSchema);
   const bin = pxlBin(process.env, process.version);
   const src = resolveInside(cwd, spec.source), pxlOut = join(cwd, 'out', 'pxl');
@@ -83,8 +85,8 @@ export function fxImportCommand(cwd: string, o: { assets?: string; out?: string 
   const prepared = fxSource(src, bible, cwd);
   pxlBuild(bin, prepared.file, pxlOut);
   const ctx = { cwd, source: spec.source, commit, palette: prepared.colors ? new Set(prepared.colors.map((c) => parseInt(c.slice(1), 16))) : palOf(prepared.text), ...(o.out ? { outArg: o.out } : {}) };
-  const packed = Object.entries(spec.assets).map(([id, a]) => packAsset(id, a, fxRows(pxlOut, a), ctx));
-  const sheet = join(cwd, 'out', 'fx', 'fx_sheet.png');
+  const packed = Object.entries(spec.assets).map(([id, a]) => packAsset(id+(variant?'_'+variant.toLowerCase():''), a, variantRows(fxRows(pxlOut, a),bible.fxPalette??{},variant), ctx));
+  const sheet = join(cwd, 'out', 'fx', variant?'fx_sheet_'+variant.toLowerCase()+'.png':'fx_sheet.png');
   writeFileEnsured(sheet, encodePng(overview(packed)));
   return { ok: true as const, cmd: 'fx-import', pxl: ctx.commit, count: packed.length, warnings: packed.flatMap((p) => p.warnings.map((w) => `${p.id}:${w.id}`)), sheet: relative(cwd, sheet), dest: packed[0]?.dest };
 }

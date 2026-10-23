@@ -34,10 +34,14 @@ function sample(img: RgbaImage, x: number, y: number): number[] {
 }
 export function normalizePortrait(source: RgbaImage) {
   const img = { ...source, rgba: new Uint8Array(source.rgba) };
-  removeBackgroundInPlace(img); despillEdgesInPlace(img, [0, 255, 0], 2);
+  removeBackgroundInPlace(img);
+  // Portrait references reserve key-green for background, including holes enclosed by hair/arms.
+  for (let i = 0; i < img.rgba.length; i += 4) if ((img.rgba[i] ?? 0) <= 64 && (img.rgba[i + 2] ?? 0) <= 64 && (img.rgba[i + 1] ?? 0) > Math.max(img.rgba[i] ?? 0, img.rgba[i + 2] ?? 0) + 40) img.rgba[i + 3] = 0;
+  despillEdgesInPlace(img, [0, 255, 0], 2);
   const b = bounds(img), scale = Math.min(1, 680 / b.h, 680 / b.w), w = Math.max(1, Math.floor(b.w * scale)), h = Math.max(1, Math.floor(b.h * scale));
   const out = { w: 720, h: 720, rgba: new Uint8Array(720 * 720 * 4) }, left = Math.floor((720 - w) / 2);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) out.rgba.set(sample(img, b.x0 + (x + .5) / scale - .5, b.y0 + (y + .5) / scale - .5), ((40 + y) * 720 + left + x) * 4);
+  despillEdgesInPlace(out, [0, 255, 0], 2);
   const edges = [b.y0 === 0 ? 'head/top' : '', b.x0 === 0 ? 'shoulder/left' : '', b.x1 === img.w - 1 ? 'shoulder/right' : ''].filter(Boolean);
   let green = 0, headMin = 720, headMax = -1;
   for (let y = 0; y < out.h; y++) for (let x = 0; x < out.w; x++) {

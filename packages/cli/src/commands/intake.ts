@@ -1,3 +1,5 @@
+import { approvedProposalActor } from './autopilot-prompts.js';
+import { intakeAsset } from './asset-intake.js';
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, existsSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
@@ -59,12 +61,13 @@ const stampOf = (iso: string, sha: string) => `${iso.replace(/[-:]/g, '').replac
  * → data/import/<actorId>/<key>/<stamp>.png + <stamp>.intake.json(gitignore). 이전 원본은 지우지 않는다(make는 최신본).
  * 입력은 작업 폴더 안만(resolveInside) — 채팅 첨부는 data/import/inbox/ 등 작업 폴더 안으로 먼저 복사한다.
  */
-type IntakeOptions = { as?: string; at?: string; kind?: string; temp?: string; out?: string; archive?: string };
+type IntakeOptions = { as?: string; at?: string; kind?: string; temp?: string; out?: string; archive?: string; from?: string; size?: number };
 export function intakeCommand(file: string, cwd: string, o: IntakeOptions = {}) {
   const result = intakeOne(file, cwd, o);
   return o.archive ? { ...result, ...archiveActor(cwd, result.actor, o.archive) } : result;
 }
 function intakeOne(file: string, cwd: string, o: IntakeOptions) {
+  if (o.kind && ['prop','ground','keyart'].includes(o.kind)) return intakeAsset(file,cwd,o);
   if (o.kind === 'portrait') return intakePortrait(file, cwd, o);
   if (o.kind === 'reference') return intakeReference(file, cwd, o);
   if (o.kind === 'cutin') return intakeCutin(file, cwd, o);
@@ -112,13 +115,14 @@ function intakeReference(file: string, cwd: string, o: { as?: string; at?: strin
   const m = o.as ? /^([a-z][a-z0-9_]*)\/([a-z][a-z0-9_]*)$/.exec(o.as) : /^([a-z][a-z0-9_]*?)__([a-z][a-z0-9_]*)\.png$/.exec(basename(file));
   if (!m?.[1] || !m[2]) throw new ForgeError('intake.name', `참조 이미지 이름: <actorId>__<name>.png 또는 --as <actorId>/<name>: ${basename(file)}`);
   const actorId = m[1], name = m[2];
-  const kit = loadKit(actorId, cwd);
-  const isTurn = basename(file) === turnaroundFile(kit) || `${actorId}__${name}.png` === turnaroundFile(kit);
-  const req = isTurn ? requestList(kit).find((r) => r.key === TURNAROUND) : undefined;
+  const proposal = name.startsWith("proposal_") && approvedProposalActor(actorId, cwd);
+  const kit = proposal ? undefined : loadKit(actorId, cwd);
+  const isTurn = kit !== undefined && (basename(file) === turnaroundFile(kit) || `${actorId}__${name}.png` === turnaroundFile(kit));
+  const req = isTurn && kit ? requestList(kit).find((r) => r.key === TURNAROUND) : undefined;
   const { bytes, img, warnings, sha, createdAt, stamp } = readSource(src, file, o.at);
   const dir = join(cwd, 'data', 'import', actorId, 'references', name);
   const meta: IntakeMeta = {
-    origin: 'chatgpt-manual', model: 'ChatGPT 이미지 생성(사용자 실행, 모델명 미확인)', createdAt, promptFile: req?.promptFile ?? '', promptSha256: req ? promptSha(promptText(kit, req)) : '',
+    origin: 'chatgpt-manual', model: 'ChatGPT 이미지 생성(사용자 실행, 모델명 미확인)', createdAt, promptFile: req?.promptFile ?? '', promptSha256: req ? promptSha(promptText(kit!, req)) : '',
     references: req?.references ?? [], receivedFrom: 'user', sourceName: basename(file), sha256: sha, size: [img.w, img.h], warnings,
   };
   // 같은 이름의 이전 기준 이미지는 지우지 않고 superseded로 표시(G2 U1 — 망토 있는 기준 해제)

@@ -54,6 +54,7 @@ export interface RunInput {
   /** intake --as <actorId>/<key>, --at <ISO 시각> */
   as?: string;
   at?: string;
+  variant?: string;
   archive?: string;
   from?: string;
   /** make --action --dir --pick --judge */
@@ -101,19 +102,19 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'qa') return qaCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> [--target godot-rowsheet --out <dir|@이름>] | --probe <png>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
-  if (cmd === 'prompts') return promptsCommand(need('<actorId> [--retake a,b --note 이유]'), input.cwd, { ...(input.retake ? { retake: input.retake } : {}), ...(input.note ? { note: input.note } : {}) });
+  if (cmd === 'prompts') return promptsCommand(need('<actorId> [--retake a,b --note 이유]'), input.cwd, { ...(input.retake ? { retake: input.retake } : {}), ...(input.note ? { note: input.note } : {}), ...(input.kind ? { kind: input.kind } : {}) });
   if (cmd === 'restore') {
     if (!input.from) throw new ForgeError('cli.args', 'restore <actorId> --from <dir> 필요');
     return restoreCommand(need('<actorId> --from <dir>'), input.cwd, input.from);
   }
-  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}), ...(input.archive ? { archive: input.archive } : {}) });
+  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.sheet ? { size: Number(input.sheet) } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}), ...(input.archive ? { archive: input.archive } : {}), ...(input.from ? { from: input.from } : {}) });
   if (cmd === 'make') {
     const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');
     if (input.sheet && !input.action) return makeSheetCommand(actor, input.cwd, { view: input.sheet, ...(input.pick ? { pick: input.pick } : {}), ...(input.out ? { out: input.out } : {}) });
     if (!input.action || !input.dir) throw new ForgeError('cli.args', '사용법: forge make <actorId> --action <a> --dir <side|front|back> | --sheet <side>');
     return makeCommand(actor, input.cwd, { action: input.action, dir: input.dir, ...(input.pick ? { pick: input.pick } : {}), ...(input.judge ? { judge: input.judge } : {}), ...(input.out ? { out: input.out } : {}) });
   }
-  if (cmd === 'fx-import') return fxImportCommand(input.cwd, { ...(arg ? { assets: arg } : {}), ...(input.out ? { out: input.out } : {}) });
+  if (cmd === 'fx-import') return fxImportCommand(input.cwd, { ...(input.variant ? {variant:input.variant} : {}), ...(arg ? { assets: arg } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'build') return buildCommand(need('<spec 경로>'), input.cwd);
   if (cmd === 'apply') return applyCommand(need('<spec 경로> --target dir --out <dir>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}), ...(input.skipReview ? { skipReview: true } : {}) });
   if (cmd === 'watch') {

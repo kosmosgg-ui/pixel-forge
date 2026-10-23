@@ -1,3 +1,4 @@
+import { autopilotPrompts } from './autopilot-prompts.js';
 import { createHash } from 'node:crypto';
 import { ForgeError } from '@pixel-forge/core';
 import { join, relative } from 'node:path';
@@ -24,7 +25,8 @@ export function checklist(kit: Kit, list: readonly PromptRequest[], state: Actor
 }
 
 /** forge prompts <actorId> → out/prompts/<actorId>/{<key>.txt, CHECKLIST.md} + 한 줄 요약 */
-export function promptsCommand(actorId: string, cwd: string, o: { retake?: string; note?: string } = {}) {
+export function promptsCommand(actorId: string, cwd: string, o: { retake?: string; note?: string; kind?: string } = {}) {
+  if (o.kind) return autopilotPrompts(actorId, o.kind, cwd, o.note, o.retake);
   const kit = loadKit(actorId, cwd);
   const list = requestList(kit);
   const state = readState(cwd, actorId);

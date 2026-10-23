@@ -7,7 +7,7 @@ try {
   const { values, positionals } = parseArgs({
     args: process.argv.slice(2),
     options: {
-      archive: { type: 'string' }, from: { type: 'string' }, version: { type: 'boolean' }, pretty: { type: 'boolean' },
+      variant: { type: 'string' }, archive: { type: 'string' }, from: { type: 'string' }, version: { type: 'boolean' }, pretty: { type: 'boolean' },
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
       format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
       source: { type: 'string' }, license: { type: 'string' }, id: { type: 'string' },
@@ -18,6 +18,7 @@ try {
   });
   const result = run({
     version: values.version === true, positionals, cwd: process.cwd(),
+    ...(values.variant !== undefined ? {variant:values.variant} : {}),
     ...(values.anim !== undefined ? { anim: values.anim } : {}),
     ...(values.count !== undefined ? { count: values.count } : {}),
     ...(values.seed !== undefined ? { seed: values.seed } : {}),

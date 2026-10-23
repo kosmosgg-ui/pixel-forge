@@ -27,13 +27,13 @@ it('single illustration and two-panel receive paths preserve alpha and input byt
   normalizePortrait(f); expect(f.rgba).toEqual(before);
   expect(() => portraitPanels({ ...f, w: 99 }, 2)).toThrow();
 });
-it('clipped head/shoulder and enclosed key-green remnants fail portrait QA', () => {
+it('clipped head/shoulder fails QA while enclosed reserved key-green is removed', () => {
   const f = face(120);
   for (let y = 0; y < 100; y++) for (let x = 0; x < 100; x++) f.rgba.set([120, 60, 30, 255], (y * 100 + x) * 4);
   // Transparent corners prevent generic keying from mistaking the entire foreground for a background.
   f.rgba[3] = 0;
   f.rgba.set([0, 255, 0, 255], (50 * 100 + 50) * 4);
   const n = normalizePortrait(f);
-  expect(n.qa.pass).toBe(false); expect(n.qa.green).toBe(1);
+  expect(n.qa.pass).toBe(false); expect(n.qa.green).toBe(0);
   expect(n.qa.clipped).toContain('head/top'); expect(n.qa.clipped).toContain('shoulder/right');
 });

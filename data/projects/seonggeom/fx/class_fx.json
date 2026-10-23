@@ -1,0 +1,7 @@
+{
+  "source": "data/projects/seonggeom/fx/class_fx.px.js",
+  "assets": {
+    "fx_guard_shield": {"anim":"fx_guard_shield","loop":true,"note":"Q8 gold shield ring: display only; existing shield state controls visibility, no shield value changes"},
+    "fx_swift_echo": {"dirs":8,"frames":["fx_swift_echo_f0","fx_swift_echo_f1","fx_swift_echo_f2"],"ms":[60,60,60],"loop":false,"note":"Q8 teal double-stroke afterimage: display only; does not create another hit"}
+  }
+}

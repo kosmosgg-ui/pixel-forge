@@ -42,5 +42,17 @@
       "title": "뒷면이 옆모습",
       "text": "This should be a back view, but the face is visible. Redraw the same sheet from directly behind: show the back of the head, the ponytail and the cape, no face."
     }
-  ]
+  ],
+  "autopilotFixes": {
+    "clipped": "Keep all hair, ribbons, shoulders, hands and sword tips strictly inside EACH panel. Leave at least80 pixels of flat key-color margin on all four sides of every panel and an equally wide gap between panels; no figure may touch a panel edge.",
+    "size": "Match head size and standing height in every panel to within6 percent. Preserve the same foot baseline for full-body frames.",
+    "identity": "Match the attached fixed character references exactly: face, brown eyes, brown high ponytail, blue ribbon, silver/gold armor and white/blue tabard. Do not redesign.",
+    "legs": "Make the legs clearly alternate contact and passing poses, with distinct knee bends.",
+    "backface": "In back views show only the back of the head and body, with no eyes or face visible.",
+    "background": "Use one absolutely flat uniform pure green #00FF00 background, including enclosed gaps around hair/arms. No shadows, gradients, background texture or dark-green halo.",
+    "text": "No text, labels, numbers, signatures, symbols resembling lettering, or panel borders.",
+    "cape": "Sera must have NO cape or back drape. Preserve only the approved blue/white tabard panels attached at the waist.",
+    "detail": "Use flat cel shading2-3 tones and broad clean color areas. No noise, speckles, texture, fine hatch marks or tiny decorative details.",
+    "upperbody": "STRICT UPPER-BODY CUT-IN: depict Sera only from the waist upward. No hips, thighs, knees, legs, feet or boots in the image. Raise the complete longsword diagonally above her shoulder; keep the entire blade tip, both hands, hair and face well inside the canvas. A waist-up figure may end at the lower torso; the sword must never be cropped. Wide landscape composition, not a full-body character sheet."
+  }
 }
