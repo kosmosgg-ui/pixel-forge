@@ -37,3 +37,12 @@ deferred/ 폴더는 보류된 설계다. 읽지 마라.
 2026-10-23 후속: 설치 차단 해소 후 [승인 6건 실행 반영 및 검증](APPROVED_IMPLEMENTATION.md)을 완료했다. 기존 PR 병합·정식 에셋 승격·전투 수치 변경 승인으로 확대하지 않는다.
 
 2026-10-23 사용자 직접 응답: **세라32/적24의 단위는 캐릭터 전체 공통 팔레트**. 동작 간 색 일관성을 우선한다. `paletteScope: character`는 후보 합성 전체에 적용하며 원본/기존 게임 PNG는 보존한다. 색 축소의 미술 승인을 의미하지 않는다. [잔여 제작 계약 초안](../../proposals/G2_REMAINING_IMAGE_CONTRACTS.md).
+
+## P12 결정 반영(2026-10-23 사용자 승인)
+
+- D-BOSS-DIR: 데모 대장 옆+반전 유지, 앞뒤는 본편.
+- D-GATE-DMG: 성문·마차 표시 정상/HP≤60%손상/HP≤25%위험, HP/판정 불변.
+- D-CLASS-ART: 세라 공통 동작+의상 교체 검증 우선, 불가하면직업idle/walk/attack/hit.
+- D-ART-TRACK: 데모pixel-forge 일원화, SF는연구보관(삭제/병합아님).
+
+원문: [승인 결정](../../DEMO_DEV/DECISIONS_DEMO_20261023.md), [P12](../../instructions/INSTRUCTIONS_P12.md).

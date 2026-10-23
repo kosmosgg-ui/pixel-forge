@@ -5,6 +5,18 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P12] 지시1~9+추가10~13 구현/기술검수, CH1≥20조건은상한10불일치로미충족.
+  - 승인원문/v1.3/계획v1.1/스킬동결/PR1~19정리안/29행11열등록부, 실제병합/삭제없음.
+  - 체험F초기화예외·캠페인45s불변·natural3직업F2회/HP90·52·52.
+  - 9쌍검기216셀PASS·가림최대17.61%·ms불변, 세라despill-before-palette실험33프레임녹색0/alpha불변·게임후보미교체.
+  - pnpm build/test305pass/2skip·규칙0,Godot357/0,등록부결정론PASS.
+  - 원격art-source=seonggeom private orphan ab5c871·미병합,원본PNG미수신. SWIFT실제스폰(b)·수정없음.
+  - review/P12_review.zip 및시트/메타/기록, 다음P13승인대본불변/제품껍데기.
+- [P12→P13 계획] pack2 원문 보존·P12 1~9와추가10~13 완료·보고/ZIP 후P13착수.
+  - 체험초기화 F예외/봇·캠페인불변검사,동결·계획v1.1·브랜치정리안·에셋등록부.
+  - 9쌍검기연출/가림QA·세라잡티원인측정/실험만·군집재촬영/스폰진단.
+  - seonggeom private orphan art-source push(미병합), P12검수ZIP과다운로드경로.
+  - P13문자열/제품화면/설정/승인대본데이터·동등봇·기존회귀·Windows/ZIP.
 - [P11] 0절 범위 구현·검수패키지 준비 / 원본·비공개 원격 확인 대기.
   - main ff(ad51afb)·설치/build/기준301pass·push, CLI archive/restore 합성왕복PNG+manifest동일.
   - 최종 pnpm build && pnpm test: Tests304 passed/2 skipped(원본골든2부재), pxl포함·규칙exit0.

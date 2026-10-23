@@ -11,3 +11,7 @@ pnpm forge restore hero_sera --from out/art-source-worktree/art-source
 현재 받은 JPEG4장은 원본 등록하지 않았고 review 패키지의 수령목록에서 derived:true로만 표시한다. 참조3장과 원본PNG5종이 없으므로 source archive에 PNG를 커밋하지 않았다. 기존 파생 후보 baseline은 원본 archive에 섞지 않는다.
 
 GitHub는 브랜치별 비공개 설정을 제공하지 않으므로 art-source는 원격 push하지 않았다. 원본 수령 후 비공개 보관 저장소/원격 확인이 필요하다. 빈 로컬 브랜치 예약 커밋만 있으며 main에 병합하지 않는다. baseline/원본·기존 후보는 변경하지 않는다.
+
+## P12 승인 반영(최신·기존 보류 설명을 대체)
+
+기본 안내 보관 대상은 **seonggeom 비공개 저장소의 orphan art-source**이며, pixel-forge 원격에는 원본을 올리지 않는다. `--archive out/seonggeom-art-source/art-source`(seonggeom worktree)로 복사하고 해당worktree에서만 commit/push한다. 옵션 자체는기본꺼짐이다. ab5c871 원격push완료·main/다른branch절대미병합. 원본미수신으로현재PNG커밋0. 과거pixel-forge로컬빈art-source는사용중단하되삭제하지않는다.

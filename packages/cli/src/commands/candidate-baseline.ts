@@ -7,6 +7,7 @@ import type { ProjectTarget } from '@pixel-forge/spec';
 import { resolveInside } from '../io/paths.js';
 import { resolveOut } from '../io/targets.js';
 import { decodePng, encodePng, type RgbaImage } from '../io/png.js';
+import { seraDespillColor, seraDespillInPlace } from './sera-despill.js';
 import { assertCoverage, candidateSchema, covers, rowsOf, type Candidate } from './candidate-contract.js';
 
 interface Sheet { manifest: Candidate; image: RgbaImage; hashes?: { manifestSha256: string; sheetSha256: string } }
@@ -70,7 +71,8 @@ export function finishCandidate(cwd: string, actor: string, png: Buffer, raw: un
   if (baseline) sheet = merge(baseline, sheet);
   if (baseline || budget !== undefined) delete sheet.manifest.qa['study'];
   if (budget !== undefined) {
-    const palette = medianCut([sheet.image], budget), q = quantize(sheet.image, palette);
+    const despilled = actor === "hero_sera" ? seraDespillInPlace(sheet.image) : 0;
+    const palette = medianCut([sheet.image], budget).map((c) => actor === "hero_sera" ? seraDespillColor(c) : c), q = quantize(sheet.image, palette);
     for (let i = 0; i < q.px.length; i++) {
       const index = q.px[i] ?? 0;
       if (!index) continue;
@@ -79,7 +81,7 @@ export function finishCandidate(cwd: string, actor: string, png: Buffer, raw: un
     }
     const notes = sheet.manifest['notes'];
     sheet.manifest['notes'] = [...(Array.isArray(notes) ? notes.filter((n: unknown) => typeof n === 'string' && !n.startsWith('동작마다 원본이 달라 팔레트가 따로다')) : []), '캐릭터 전체 공통 팔레트 — 기술 후보, 미술/권리 승인 아님'];
-    sheet.manifest.provenance['commonPalette'] = { budget, colors: palette.map((c) => `#${c.toString(16).padStart(6, '0')}`), scope: 'character' };
+    sheet.manifest.provenance['commonPalette'] = { budget, despilled, colors: palette.map((c) => `#${c.toString(16).padStart(6, '0')}`), scope: 'character' };
   }
   return { png: encodePng(sheet.image), manifest: sheet.manifest };
 }

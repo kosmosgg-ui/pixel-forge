@@ -52,9 +52,17 @@ function directSlash(name, R, sweep, edge, mid) {
           const dx = x - cx, dy = y - cx, distance = Math.hypot(dx, dy)
           const angle = ((Math.atan2(dy, dx) * 180 / Math.PI - direction * 45 + 540) % 360) - 180
           if (angle < lo || angle > hi || distance > outer) continue
-          const taper = 1 + (frame === 0 ? 5 : frame === 1 ? 3 : 1) * (angle - lo) / (hi - lo)
-          if (distance < outer - taper) continue
-          c.px(x, y, frame === 0 ? (distance >= outer - 1 ? "w" : mid) : edge)
+          const ratio = distance / outer
+          const tip = hi - angle <= 4 / outer * 180 / Math.PI
+          const edge = distance >= outer - (frame === 1 ? 2 : 1)
+          const auxiliary = ratio >= .82 && ratio <= .88 && distance >= outer * .88 - 2
+          const stipple = ratio >= .88 && ((x + 2 * y) % 3 === 0)
+          if (frame === 0 && edge) c.px(x, y, tip ? "w" : "c")
+          else if (frame === 0 && auxiliary && angle >= hi - sweep * .6) c.px(x, y, "C")
+          else if (frame === 1 && edge) c.px(x, y, tip ? "w" : "c")
+          else if (frame === 1 && auxiliary) c.px(x, y, "C")
+          else if (frame > 0 && stipple && !edge) c.px(x, y, "n")
+          else if (frame === 2 && edge) c.px(x, y, "C")
         }
       })
     }

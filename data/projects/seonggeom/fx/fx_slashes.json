@@ -13,8 +13,7 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 110 angle 100"
+      "loop": false
     },
     "fx_slash_r110_a140": {
       "dirs": 8,
@@ -28,8 +27,7 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 110 angle 140"
+      "loop": false
     },
     "fx_slash_r120_a110": {
       "dirs": 8,
@@ -43,8 +41,7 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 120 angle 110"
+      "loop": false
     },
     "fx_slash_r130_a140": {
       "dirs": 8,
@@ -58,8 +55,7 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 130 angle 140"
+      "loop": false
     },
     "fx_slash_r130_a180": {
       "dirs": 8,
@@ -73,8 +69,7 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 130 angle 180"
+      "loop": false
     },
     "fx_slash_r140_a140": {
       "dirs": 8,
@@ -88,8 +83,49 @@
         60,
         60
       ],
-      "loop": false,
-      "note": "P11 actual reach 140 angle 140"
+      "loop": false
+    },
+    "fx_slash_r110_a90": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r110_a90_f0",
+        "fx_slash_r110_a90_f1",
+        "fx_slash_r110_a90_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    "fx_slash_r125_a110": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r125_a110_f0",
+        "fx_slash_r125_a110_f1",
+        "fx_slash_r125_a110_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    "fx_slash_r135_a145": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r135_a145_f0",
+        "fx_slash_r135_a145_f1",
+        "fx_slash_r135_a145_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false
     }
   }
 }

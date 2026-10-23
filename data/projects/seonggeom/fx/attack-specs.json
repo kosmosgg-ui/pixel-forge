@@ -4,6 +4,10 @@
   "pairs": [
     {
       "reach": 110,
+      "angle": 90
+    },
+    {
+      "reach": 110,
       "angle": 100
     },
     {
@@ -15,6 +19,10 @@
       "angle": 110
     },
     {
+      "reach": 125,
+      "angle": 110
+    },
+    {
       "reach": 130,
       "angle": 140
     },
@@ -23,8 +31,13 @@
       "angle": 180
     },
     {
+      "reach": 135,
+      "angle": 145
+    },
+    {
       "reach": 140,
       "angle": 140
     }
-  ]
+  ],
+  "trialSource": "seonggeom/demo/data/demo_080_classes.json"
 }
