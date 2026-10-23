@@ -9,6 +9,7 @@ import { FILE_RULE, promptText, requestList, TURNAROUND, turnaroundFile, type Pr
 import { loadKit } from '../prompts/kit.js';
 import { readState, writeState } from '../prompts/state.js';
 import { intakeCutin } from './cutin.js';
+import { archiveActor } from './archive.js';
 import { promptSha } from './prompts.js';
 
 /** 긴 변이 이보다 짧으면 경고(파일럿: 키 210px 원본은 테두리가 거칠었다 — P9-M 4) */
@@ -57,7 +58,12 @@ const stampOf = (iso: string, sha: string) => `${iso.replace(/[-:]/g, '').replac
  * → data/import/<actorId>/<key>/<stamp>.png + <stamp>.intake.json(gitignore). 이전 원본은 지우지 않는다(make는 최신본).
  * 입력은 작업 폴더 안만(resolveInside) — 채팅 첨부는 data/import/inbox/ 등 작업 폴더 안으로 먼저 복사한다.
  */
-export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: string; kind?: string; temp?: string; out?: string } = {}) {
+type IntakeOptions = { as?: string; at?: string; kind?: string; temp?: string; out?: string; archive?: string };
+export function intakeCommand(file: string, cwd: string, o: IntakeOptions = {}) {
+  const result = intakeOne(file, cwd, o);
+  return o.archive ? { ...result, ...archiveActor(cwd, result.actor, o.archive) } : result;
+}
+function intakeOne(file: string, cwd: string, o: IntakeOptions) {
   if (o.kind === 'reference') return intakeReference(file, cwd, o);
   if (o.kind === 'cutin') return intakeCutin(file, cwd, o);
   if (o.kind === 'sheet') return intakeSheet(file, cwd, o);
@@ -87,7 +93,7 @@ export function intakeCommand(file: string, cwd: string, o: { as?: string; at?: 
 function readSource(src: string, file: string, at?: string) {
   const bytes = readFileSync(src);
   const fmt = formatOf(bytes);
-  if (fmt !== 'png') throw new ForgeError('intake.format', fmt ? `${fmt.toUpperCase()}는 아직 읽지 못합니다(디코더가 의존성 허용 목록 밖) — PNG로 저장해 다시 주세요` : `PNG/JPEG/WebP가 아닙니다: ${basename(file)}`);
+  if (fmt !== 'png') throw new ForgeError('intake.format', fmt ? `${fmt.toUpperCase()}는 아직 읽지 못합니다(디코더가 의존성 허용 목록 밖) — 원본 PNG를 전달하세요(JPEG 재저장본은 원본 등록 금지)` : `PNG/JPEG/WebP가 아닙니다: ${basename(file)}`);
   const img = decodePng(bytes);
   const warnings = Math.max(img.w, img.h) < MIN_LONG_SIDE ? [`긴 변 ${Math.max(img.w, img.h)}px < ${MIN_LONG_SIDE}px — 테두리가 거칠 수 있다(더 큰 해상도로 다시 저장 권장)`] : [];
   const sha = createHash('sha256').update(bytes).digest('hex');

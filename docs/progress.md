@@ -5,6 +5,19 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P11] 0절 범위 구현·검수패키지 준비 / 원본·비공개 원격 확인 대기.
+  - main ff(ad51afb)·설치/build/기준301pass·push, CLI archive/restore 합성왕복PNG+manifest동일.
+  - 최종 pnpm build && pnpm test: Tests304 passed/2 skipped(원본골든2부재), pxl포함·규칙exit0.
+  - 16게임play primary20행→고유6쌍JSON·검기8방향3프레임호90~100%/angle±5°/안쪽투명, QA경고0.
+  - 공식Godot4.7.2/templates SHA512·153/0+FX16/0·대표12장/overlay2장·Windowsexe+pckbuild0.
+  - 기존후보는측정/행이동실험만·미적용. JPEG4장은derived만,원본PNG미수신·로컬art-source만(API Forbidden).
+  - review/P11_review.zip(Git제외), sheets/P11_lineup.png·측정표·실제캡처·Windows포함. 이미지합계約3.5MiB.
+  - 새의존성/바이블수치/원본PNG덮어쓰기/게임main병합/정식승격없음. 다음은클로드검수·원본수령·비공개보관확인.
+- [P11 계획] 0절 승인 범위만: main ff병합·설치/build/test/규칙 확인 후 push.
+  - CLI archive/restore와 합성 왕복 해시 검증, 원본 PNG 미수신/JPEG 구분.
+  - Godot4.7.2 공식 빌드·템플릿·기대버전 및 지정 회귀/Windows 빌드.
+  - 읽기 전용 공격 사양표·JSON 구동 검기·review 바인딩·계약검사.
+  - 기존후보 경고는 측정/행이동 실험만, review/P11_review.zip≤20MB 이미지·8절보고.
 - [P10/G2 공정 보완] 구현·기술검증 완료 / 미술 ART_HOLD.
   - 사용자 확정: 세라32/적24는 캐릭터 전체 공통 팔레트. 별도5종31/18/11/12/14색, 알파·형상·프레임 불변.
   - 명시적 baseline 병합/누락 덮어쓰기·시간충돌 차단, 출력파일·state 예외복구, 원본/state 창작 없음.

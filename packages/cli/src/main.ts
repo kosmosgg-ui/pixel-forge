@@ -7,7 +7,7 @@ try {
   const { values, positionals } = parseArgs({
     args: process.argv.slice(2),
     options: {
-      version: { type: 'boolean' }, pretty: { type: 'boolean' },
+      archive: { type: 'string' }, from: { type: 'string' }, version: { type: 'boolean' }, pretty: { type: 'boolean' },
       anim: { type: 'string' }, count: { type: 'string' }, seed: { type: 'string' },
       format: { type: 'string' }, target: { type: 'string' }, out: { type: 'string' },
       source: { type: 'string' }, license: { type: 'string' }, id: { type: 'string' },
@@ -34,7 +34,7 @@ try {
     ...(values.kind !== undefined ? { kind: values.kind } : {}),
     ...(values.temp !== undefined ? { temp: values.temp } : {}),
     ...(values.retake !== undefined ? { retake: values.retake } : {}),
-    ...Object.fromEntries((['as', 'at', 'action', 'dir', 'pick', 'judge'] as const).flatMap((k) => (values[k] !== undefined ? [[k, values[k]]] : []))),
+    ...Object.fromEntries((['as', 'at', 'action', 'dir', 'pick', 'judge', 'archive', 'from'] as const).flatMap((k) => (values[k] !== undefined ? [[k, values[k]]] : []))),
     ...(values.sheet !== undefined ? { sheet: values.sheet } : {}),
     ...(values.obs !== undefined ? { obs: values.obs } : {}),
   });

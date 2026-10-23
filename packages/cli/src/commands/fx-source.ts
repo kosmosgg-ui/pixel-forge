@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { z } from 'zod';
+import { readJson } from '../io/files.js';
 import { ForgeError } from '@pixel-forge/core';
 import type { Bible } from '@pixel-forge/spec';
 import { writeFileEnsured } from '../io/files.js';
@@ -10,7 +12,8 @@ export function fxSource(source: string, bible: Bible, cwd: string): { file: str
   if (!text.includes('pal(FX_PALETTE)')) return { file: source, text };
   const palette = bible.fxPalette;
   if (!palette || Object.keys(palette).length === 0) throw new ForgeError('fx.palette', '바이블 fxPalette가 필요합니다');
-  const prepared = text.replace('pal(FX_PALETTE)', `pal(${JSON.stringify(palette)})`);
+  const pairs = text.includes('FX_SLASH_SPECS') ? readJson(join(dirname(source), 'attack-specs.json'), z.object({ pairs: z.array(z.object({ reach: z.number().positive(), angle: z.number().positive().max(360) })) })).pairs : [];
+  const prepared = text.replace('FX_SLASH_SPECS', JSON.stringify(pairs)).replace('pal(FX_PALETTE)', `pal(${JSON.stringify(palette)})`);
   const file = join(cwd, 'out', 'pxl-source', 'effects.px.js');
   writeFileEnsured(file, Buffer.from(prepared));
   return { file, text: prepared, colors: Object.values(palette) };

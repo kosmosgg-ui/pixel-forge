@@ -14,7 +14,8 @@ function eightWay(name, frames) {
 
 // 검기 호(오른쪽을 향함): 판정 range 90 → 화면 ×2/3 → 1배 ÷2 ≈ 반지름 30px.
 // 스미어 규칙(scenes 12): 0 = 가득·밝게, 1 = 가늘고 어둡게(다른 색), 2 = 끝 조각. 안쪽은 비워 적을 가리지 않는다.
-function slash(name, R, sweep, edge, mid, reverse) {
+function slash(name, R, sweep, edge, mid, reverse, direct = false) {
+  if (direct) return directSlash(name, R, sweep, edge, mid)
   // 호 중심 = 캔버스 가운데(= 게임에서 주인공 위치) — 8방향 회전이 같은 점을 축으로 돈다
   const S = 2 * R + 8, cx = Math.floor(S / 2), cy = Math.floor(S / 2)
   const a0 = -sweep / 2, a1 = sweep / 2
@@ -37,6 +38,34 @@ function slash(name, R, sweep, edge, mid, reverse) {
 slash("fx_slash_1", 30, 90, "C", "c", false)
 slash("fx_slash_2", 30, 90, "C", "c", true)
 slash("fx_slash_3", 31, 110, "j", "y", false)
+
+// Directly rasterize approved directions around one integer anchor. Rotation/recentering of
+// the legacy tapered arc shifts its center and narrows its ends beyond the P11 contract.
+function directSlash(name, R, sweep, edge, mid) {
+  const S = 2 * R + 8, cx = S / 2, outer = R + 1
+  DIRS.forEach((d, direction) => {
+    for (let frame = 0; frame < 3; frame++) {
+      const id = `${name}_f${frame}` + (direction === 0 ? "" : `_${d}`)
+      sprite(id, { w: S, h: S }, (c) => {
+        const hi = sweep / 2, lo = frame === 0 ? -hi : frame === 1 ? -hi + sweep * .25 : hi - 22
+        for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+          const dx = x - cx, dy = y - cx, distance = Math.hypot(dx, dy)
+          const angle = ((Math.atan2(dy, dx) * 180 / Math.PI - direction * 45 + 540) % 360) - 180
+          if (angle < lo || angle > hi || distance > outer) continue
+          const taper = 1 + (frame === 0 ? 5 : frame === 1 ? 3 : 1) * (angle - lo) / (hi - lo)
+          if (distance < outer - taper) continue
+          c.px(x, y, frame === 0 ? (distance >= outer - 1 ? "w" : mid) : edge)
+        }
+      })
+    }
+  })
+}
+
+// P11: verified JSON pairs injected by the CLI; no game numbers are changed.
+for (const spec of FX_SLASH_SPECS) {
+  const name = `fx_slash_r${spec.reach}_a${spec.angle}`
+  slash(name, Math.floor(spec.reach / 3) - 2, spec.angle, "C", "c", false, true)
+}
 
 // 타격 섬광(방향 없음): 어두운 타원 → 흰 4갈래 별 → 흰 원 → 청록·노랑 초승달
 anim("fx_hit_spark", { w: 16, h: 16, frames: 4, fps: 20, loop: false }, (c) => {

@@ -1,0 +1,30 @@
+{
+  "source": "seonggeom/data/16_gameplay_v04.json",
+  "sourceSha256": "b673c14e827d1eb900b81cb023e201803bebeee330fe482d11fd6f8c0bfa9f5f",
+  "pairs": [
+    {
+      "reach": 110,
+      "angle": 100
+    },
+    {
+      "reach": 110,
+      "angle": 140
+    },
+    {
+      "reach": 120,
+      "angle": 110
+    },
+    {
+      "reach": 130,
+      "angle": 140
+    },
+    {
+      "reach": 130,
+      "angle": 180
+    },
+    {
+      "reach": 140,
+      "angle": 140
+    }
+  ]
+}

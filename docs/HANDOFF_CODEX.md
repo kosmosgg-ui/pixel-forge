@@ -65,3 +65,7 @@
 ## 2026-10-23 공정 보완 후속
 
 최신 build/test=301 passed/2 skipped. 안전 baseline 병합/누락보호·상태/출력 예외복구·전체공통팔레트·컷인전용요청 적용. [잔여 제작 계약](proposals/G2_REMAINING_IMAGE_CONTRACTS.md), 게임 결과 seonggeom/docs/DEMO_DEV/G2_PROCESS_IMPLEMENTATION.md. 로컬 baseline5쌍은 data/import/<actor>/baseline, 색변환5종/report/lineup은 out/process-fix, 기존게임후보 불변. 세라31색/적18·11·12·14색. 신규 원본/state/spec는 여전히 미복원. 다음3요청은 기존 NEXT_IMAGE_REQUESTS.md, 새원본 수령후 별도출력 병합·사람검수. 검기90과현재데모110/100 불일치로 기본도형 유지, 게임수치를맞추지않는다.
+
+## P11 재개 진입점
+
+지시문 docs/instructions/INSTRUCTIONS_P11.md 0절만 허용. main ff 병합 완료(ad51afb), archive/restore CLI와 사용법 docs/instructions/P11_ARCHIVE_USAGE.md. 원본PNG 미수신·JPEG는derived:true만. 로컬out/art-source-worktree의 orphan art-source는main미병합/원격미푸시. 새 검기6쌍은fx/attack-specs.json·fx_slashes.json·sg_fx.px.js, 기존12종 보존. 패키지review/P11_review.zip은Git제외.

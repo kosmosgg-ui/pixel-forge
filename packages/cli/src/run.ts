@@ -15,6 +15,7 @@ import { lineupCommand } from './commands/lineup.js';
 import { importCommand, probeCommand } from './commands/import.js';
 import { fxImportCommand } from './commands/fx-import.js';
 import { promptsCommand } from './commands/prompts.js';
+import { restoreCommand } from './commands/archive.js';
 import { intakeCommand } from './commands/intake.js';
 import { makeCommand } from './commands/make.js';
 import { makeSheetCommand } from './commands/make-sheet.js';
@@ -53,6 +54,8 @@ export interface RunInput {
   /** intake --as <actorId>/<key>, --at <ISO 시각> */
   as?: string;
   at?: string;
+  archive?: string;
+  from?: string;
   /** make --action --dir --pick --judge */
   action?: string;
   dir?: string;
@@ -99,7 +102,11 @@ export function run(input: RunInput): RunResult {
   if (cmd === 'pack') return packCommand(need('<spec 경로> [--format aseprite-json]'), input.cwd, input.format);
   if (cmd === 'import') return input.probe ? probeCommand(need('--probe <png>'), input.cwd) : importCommand(need('<spec 경로> [--target godot-rowsheet --out <dir|@이름>] | --probe <png>'), input.cwd, { ...(input.target ? { target: input.target } : {}), ...(input.out ? { out: input.out } : {}) });
   if (cmd === 'prompts') return promptsCommand(need('<actorId> [--retake a,b --note 이유]'), input.cwd, { ...(input.retake ? { retake: input.retake } : {}), ...(input.note ? { note: input.note } : {}) });
-  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}) });
+  if (cmd === 'restore') {
+    if (!input.from) throw new ForgeError('cli.args', 'restore <actorId> --from <dir> 필요');
+    return restoreCommand(need('<actorId> --from <dir>'), input.cwd, input.from);
+  }
+  if (cmd === 'intake') return intakeCommand(need('<file> [--as <actorId>/<action>_<dir>] [--kind reference|cutin] [--temp 이유] [--out @이름] [--at <ISO 시각>]'), input.cwd, { ...(input.as ? { as: input.as } : {}), ...(input.at ? { at: input.at } : {}), ...(input.kind ? { kind: input.kind } : {}), ...(input.temp ? { temp: input.temp } : {}), ...(input.out ? { out: input.out } : {}), ...(input.archive ? { archive: input.archive } : {}) });
   if (cmd === 'make') {
     const actor = need('<actorId> --action <a> --dir <side|front|back> [--pick <stamp>] [--judge 관찰] [--out @이름]');
     if (input.sheet && !input.action) return makeSheetCommand(actor, input.cwd, { view: input.sheet, ...(input.pick ? { pick: input.pick } : {}), ...(input.out ? { out: input.out } : {}) });

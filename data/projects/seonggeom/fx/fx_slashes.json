@@ -1,0 +1,95 @@
+{
+  "source": "data/projects/seonggeom/fx/sg_fx.px.js",
+  "assets": {
+    "fx_slash_r110_a100": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r110_a100_f0",
+        "fx_slash_r110_a100_f1",
+        "fx_slash_r110_a100_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 110 angle 100"
+    },
+    "fx_slash_r110_a140": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r110_a140_f0",
+        "fx_slash_r110_a140_f1",
+        "fx_slash_r110_a140_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 110 angle 140"
+    },
+    "fx_slash_r120_a110": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r120_a110_f0",
+        "fx_slash_r120_a110_f1",
+        "fx_slash_r120_a110_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 120 angle 110"
+    },
+    "fx_slash_r130_a140": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r130_a140_f0",
+        "fx_slash_r130_a140_f1",
+        "fx_slash_r130_a140_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 130 angle 140"
+    },
+    "fx_slash_r130_a180": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r130_a180_f0",
+        "fx_slash_r130_a180_f1",
+        "fx_slash_r130_a180_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 130 angle 180"
+    },
+    "fx_slash_r140_a140": {
+      "dirs": 8,
+      "frames": [
+        "fx_slash_r140_a140_f0",
+        "fx_slash_r140_a140_f1",
+        "fx_slash_r140_a140_f2"
+      ],
+      "ms": [
+        60,
+        60,
+        60
+      ],
+      "loop": false,
+      "note": "P11 actual reach 140 angle 140"
+    }
+  }
+}
