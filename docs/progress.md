@@ -2,9 +2,17 @@
 
 > 규칙: 단계당 10줄 이내. 최신이 위. 형식: `[P{n}] 상태 | 완료 | 수락기준 | 다음`
 
-현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
+현재 단계: **AUTOPILOT BATCH-1 — Q0/Q4/Q6 승인·Q3 판정 대기, 다음 독립 Q9**
 
 ## 로그
+- [AUTOPILOT BATCH-1] 구현 a9ec63b/게임d1b002b·art-source14fe669, 원문 양 저장소 커밋.
+  - 고정참조3+원본16·요청바이트SHA 검증, 고해상도Q0 A/B·레오나2·직업6 승인대기.
+  - portrait6장 기술QA통과/동일인ΔE·등급NEEDS-CLAUDE, Q5 FAILED-3·후보철회/게임미연결.
+  - Q5 opt-in 오른쪽.35s/70%/HUD80 GUI9/0, Q8 금/청록18+고유2후보·보라는13색충돌 승인질문.
+  - build/rules PASS, Tests321passed/2skipped(원본PNG2부재), Godot587/0, 보호19파일/대본불변.
+  - 첫 점검 review/BATCH-1.zip(이미지≤20MB, Windows별도), CP-M1 미완료. 다음 독립 Q9.
+
+- [AUTOPILOT Q8 계획] 승인13색 안의 GUARD 금/SWIFT 청록 팔레트 교체만, 형태·알파·시간 불변. RUNE 보라는 승인팔레트에 없어 해당 변형만 승인 질문. 기존 pxl 경로/핀 재사용.
 - [AUTOPILOT 계획] 사용자 마스터지시를 두 저장소에 고정, P13 완료 상태에서 Q0 시작.
   - 저해상도참조3장 private art-source 고정·해시검증, Q0 고해상도2안은 승인대기.
   - 데이터 문구/골든·codex-imagegen provenance/archive·승인된 kind 수령 경로부터 구현.

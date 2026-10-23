@@ -1,0 +1,178 @@
+{
+  "Q0_A.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q0_B.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q3_NPC.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q3_SERA.png": {
+    "size": [
+      1254,
+      1254
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q3_SERA_2.png": {
+    "size": [
+      1254,
+      1254
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q4_A.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q4_B.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q5_A.png": {
+    "size": [
+      1672,
+      941
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q5_A_2.png": {
+    "size": [
+      1672,
+      941
+    ],
+    "borderKeyWithin24": 0.869116,
+    "edgeInk": 681,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q5_A_3.png": {
+    "size": [
+      1672,
+      941
+    ],
+    "borderKeyWithin24": 0.892461,
+    "edgeInk": 560,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_GUARD_A.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_GUARD_B.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_RUNE_A.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_RUNE_B.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_SWIFT_A.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  },
+  "Q6_SWIFT_B.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "borderKeyWithin24": 1.0,
+    "edgeInk": 0,
+    "automaticAcceptance": false,
+    "identityDeltaE": "UNVERIFIED: feature-specific segmentation needed",
+    "noTextNoCape": "visual inspection pending; not an automatic proof"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "BLOCKED-APPROVAL",
+  "source": "DEMO_AUTOPILOT Q8; DECISIONS approved13 colors takes precedence",
+  "currentKeyCount": 13,
+  "proposedKeyCount": 16,
+  "proposedAdditionalKeys": {
+    "p": "#d8b5ff",
+    "P": "#a26ae3",
+    "q": "#63408f"
+  },
+  "existingKeysChanged": false,
+  "applied": false
+}
