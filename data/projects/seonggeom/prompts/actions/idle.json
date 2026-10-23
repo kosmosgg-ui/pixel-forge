@@ -8,7 +8,7 @@
     "frame 1: standing relaxed, sword held low",
     "frame 2: chest rises slightly, shoulders up 1-2px",
     "frame 3: highest point of the breath",
-    "frame 4: settling back down, same as frame 1 but cape slightly moved"
+    "frame 4: settling back down, returning to the relaxed pose of frame 1; only subtle breathing movement"
   ],
   "viewExtra": {}
 }

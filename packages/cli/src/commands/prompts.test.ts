@@ -49,6 +49,11 @@ describe('P9-M 요청 문구', () => {
     expect(text('walk_side')).toMatch(/three-quarter top-down view[\s\S]*No slash trails/);
     expect(text('walk_side')).toMatch(/exactly the same size as in the attached size reference/);
     expect(text('walk_side')).not.toMatch(/blue cape|long cape/);
+    for (const key of ['idle_front', 'idle_back', 'walk_front', 'walk_back']) {
+      expect(text(key)).toContain('no cape');
+      expect(text(key)).not.toMatch(/cape slightly moved|show the back of the head and the cape/);
+    }
+    expect(text('walk_back')).toContain('The face must not be visible.');
     expect({ turnaround: promptSha(text('turnaround_all')).slice(0, 16), walk: promptSha(text('walk_side')).slice(0, 16), back: promptSha(text('idle_back')).slice(0, 16) }).toMatchSnapshot();
   });
   it('고치기 문구 고르기: 잘림·identity(프레임 번호)·프레임 수·배경·다리·뒷면 얼굴', () => {

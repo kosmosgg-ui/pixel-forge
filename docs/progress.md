@@ -5,6 +5,19 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [G2 후보 검수/요청 준비] 실행 완료 / 미술 승인 대기.
+  - Xorg/Mesa·Godot4.6.3 실제 후보 게임화면30장, 고정프레임5종9개, G1-ACTORVIEW13/0. 임시 연결은 별도 복제본만.
+  - 세라는 옆 행1개로 앞뒤 이동도 대체 표시. 크기차·오크 접지·대장 원본 잘림은 유지, 신규 미술 등급 없음.
+  - idle/walk의 망토 잔재 제거, idle_back 조립 문자열 골든 의도적 갱신. 정사·프레임수·게임수치 불변.
+  - pnpm build && pnpm test: Tests294 passed/2 skipped(원본2장 부재). 규칙 검사 통과.
+  - 다음3건 idle_front4/idle_back4/walk_front6 요청 txt·ZIP 생성, NEXT_IMAGE_REQUESTS.md에 참조3장/전달규칙 기록.
+  - 원본/state 미복원으로 forge prompts remaining18은 실제 잔여수가 아님. 기존 옆 후보는 중복 요청하지 않는다.
+  - 상세 seonggeom G2_CANDIDATE_REVIEW.md, 정식 아트/기존 PR/전투/저장/17JSON 불변. Gate C PENDING.
+- [G2 후보 현황 재확인] 사용자 첨부5장과 seonggeom art/candidates/의 기존 픽셀 후보 대응 확인.
+  - 세라33·고블린14·늑대15·오크15·대장37프레임 PNG/매니페스트 존재, 알파0/255·승인 셀/앵커·비어 있지 않은 프레임 검사 통과.
+  - 옆 방향 동작 시트는 변환 완료. 원본 data/import는 미복원이며 JPEG→PNG 단순 변환으로 대체하지 않음.
+  - 기존 QA: 세라 크기 차이, 오크 접지, 대장 흔들림/원본 잘림·5종 밴딩 경고. 미술 등급/정식 승인 아님.
+  - 다음: 세라 정면·뒷면 idle/walk·컷인 등 미확보분. 상세 seonggeom docs/DEMO_DEV/G2_CONVERTED_ASSET_STATUS.md. 정식 교체/PR 병합 없음.
 - [P10/G2] 승인 6건 실행 반영·검증 완료(2026-10-23) | ART_HOLD / 사용자 Gate C PENDING.
   - 바이블 fxPalette 13키→pxl 생성 소스·QA 연결, metal_blade 추가·무기 검사 활성, hero32/적24 유지; $history 보존.
   - 승인 sheetSize 5종·발밑 여백 보존, 초과 입력 중단; 기존 후보·정식 바인딩 미변경.
