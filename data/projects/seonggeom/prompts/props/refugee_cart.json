@@ -1,0 +1,10 @@
+{
+  "id": "refugee_cart",
+  "status": "approved_identity_candidate_prompt_only",
+  "mission": "PRO-01",
+  "source": "docs/proposals/P10_G2_CODEX_APPROVALS.md",
+  "prompt": "Draw a stationary refugee wagon for a three-quarter top-down anime fantasy game. A wooden wagon loaded with bundled belongings, readable wheels and a protective travel cover; no people, horse, weapons, text or UI. Clean flat colors and crisp separated silhouette on a pure #00FF00 background. A single object, no ground shadow, no effects. This is a visual candidate for a fixed defense objective, not a moving escort. Match the attached Sera reference's style and lighting.",
+  "references": ["hero_sera__ref.png"],
+  "output": "refugee_cart__ref.png",
+  "constraints": ["No new kind/view or final cell size is established here", "Existing objective position, HP, waves, hitbox and save format stay unchanged", "User creates the image in ChatGPT; no image API", "No production binding before Gate C"]
+}

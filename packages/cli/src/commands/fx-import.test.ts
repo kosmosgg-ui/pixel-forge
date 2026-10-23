@@ -34,7 +34,7 @@ describe('fx-import 부품', () => {
   });
 });
 
-const bin = join(homedir(), '.claude/skills/pxl-pixel-art/bin/pxl.js');
+const bin = process.env['PXL_BIN'] ?? join(homedir(), '.claude/skills/pxl-pixel-art/bin/pxl.js');
 describe.skipIf(!existsSync(bin))('forge fx-import(pxl 설치된 환경)', () => {
   const root = join(import.meta.dirname, '..', '..', '..', '..');
   const work = mkdtempSync(join(tmpdir(), 'forge-fx-'));

@@ -67,10 +67,12 @@ function studyOf(cwd: string, actorId: string, png: Buffer): (StudyNumbers & { w
 }
 
 /** 여러 원본의 셀 → 시트 셀: 가장 넓고 높은 것, 앵커는 가로 가운데·바닥 거리 유지(가장 큰 셀 기준) */
-function unifiedCell(cells: readonly { w: number; h: number; anchor: readonly [number, number] }[]): { w: number; h: number; anchor: [number, number] } {
+export function unifiedCell(cells: readonly { w: number; h: number; anchor: readonly [number, number] }[], approved?: readonly [number, number]): { w: number; h: number; anchor: [number, number] } {
   const big = cells.reduce((a, c) => (c.w * c.h > a.w * a.h ? c : a));
   const w = Math.max(...cells.map((c) => c.w)), h = Math.max(...cells.map((c) => c.h)), below = big.h - 1 - big.anchor[1];
-  return { w, h, anchor: [Math.floor(w / 2), h - 1 - below] };
+  if (approved && (w > approved[0] || h > approved[1])) throw new ForgeError('make.cell-contract', `동작이 승인 셀 ${approved.join("×")}을 넘습니다: ${w}×${h}`);
+  const [cw, ch] = approved ?? [w, h];
+  return { w: cw, h: ch, anchor: [Math.floor(cw / 2), ch - 1 - below] };
 }
 
 /** 셀 하나를 RGBA 시트에 붙인다(원본마다 팔레트가 달라 인덱스가 아니라 RGBA로 합친다) */
@@ -85,7 +87,7 @@ export function composeCandidates(kit: Kit, cwd: string, outArg?: string) {
   const parts = passedParts(kit, cwd);
   const first = parts[0];
   if (!first) throw new ForgeError('make.empty', `합격한 항목이 없습니다: ${kit.actor.id}`);
-  const t = loadTarget(first.im.bible.id, cwd), cell = unifiedCell(parts.map((p) => p.im.cell));
+  const t = loadTarget(first.im.bible.id, cwd), cell = unifiedCell(parts.map((p) => p.im.cell), first.im.bible.sizeClassOptions[kit.actor.sizeClass]?.sheetSize);
   const layout = rowSheetLayout(t.rows, animMetas(kit, measuredStrides(parts)), parts.map((p) => ({ anim: p.anim, dir: p.dir, count: p.order.length })));
   const W = layout.columns * cell.w, H = layout.rows.length * cell.h, rgba = new Uint8Array(W * H * 4);
   for (const p of parts) {

@@ -1,14 +1,7 @@
 // 「성검의 맹세」 전투 이펙트 (P10 2절, pxl 2e72b9a — 코드 그림, 생성형 AI 아님).
 // 시작점: 기획 세션 시험작(docs/integrated/G2/samples/pxl_trial/sg_fx.px.js). 아군 효과: 흰·청록·금 — 적 예고색(빨강·주황) 쓰지 않음.
-// 팔레트 키는 바이블 fxPalette 제안과 같다(docs/proposals/P10_fx_palette.md, 사용자 승인 전).
-pal({
-  k: "#141824",
-  w: "#ffffff", v: "#f4f0dc",
-  c: "#7ff0e6", C: "#2fb8b0", n: "#1d6f78",
-  y: "#ffe27a", j: "#e0a83a", J: "#9a6420",
-  g: "#b8b3a8", G: "#7d786e",
-  m: "#9fe0ff", M: "#3f7fd0",
-})
+// forge fx-import가 검증된 바이블 fxPalette를 주입한다(승인 기록: P10_G2_CODEX_APPROVALS.md).
+pal(FX_PALETTE)
 
 // 8방향 = 오른쪽(0°)부터 시계 방향 45°씩(e se s sw w nw n ne). 프레임마다 스프라이트로 그리고 각도별로 미리 돌린다
 // (pxl은 anim에 angle을 주면 첫 프레임만 남아서 — 포장은 forge fx-import가 행 = 방향, 열 = 프레임으로 묶는다).

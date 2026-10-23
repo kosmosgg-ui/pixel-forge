@@ -1,6 +1,6 @@
 # P10 / G2 — Codex 인계 후 사용자 승인 기록
 
-상태: **6건 사용자 결정 완료 / 환경 복구 전 실행 반영 보류**. 출처: 이번 대화의 6개 질문에 대한 사용자 직접 응답. 인계 파일 main 제출 승인과 별도로 기록한다.
+상태: **6건 사용자 결정 완료 / 실행 반영·검증 완료(2026-10-23)**. 구현 연결·제한은 [APPROVED_IMPLEMENTATION](../integrated/G2/APPROVED_IMPLEMENTATION.md) 참고. 출처: 이번 대화의 6개 질문에 대한 사용자 직접 응답. 인계 파일 main 제출 승인과 별도로 기록한다.
 
 | 항목 | 사용자 응답 | 적용 계약 |
 |---|---|---|
@@ -20,7 +20,7 @@
 }
 ```
 
-## 현재 반영 수준
+## 승인 기록 당시 반영 수준(아래는 과거 이력)
 
 - 이번 제출은 승인 기록·DECISIONS 연결·progress 갱신만 한다. 바이블 JSON·rules·TS·pxl 소스·게임 코드·후보 PNG는 아직 변경하지 않았다. 승인과 구현 완료를 구분한다.
 - pnpm 설치는 셸 프록시 소켓 EPERM, 온라인 META_FETCH_FAIL, 오프라인 NO_OFFLINE_META로 실패했다. build/test는 tsc/vitest가 없어 exit 1이다. 전체 Tests N passed 근거가 없으며 환경 검증 완료로 처리하지 않는다.

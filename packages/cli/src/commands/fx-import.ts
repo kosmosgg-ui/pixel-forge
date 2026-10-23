@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { parseHex } from '@pixel-forge/core';
+import { parseHex, ForgeError } from '@pixel-forge/core';
 import { bibleSchema, fxAssetsSchema, type FxAsset } from '@pixel-forge/spec';
 import { readJson, writeFileEnsured } from '../io/files.js';
 import { resolveInside } from '../io/paths.js';
@@ -9,6 +8,8 @@ import { bibleFile } from '../io/project.js';
 import { PXL_COMMIT, pxlBin, pxlBuild, pxlCommit } from '../io/pxl.js';
 import { centerIn, fxQa, fxRows, type FxRow } from './fx-frames.js';
 import { displayScaleOf, loadTarget, writeRowExport } from './import-target.js';
+
+import { fxSource } from './fx-source.js';
 
 const DEFAULT_ASSETS = 'data/projects/seonggeom/fx/fx_assets.json';
 const PREVIEW_BG = '#1f1a24';
@@ -76,8 +77,12 @@ export function fxImportCommand(cwd: string, o: { assets?: string; out?: string 
   const spec = readJson(resolveInside(cwd, o.assets ?? DEFAULT_ASSETS), fxAssetsSchema);
   const bin = pxlBin(process.env, process.version);
   const src = resolveInside(cwd, spec.source), pxlOut = join(cwd, 'out', 'pxl');
-  pxlBuild(bin, src, pxlOut);
-  const ctx = { cwd, source: spec.source, commit: pxlCommit(bin), palette: palOf(readFileSync(src, 'utf8')), ...(o.out ? { outArg: o.out } : {}) };
+  const commit = pxlCommit(bin);
+  if (commit !== PXL_COMMIT) throw new ForgeError('fx.pxl-commit', `pxl 고정 ${PXL_COMMIT} 필요(현재 ${commit})`);
+  const bible = readJson(bibleFile('seonggeom', cwd), bibleSchema);
+  const prepared = fxSource(src, bible, cwd);
+  pxlBuild(bin, prepared.file, pxlOut);
+  const ctx = { cwd, source: spec.source, commit, palette: prepared.colors ? new Set(prepared.colors.map((c) => parseInt(c.slice(1), 16))) : palOf(prepared.text), ...(o.out ? { outArg: o.out } : {}) };
   const packed = Object.entries(spec.assets).map(([id, a]) => packAsset(id, a, fxRows(pxlOut, a), ctx));
   const sheet = join(cwd, 'out', 'fx', 'fx_sheet.png');
   writeFileEnsured(sheet, encodePng(overview(packed)));

@@ -12,6 +12,8 @@ export const sizeClassOptionSchema = z.object({
   anchor: z.tuple([z.number().int(), z.number().int()]).optional(),
   /** 이 등급의 논리 키(px, import targetHeight 기본값) */
   height: z.number().int().positive().optional(),
+  /** 승인된 합성 후보 시트 셀. 논리 키·기본 셀·발밑 여백은 그대로 둔다 */
+  sheetSize: sizePx.optional(),
 });
 
 /**
@@ -53,6 +55,8 @@ export const bibleSchema = z.preprocess(splitSizeClasses, z
     colorBudget: z.record(z.string().min(1), z.number().int().min(1)),
     materials: z.record(z.string().min(1), materialSchema),
     fxColors: z.array(hexColorSchema),
+    /** 코드 이펙트의 명명 팔레트(팔레트 숫자·색은 프로젝트 바이블에서만) */
+    fxPalette: z.record(z.string().min(1), hexColorSchema).optional(),
     roleColorKey: z.record(z.string().min(1), z.string().min(1)).default({}),
     /** Spec이 rig를 생략하면 쓰는 리그 id */
     defaultRig: z.string().min(1).optional(),

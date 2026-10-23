@@ -1,0 +1,28 @@
+{
+  "id": "hero_sera_rune",
+  "bible": "seonggeom",
+  "sizeClass": "hero",
+  "description": "Sera in a candidate RUNE class outfit. Same brown eyes, face, high ponytail with blue ribbon and body proportions as the attached Sera references. Magic textiles mixed with light armor and a clearly visible rune LONGSWORD in the right hand; left hand casting runes. Blue and purple. Never a staff-only mage or a book-only character without a sword.",
+  "references": [
+    "hero_sera__ref.png",
+    "hero_sera__turnaround.png"
+  ],
+  "turnaroundFile": "hero_sera_rune__turnaround.png",
+  "sizeRefFile": "hero_sera__size_ref.png",
+  "mustKeep": [
+    "The character must be exactly the same size as in the attached size reference (the standing idle frame): same head size and same height when standing upright",
+    "Keep the same face and body proportions as Sera; this is a costume candidate, not a new character or a final approved design. No cape in these first-class candidates."
+  ],
+  "altBackground": false,
+  "produce": [
+    {
+      "action": "idle",
+      "views": [
+        "front",
+        "side",
+        "back"
+      ]
+    }
+  ],
+  "paletteMax": 32
+}

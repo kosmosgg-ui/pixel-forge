@@ -16,7 +16,9 @@
 - G1: 이동 중 공격 = 걷기 스프라이트 + 검기 이펙트만, 필살기 컷인(0.35초 정지 중), 히트박스 불변, 효과음 보류.
 - CH1-02 오크 대장 패턴: demo/data/ch1_02_slice.json 기준(CLEAVE 0.9/0.12/0.8, DASH 1.2/0.5/1.0, SIEGE 1.4/0.15/1.2). **구 프로토타입 적·보스(E1~E4, 철갑 추격관, 공명의 집행자) 혼입 금지.**
 
-## 3. 사용자 결정 대기 (제안서만, 구현 확정 금지)
+## 3. 인계 당시 사용자 결정 대기(후속 승인·구현 완료)
+
+아래 6건은 이후 사용자 승인 및 구현 검증 완료. 최신 상태는 [승인 기록](proposals/P10_G2_CODEX_APPROVALS.md)과 [실행 연결](integrated/G2/APPROVED_IMPLEMENTATION.md)을 따른다. 정식 에셋 교체·기존 PR 병합은 여전히 범위 밖이다.
 1. fxPalette 키(k/w/v/c/C/n/y/j/J/g/G/m/M) — docs/proposals/P10_fx_palette_colorbudget.md
 2. colorBudget 32 → 24(24+정리: 잡티 17% 최소, 띠 56 최악)
 3. metal_blade #c8d4dc

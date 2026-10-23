@@ -5,6 +5,15 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [P10/G2] 승인 6건 실행 반영·검증 완료(2026-10-23) | ART_HOLD / 사용자 Gate C PENDING.
+  - 바이블 fxPalette 13키→pxl 생성 소스·QA 연결, metal_blade 추가·무기 검사 활성, hero32/적24 유지; $history 보존.
+  - 승인 sheetSize 5종·발밑 여백 보존, 초과 입력 중단; 기존 후보·정식 바인딩 미변경.
+  - PRO-01 고정 피난민 마차 프롬프트·G1 안내/HUD, 3직업 실루엣 후보 actor/수동 요청 12개 생성(이미지 생성 아님).
+  - Node22.23.4/pnpm10.28.0 설치·build 성공 기준선 확인; 최종 build/test: Tests 294 passed | 2 skipped, 규칙 검사 통과.
+  - 원래 skipped3 = 원본 PNG 골든2 + pxl1. PXL_BIN 반영 후 pxl 통합1 실행·통과. 원본2장 부재로 골든2만 skipped.
+  - pxl /workspace/tools/pxl = 2e72b9ad5fae3709b1bcd81ea6a3cfc5eafbdb90(clean). fx12종 out/approval-fx 생성·QA 경고0. --out 없이 실행은 로컬 대상 허용목록 부재로 중단됨.
+  - seonggeom G1=4c6afe6, Godot4.6.3 격리 검사 manifest11/state27/DEMO050 52 통과. 인계4.7.2·GUI/미술 검수 아님.
+  - 다음: 원본 2장·새 직업/마차 이미지를 사용자가 전달하면 intake/make·미술 검수. 기존 PR 병합·정식 교체·전투/저장/17JSON·.claude/ 불변.
 - [P10/G2 승인 기록] 6건 결정 완료 / 구현 반영 BLOCKED | 사용자 직접 응답을 proposals/P10_G2_CODEX_APPROVALS.md·G2 DECISIONS에 기록.
   - 승인: fxPalette 13키 / metal_blade #c8d4dc·3단·metal / cellGrow 확대 규격.
   - 유지·선택: 세라32색·적24색 / PRO-01 고정 피난민 마차 / GDD §8.3 전직 실루엣 후보 제작.
