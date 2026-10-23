@@ -41,3 +41,9 @@ node scripts/check-rules.mjs
 docs: ARCHITECTURE.md, phases/, progress.md, backlog.md, proposals/, integrated/(지시문·보정 세트), HANDOFF_CODEX.md
 data: projects/seonggeom/(바이블·타깃·prompts·fx/sg_fx.px.js), rules/, bibles/
 외부 도구: pxl — `git clone https://github.com/augusto-scarvalho/claude-pxl.git ~/tools/pxl && git -C ~/tools/pxl checkout 2e72b9a`, `PXL_BIN=~/tools/pxl/bin/pxl.js`
+
+## 토큰·개발 최적화 — 사용자 상시 지시
+- 모든 코딩 작업은 목표를 충족하는 최소 토큰·최소 변경을 기본으로 한다. 필요한 파일/함수/변경 부분만 검색·읽고 기존 구현·도구·검증 결과를 재사용한다.
+- 독립 조회는 묶어서 실행하고 출력·설명·계획·인계는 핵심만 남긴다. 근거 없는 반복 탐색·같은 검사 재실행·장황한 로그·불필요한 의존성/추상화/리팩터링을 피한다.
+- 변경 영향에 맞는 검사를 먼저 수행하고 필요한 필수 회귀를 완료한다. 동일 코드/환경에서 이미 통과한 검사는 새 변경·실패·미해결 우려 없이 반복하지 않는다. 정확성·필수 검증·기존 데이터 보호는 유지한다.
+- 성능 개선은 실제 병목·측정 근거가 있을 때 수행한다. 기존 동작과 승인 계약을 유지하면서 실행시간·메모리·반복 작업 비용을 줄이고 추측성 최적화는 보류한다.
