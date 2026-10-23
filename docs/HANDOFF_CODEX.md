@@ -1,6 +1,20 @@
 # HANDOFF_CODEX — Claude Code → Codex 인계 (2026-10-23)
 
-## 1. 저장소 상태
+## 0. 현재 인계 진입점(최신 작업 우선)
+
+두 저장소의 후속 작업은 `codex/g2-approved-handoff` 브랜치에 커밋·푸시돼 있다. 아래 1절 표는 Claude 인계 당시 기준점이며 현재 HEAD로 간주하지 않는다.
+
+읽는 순서: **AGENTS.md → docs/progress.md 최신 로그 → 이 문서 → 작업에 해당하는 아래 문서**. 기존 규칙을 새로 승인하거나 변경한 것이 아니라 현재 위치를 연결한 것이다.
+
+- 개발 절대 규칙/코딩/검증: [AGENTS.md](../AGENTS.md), [규칙 검사](../scripts/check-rules.mjs). Node22·TS strict·결정론·순수 코어·의존성 허용목록·경로 제한·골든 갱신 규칙 유지.
+- 확정 결정: [G2 DECISIONS](integrated/G2/DECISIONS.md), [승인6건](proposals/P10_G2_CODEX_APPROVALS.md), [실행 계약](integrated/G2/APPROVED_IMPLEMENTATION.md). 세라32/적24, fxPalette13키·metal_blade·승인 후보 셀5종, 마차/직업 후보 계약.
+- 최신 이미지 요청: [NEXT_IMAGE_REQUESTS](integrated/G2/NEXT_IMAGE_REQUESTS.md). 정면 idle4/뒷면 idle4/정면 walk6부터. 기존 옆 방향5종은 변환 완료이며 재요청하지 않는다. state 미복원으로 CLI remaining=18은 실제 잔여 목록이 아니다.
+- 게임 개발 기준: seonggeom/AGENTS.md → outputs/game-production/15_AI게임개발_운영원칙.md·16_현재상태와_개발일지.md → docs/GAME_DEVELOPMENT_STANDARD_v1.0.md. 현재 결과는 docs/DEMO_DEV/G2_CANDIDATE_REVIEW.md 및 DEVELOPMENT_HANDOFF.md.
+- 검증 기록: pnpm build/test =294 passed/2 skipped(원본 PNG2장 부재). G1 ActorView13/0·실제 Xorg/Mesa 자동 캡처30장·고정 포즈9개. 자연 플레이·최종 미술 승인과 구분한다. 사용 Godot4.6.3, 인계4.7.2 호환성 미확인.
+- 도구: Node22.23.4·pnpm10.28.0, pxl은 저장소 밖 /workspace/tools/pxl @2e72b9ad5fae3709b1bcd81ea6a3cfc5eafbdb90(PXL_BIN). 활성화/캐시/격리 경로는 환경 start_skill과 실행 계약 참고.
+- 보호 범위: 이미지 생성 API 호출 없음, 후보/생성 원본 PNG 커밋 금지, .claude/ 불변, 정식 에셋 교체·기존 PR 병합·전투/히트박스/저장/17JSON 변경 없음. ART_HOLD/Gate C PENDING. 별도 승인이 필요한 작업을 문서 인계만으로 승인된 것으로 간주하지 않는다.
+
+## 1. 인계 당시 저장소 상태(과거 기준점)
 | 저장소 | 브랜치 | 커밋 | 상태 |
 | --- | --- | --- | --- |
 | kosmosgg-ui/pixel-forge | main | 35c4b79 (G2 U3) | P8 마감, P9-M·P10 0~3·G2 U1~U3 구현 완료. progress "P8-9 대기" |
@@ -34,10 +48,10 @@
 - 받은 이미지 판정은 `forge lineup` 시트 1장 + AGENTS.md 3절 절차.
 
 ## 6. 다음 작업 순서 (권장)
-1. 환경 확인: `pnpm install && pnpm build && pnpm test`(마지막 보고 기준 통과), pxl 설치(AGENTS.md 5절).
-2. 사용자 결정 3절 답이 오면 해당 제안서 반영(바이블 `$history` 유지).
-3. 세라 정면·뒷면 시트 수령 → intake/make → seonggeom candidates 갱신.
-4. seonggeom: feature/g1-actor-sprites에서 Draft PR 상태 정리, Gate C 패키지(캡처·후보 시트) 사용자 확인 → 승인 후에만 정식 경로 승격·main 병합.
+1. 새 작업에서는 기존 체크아웃·최신 progress를 확인한다. 도구/의존성이 유지돼 있으면 같은 설치·전체 테스트를 불필요하게 반복하지 않는다. 변경 영향에 맞춰 필수 검증을 수행한다.
+2. 승인6건은 구현 완료이며 다시 결정을 요청하지 않는다. 바이블 `$history`와 미승인 범위를 유지한다.
+3. NEXT_IMAGE_REQUESTS의3건 원본 PNG 수령 → intake/make → 후보 검수. 미복원 원본/참조를 지어내거나 JPEG로 바꿔 원본 검증을 통과시키지 않는다.
+4. 기존 옆 후보의 크기·접지·잘림 경고는 G2_CANDIDATE_REVIEW 기록을 따른다. 후보 미술 등급은 AGENTS 절차로 판정하고 정식 경로 승격·기존 PR 병합은 별도 승인 전 보류한다.
 
 ## 7. 도구 차이 (Claude Code → Codex)
 | Claude Code | Codex에서 |
