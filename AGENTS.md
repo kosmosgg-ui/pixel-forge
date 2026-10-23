@@ -53,3 +53,8 @@ data: projects/seonggeom/(바이블·타깃·prompts·fx/sg_fx.px.js), rules/, b
 - 보고 형식(클로드 검수용, 그대로 붙여넣을 수 있게):
   [지시문 ID] 커밋 <해시> / 완료 / 수락 결과(명령·결과 줄) / 경고·불일치 / 질문 / 시트 경로
 - 실패 로그는 마지막 25줄만. 이미지는 forge lineup 시트 1장.
+
+## DEMO_AUTOPILOT 우선 적용 (2026-10-23 사용자 지시)
+- docs/instructions/DEMO_AUTOPILOT.md를 이후 개별 지시문보다 우선한다. 정사·수치 DECISIONS와 고정 대본은 유지. 내장 imagegen은 이번 명시 승인 범위에서 사용 가능(이전 생성 금지 규칙의 승인된 예외).
+- Q0 추가: 저해상도 고정참조3장 기반 고해상도 기준원화·턴어라운드2안(긴변≥1536), 디자인변경금지; BLOCKED-APPROVAL 후 승인본만 새고정참조로 등록. 해당 항목만 대기하고 다음 독립항목 진행. 승인14/15는 이미 "둘 다 승인"되어 적용됨.
+- 점검 묶음은 하루1회 이내, 로그/사용량/실패·승인 대기는 문서5절 형식. 원본은 seonggeom private orphan art-source만, 병합/정식승격/공개/유료API 금지.

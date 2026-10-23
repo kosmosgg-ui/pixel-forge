@@ -5,6 +5,10 @@
 현재 단계: **P8-9 대기(세라 생산 — G1·P9 진행)**
 
 ## 로그
+- [AUTOPILOT 계획] 사용자 마스터지시를 두 저장소에 고정, P13 완료 상태에서 Q0 시작.
+  - 저해상도참조3장 private art-source 고정·해시검증, Q0 고해상도2안은 승인대기.
+  - 데이터 문구/골든·codex-imagegen provenance/archive·승인된 kind 수령 경로부터 구현.
+  - 승인 필요 항목만 대기, 독립항목 진행·3시도 제한·일1회 점검 묶음.
 - [P13 추가16~18] 세라 후보 채택·HSV70°경계 정수화·portrait intake 완료(실제 원본 미수신).
   - portrait1/2/4칸·green/2px despill·linear/720/y40·11필드·합성QA/클리핑·경로 차단.
   - 세라33프레임 green0/alpha동일/32색, 기존 P12 float 경계298픽셀 누락 교정·적 피부 보존.
